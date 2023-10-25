@@ -1,27 +1,28 @@
 from copy import deepcopy
 import jmespath 
 from intervals import Interval
+from state import State
 
 class Interpreter:
     def __init__(self, abstraction, program):
         self.abstraction = abstraction
         self.program = program # just needed for get... which could be hardcoded anyway
 
-    def step(self, bc, l, s, i): 
+    def step(self, bc, state, i): 
             if bc["opr"] == "return":
                 bc["opr"] = "return_m" # I know ugly but there were many :)
             if bc["opr"] == "if":
                 bc["opr"] = "if_m"
             if hasattr(self, bc["opr"]):
-                return getattr(self, bc["opr"])(bc, l, s, i) 
+                return getattr(self, bc["opr"])(bc, state, i) 
             else:
                 raise Exception("Not implemented") 
 
-    def push(self, bc, l, s, i): 
+    def push(self, bc, old_state, i): 
             value = self.abstraction.from_value(bc["value"])
             
             if "value" in bc:
-                return [(l, s + [value], i+1)]
+                return [(State.add_to_stack(old_state, value), i+1)]
             else: 
                 raise Exception("Review implementation of push")
 
@@ -37,38 +38,44 @@ class Interpreter:
     def return_m(self, b, l, s, i): 
         return [] 
    
-    def load(self, b, l, s, i):
-        # Only consider ints for now. 
-        print(l) 
-        value = l[b["index"]].cpy_set_index(b["index"]) 
-        return [(l, s + [value], i+1)]   
+    def load(self, b, state, i): 
+        value = state.locals[b["index"]].cpy_set_index(b["index"])
 
-    def binary(self, b, l, s, i): 
-        if len(s) < 2: raise Exception("Not enough operands on stack") # We must have at least two elements on stack
+        return [(State.add_to_stack(state, value), i+1)]   
+
+    def binary(self, b, old_state, i): 
+        if len(old_state.stack) < 2: raise Exception("Not enough operands on stack") # We must have at least two elements on stack
          
-        val1 = s[-2]
-        val2 = s[-1] 
+        val1 = old_state.stack[-2]
+        val2 = old_state.stack[-1] 
 
         if type(val1) != type(val2): raise Exception("Type mismatch")
 
+        new_stack = deepcopy(old_state.stack[:-2])
+
         match b["operant"]:
             case "add":
-                return [(l, s[:-2]+[val1 + val2], i+1)] 
+                #return [(l, s[:-2]+[val1 + val2], i+1)] 
+                new_stack += [val1 + val2]
             case "sub":
-                return [(l, s[:-2]+[val1 - val2], i+1)] 
+                #return [(l, s[:-2]+[val1 - val2], i+1)] 
+                new_stack += [val1 - val2]
             case "mul":
-                return [(l, s[:-2]+[val1 * val2], i+1)] 
+                #return [(l, s[:-2]+[val1 * val2], i+1)] 
+                new_stack += [val1 * val2]
             case "div": 
-                return [(l, s[:-2]+[val1 / val2], i+1)] # Exception checked in AbstractInt
-            case "rem": 
-                return [(l, s[:-2]+[val1 % val2], i+1)] 
+                #return [(l, s[:-2]+[val1 / val2], i+1)] # Exception checked in AbstractInt
+                new_stack += [val1 / val2]
+            case "rem":
+                #return [(l, s[:-2]+[val1 % val2], i+1)] 
+                new_stack += [val1 % val2]
 
-        return True
+        return [(State.new_stack(old_state, new_stack), i+1)] 
      
-    def store(self, b, l, s, i): 
+    def store(self, b, state, i): 
         idx = b["index"]
-        l[idx] = s.pop() # hope I understood it correctly. Think we remove the element from the operand stack too.
-        return [(l, s, i+1)] 
+        # hope I understood it correctly. Think we remove the element from the operand stack too.
+        return [(State.store(state, idx), i+1)] 
 
     def incr(self, b, l, s, i):
         #increment local in $index by $amount

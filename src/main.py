@@ -13,15 +13,12 @@ def main():
     # program class usage
     program = Program(classes)
 
-    for key in program.bytecode.keys():
-        print(key)
-
     interpreter = AbstractInterpreter(program, Interval)
 
     pretty_print_bytecode(program, ('eu/bogoe/dtu/exceptional/Arrays', 'selectionSort'))
 
     #interpreter.analyse(('dtu/compute/exceptional/Arrays', 'bubbleSort'))
-    #interpreter.analyse(('eu/bogoe/dtu/exceptional/Arrays', 'selectionSort'))
+    interpreter.analyse(('eu/bogoe/dtu/exceptional/Arrays', 'selectionSort'))
      
 if __name__ == "__main__":
     main()

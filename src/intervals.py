@@ -36,7 +36,8 @@ class Interval: # Integers represented as intervals
         if v1 in EXCEPTIONS: return v1
         if v2 in EXCEPTIONS: return v2 # hmmm ?
         return cls.checked(cls.LB_k(v1.l, v2.l, K), cls.UB_k(v1.h, v2.h, K)) 
-
+    
+    # LBk UBk Principles of Program Analysis p.228. 
     @classmethod # Gives a lot of min/max when slie one would have given z3/z4??
     def LB_k(cls, z1, z3, K):
         if z1 <= z3: return z1
@@ -70,7 +71,7 @@ class Interval: # Integers represented as intervals
             yield elem 
 
     def __add__(self, other):
-        assert( isinstance(other, Interval))
+        assert(isinstance(other, Interval))
         return self.checked(self.l + other.l, self.h + other.h, self.index)  
         
     def __sub__(self, other):
