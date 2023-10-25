@@ -18,11 +18,11 @@ class Interpreter:
             else:
                 raise Exception("Not implemented") 
 
-    def push(self, bc, old_state, i): 
+    def push(self, bc, state, i): 
             value = self.abstraction.from_value(bc["value"])
             
             if "value" in bc:
-                return [(State.add_to_stack(old_state, value), i+1)]
+                return [(State.add_to_stack(state, value), i+1)]
             else: 
                 raise Exception("Review implementation of push")
 
@@ -43,15 +43,15 @@ class Interpreter:
 
         return [(State.add_to_stack(state, value), i+1)]   
 
-    def binary(self, b, old_state, i): 
-        if len(old_state.stack) < 2: raise Exception("Not enough operands on stack") # We must have at least two elements on stack
+    def binary(self, b, state, i): 
+        if len(state.stack) < 2: raise Exception("Not enough operands on stack") # We must have at least two elements on stack
          
-        val1 = old_state.stack[-2]
-        val2 = old_state.stack[-1] 
+        val1 = state.stack[-2]
+        val2 = state.stack[-1] 
 
         if type(val1) != type(val2): raise Exception("Type mismatch")
 
-        new_stack = deepcopy(old_state.stack[:-2])
+        new_stack = deepcopy(state.stack[:-2])
 
         match b["operant"]:
             case "add":
@@ -70,7 +70,7 @@ class Interpreter:
                 #return [(l, s[:-2]+[val1 % val2], i+1)] 
                 new_stack += [val1 % val2]
 
-        return [(State.new_stack(old_state, new_stack), i+1)] 
+        return [(State.new_stack(state, new_stack), i+1)] 
      
     def store(self, b, state, i): 
         idx = b["index"]
@@ -87,38 +87,42 @@ class Interpreter:
     def goto(self, b, l, s, i): 
         return [(l, s, b["target"])]  
     
-    def if_m(self, b, l, s, i):
-        val2 = s.pop()
-        val1 = s.pop()
+    def if_m(self, b, state, i):
+        if len(state.stack) < 2: raise Exception("Not enough operands on stack") # We must have at least two elements on stack
+         
+        val1 = state.stack[-2]
+        val2 = state.stack[-1] 
+
         return_vals = []
         
         match b["condition"]:
             case "gt":
-                if val1 > val2: return_vals.append((l, s, b["target"]))
-                elif val1 <= val2: return_vals.append((l, s, i+1))
+                if val1 > val2: return_vals.append((State.new_stack(state, deepcopy(state.stack[:-2])), b["target"]))
+                elif val1 <= val2: return_vals.append((State.new_stack(state, deepcopy(state.stack[:-2])), i+1))
                 else: 
-                    l_branch = deepcopy(l)
-                    l_no_branch = deepcopy(l)
+                    l_branch = deepcopy(state.locals)
+                    l_no_branch = deepcopy(state.locals)
                     
                     if val1.index is not None and val2.is_constant():
                         new_h = max(val1.h, val2.h+1)
                         new_l = max(val1.l, val2.h+1)
                         l_branch[val1.index] = self.abstraction(new_l, new_h, None)
+                        
                         new_h = val2.l
                         new_l = min(val1.l, new_h)
                         l_no_branch[val1.index] = self.abstraction(new_l, new_h, None)
 
-                    elif val2.index is not None and val1.is_constant():
-                    
+                    elif val2.index is not None and val1.is_constant(): 
                         new_h = val1.l - 1
                         new_l = min(val2.l, new_h)
                         l_branch[val2.index] = self.abstraction(new_l, new_h, None)
+                        
                         new_h = max(val1.h, val2.h)
                         new_l = min(val1.h, new_h)
                         l_no_branch[val2.index] = self.abstraction(new_l, new_h, None)
 
                     
-                    return_vals = [(l_branch, deepcopy(s), b["target"]), (l_no_branch, deepcopy(s), i+1)]
+                    return_vals = [(State.new_locals(state, l_branch), b["target"]), (State.new_locals(state, l_no_branch), i+1)]
 
             case "ge":
                 if val1 >= val2: return_vals.append((l, s, b["target"]))

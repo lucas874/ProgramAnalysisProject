@@ -30,7 +30,11 @@ class State: # State consists of local variables, operand stack and heap
     @classmethod
     def new_stack(cls, old_state, new_stack): 
         return State(deepcopy(old_state.locals), new_stack, deepcopy(old_state.heap))
-
+    
+    @classmethod
+    def new_locals(cls, old_state, new_locals): 
+        return State(new_locals, deepcopy(old_state.stack), deepcopy(old_state.heap))
+ 
     @classmethod
     def store(cls, old_state, index):
         ns = deepcopy(old_state)
