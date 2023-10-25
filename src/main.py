@@ -1,11 +1,11 @@
 from helpers_constants import *
 from abstract_interpreter import *
-from range_abstract_int import *
+from intervals import *
 
 def main():
     # read the json files
     #json_file_path = "assignment_5\decompiled"
-    json_file_path = "exceptional" 
+    json_file_path = "../exceptional" 
     cls_json_files = extract_files_by_extension(json_file_path, "json")
     classes = get_classes(cls_json_files)
     
@@ -16,7 +16,7 @@ def main():
     for key in program.bytecode.keys():
         print(key)
 
-    interpreter = AbstractInterpreter(program, AbstractInt)
+    interpreter = AbstractInterpreter(program, Interval)
 
     pretty_print_bytecode(program, ('eu/bogoe/dtu/exceptional/Arrays', 'selectionSort'))
 

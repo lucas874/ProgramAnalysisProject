@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from helpers_constants import *
 
 @dataclass(frozen=True)
-class AbstractInt: # Integers represented as intervals 
+class Interval: # Integers represented as intervals 
     l: int
     h: int
     index: int # Use when loading from locals 
@@ -10,7 +10,7 @@ class AbstractInt: # Integers represented as intervals
     @classmethod
     def from_type(cls, typename):
         if typename == "int" or typename == "float":
-            return AbstractInt(INT_MIN, INT_MAX, None)
+            return Interval(INT_MIN, INT_MAX, None)
         else:
             raise Exception("Type not implemented")
 
@@ -29,7 +29,7 @@ class AbstractInt: # Integers represented as intervals
     def checked(cls, l, h, index=None):
         if l > h:
             raise Exception("ASDADADDA")
-        return AbstractInt(max(l, INT_MIN), min(h, INT_MAX), index)
+        return Interval(max(l, INT_MIN), min(h, INT_MAX), index)
 
     @classmethod # slides and p. 228 in book. more so p. 228. K is the set of integers explicitly mentioned in bytecode. 
     def wide(cls, v1, v2, K):
@@ -70,22 +70,22 @@ class AbstractInt: # Integers represented as intervals
             yield elem 
 
     def __add__(self, other):
-        assert( isinstance(other, AbstractInt))
+        assert( isinstance(other, Interval))
         return self.checked(self.l + other.l, self.h + other.h, self.index)  
         
     def __sub__(self, other):
-        assert( isinstance(other, AbstractInt))        
+        assert( isinstance(other, Interval))        
         return self.checked(self.l - other.h, self.h - other.l, self.index)
 
     def __mul__(self, other): 
-        assert( isinstance(other, AbstractInt))
+        assert( isinstance(other, Interval))
         pairs = [(n1, n2) for n1 in list(self) for n2 in list(other)]
         results = list(map(lambda tup: tup[0]*tup[1], pairs))
 
         return self.checked(min(results), max(results))
     
     def __truediv__(self, other):  # integer division
-        assert( isinstance(other, AbstractInt))
+        assert( isinstance(other, Interval))
         if 0 in range(other.l, other.h+1): return ArithException
         
         pairs = [(n1, n2) for n1 in list(self) for n2 in list(other)]
@@ -94,7 +94,7 @@ class AbstractInt: # Integers represented as intervals
         return self.checked(min(results), max(results))
     
     def __mod__(self, other):  # integer division
-        assert( isinstance(other, AbstractInt))
+        assert( isinstance(other, Interval))
         if 0 in range(other.l, other.h+1): return ArithException
         
         pairs = [(n1, n2) for n1 in list(self) for n2 in list(other)]
@@ -103,23 +103,23 @@ class AbstractInt: # Integers represented as intervals
         return self.checked(min(results), max(results))
     
     def __gt__(self, other):
-        assert(isinstance(other, AbstractInt))
+        assert(isinstance(other, Interval))
         return self.l > other.h
 
     def __ge__(self, other):
-        assert(isinstance(other, AbstractInt)) 
+        assert(isinstance(other, Interval)) 
         return self.l >= other.h
 
     def __lt__(self, other):
-        assert(isinstance(other, AbstractInt))
+        assert(isinstance(other, Interval))
         return self.h < other.l
 
     def __le__(self, other): 
-        assert(isinstance(other, AbstractInt))
+        assert(isinstance(other, Interval))
         return self.h <= other.l
 
     def __eq__(self, other):
-        assert(isinstance(other, AbstractInt))
+        assert(isinstance(other, Interval))
         return self.l == other.l and self.h == other.h 
     
     def __neq__(self, other):

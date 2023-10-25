@@ -1,6 +1,6 @@
 from copy import deepcopy
 import jmespath 
-from range_abstract_int import AbstractInt
+from intervals import Interval
 
 class Interpreter:
     def __init__(self, abstraction, program):
@@ -200,8 +200,7 @@ class Interpreter:
                     if val1 is not None:
                         return_vals.append((deepcopy(l), deepcopy(s), b["target"])) # branch
                     else:
-                        return_vals.append((deepcopy(l), deepcopy(s), i+1)) # do not branch
-                 
+                        return_vals.append((deepcopy(l), deepcopy(s), i+1)) # do not branch 
                 
             case "ne" | "isnot": 
                 if isinstance(val1, self.abstraction):
@@ -298,7 +297,7 @@ class Interpreter:
                 
         
             case "eq" | "is": 
-                if isinstance(val, AbstractInt):
+                if isinstance(val, Interval):
                     if val == zero:
                         return_vals.append((deepcopy(l), deepcopy(s), b["target"])) # do not branch
                     else:
@@ -310,7 +309,7 @@ class Interpreter:
                         return_vals.append((deepcopy(l), deepcopy(s), i+1)) # do not branch
                 
             case "ne" | "isnot": 
-                if isinstance(val, AbstractInt):
+                if isinstance(val, Interval):
                     if val == zero:
                         return_vals.append((deepcopy(l), deepcopy(s), i+1)) # do not branch
                     else:
@@ -350,7 +349,6 @@ class Interpreter:
             return [(l, s + [s[-2:]], i+ 1)] 
         else:
             raise Exception("Not implemented") 
-
 
     def new(self, b, l, s, i):
         if "class" in b:
