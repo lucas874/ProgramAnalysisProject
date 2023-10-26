@@ -9,6 +9,10 @@ class State: # State consists of local variables, operand stack and heap
     heap: dict
 
     @classmethod
+    def cpy(cls, other):
+        return deepcopy(other)
+
+    @classmethod
     def add_to_locals(cls, old_state, index, value):
         ns = deepcopy(old_state)
         ns.locals[index] = value 
@@ -47,10 +51,11 @@ class State: # State consists of local variables, operand stack and heap
     def merge_locals(cls, old_locals, new_locals, wide, *args):
         union = set(old_locals) | set(new_locals)
         merged = {}
-        
+        print("UNION IS: ", union) 
+        print("OLD LOCALS: ", old_locals, "NEW LOCALS: ", new_locals)
         for i in union:
             if i in old_locals and new_locals:
-                merged[i] = wide(old_locals[i], new_locals[i], args)
+                merged[i] = wide(old_locals[i], new_locals[i], *args)
             elif i in old_locals:
                 merged[i] = deepcopy(old_locals[i])
             else: 
@@ -60,11 +65,13 @@ class State: # State consists of local variables, operand stack and heap
 
     @classmethod
     def merge_stacks(cls, old_stack, new_stack, wide, *args):
+        print("OLD STACK ", old_stack)
+        print("NEW STACK ", new_stack)
         assert len(old_stack) == len(new_stack)
         return [wide(o, n, *args) for o,n in zip(old_stack, new_stack)]
 
     @classmethod
-    def merge_heaps(cls, old_heap, new_heap, wide, *args):
+    def merge_heaps(cls, old_heap, new_heap, wide, args):
         return {} 
 
     @classmethod
@@ -72,14 +79,10 @@ class State: # State consists of local variables, operand stack and heap
         if old_state == None:
             return new_state
         
-        # old and new locals and stacks
-        olc, os, oh = old_state 
-        nlc, ns, nh = new_state 
-
         # merged locals, merged stack and merged heap
-        mlc = cls.merge_locals(olc, nlc, wide, *args) 
-        ms = cls.merge_stacks(os, ns, wide, *args) 
-        mh = cls.merge_heaps(oh, nh, wide, *args)
+        mlc = cls.merge_locals(old_state.locals, new_state.locals, wide, *args) 
+        ms = cls.merge_stacks(old_state.stack, new_state.stack, wide, *args) 
+        mh = cls.merge_heaps(old_state.heap, new_state.heap, wide, *args)
 
         return State(mlc, ms, mh)
 

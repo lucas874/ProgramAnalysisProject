@@ -61,7 +61,7 @@ class AbstractInterpreter:
         def merge(self, old_state, new_state, *args): 
             return State.merge(old_state, new_state, self.abstraction.wide, *args)
 
-        def merge_fwd(self, i, new_state, *args): # i points to an instruction. locals, state. K is list of integer constants in program
+        def merge_fwd(self, i, new_state, *args): # i points to an instruction. locals, state. K is list of integer constants in program 
             res = self.merge(self.states[i], new_state, *args) 
             
             if res != self.states[i]:

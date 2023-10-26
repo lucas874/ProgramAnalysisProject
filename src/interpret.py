@@ -77,15 +77,17 @@ class Interpreter:
         # hope I understood it correctly. Think we remove the element from the operand stack too.
         return [(State.store(state, idx), i+1)] 
 
-    def incr(self, b, l, s, i):
+    def incr(self, b, state, i):
         #increment local in $index by $amount
          
         idx = b["index"]
-        l[idx]+= self.abstraction.from_integer(b["amount"])
-        return [(l, s, i+1)]
+        new_l = deepcopy(state.locals)
+        new_l[idx] += self.abstraction.from_integer(b["amount"])
+        
+        return [(State.new_locals(state, new_l), i+1)]
 
-    def goto(self, b, l, s, i): 
-        return [(l, s, b["target"])]  
+    def goto(self, b, state, i): 
+        return [(State.cpy(state), b["target"])]  
     
     def if_m(self, b, state, i):
         if len(state.stack) < 2: raise Exception("Not enough operands on stack") # We must have at least two elements on stack
@@ -96,7 +98,7 @@ class Interpreter:
         return_vals = []
         
         match b["condition"]:
-            case "gt": # all cases except eq, neq follow this pattern. two 'easy cases'. two difficult cases. 
+            case "gt": # all cases except eq, neq follow this pattern. two 'easy cases' and a difficult case leading to two new states
                 if val1 > val2: return_vals.append((State.new_stack(state, deepcopy(state.stack[:-2])), b["target"])) # return state that is old state with two elements popped from stack jump to target address
                 elif val1 <= val2: return_vals.append((State.new_stack(state, deepcopy(state.stack[:-2])), i+1)) # same but jump to next address 
                 else:
@@ -127,7 +129,6 @@ class Interpreter:
 
 
                     return_vals = [(l_branch, deepcopy(s), b["target"]), (l_no_branch, deepcopy(s), i+1)]
-
 
             case "le": 
                 if val1 <= val2: return_vals.append((l, s, b["target"]))

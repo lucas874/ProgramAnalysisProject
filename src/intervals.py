@@ -41,8 +41,9 @@ class Interval: # Integers represented as intervals
     # LBk UBk Principles of Program Analysis p.228. 
     @classmethod # Gives a lot of min/max when slie one would have given z3/z4??
     def LB_k(cls, z1, z3, K):
+        print("HELLO FROM LBk")
         if z1 <= z3: return z1
-        elif z1 > z3:
+        elif z1 > z3: 
             ks = [k for k in K if k <= z3]
             if ks != []: return max(ks)
             else: return INT_MIN
@@ -50,6 +51,7 @@ class Interval: # Integers represented as intervals
     @classmethod
     def UB_k(cls, z2, z4, K):
         print("HELLO from UB_k")
+        print("K IS ", K)
         if z4 <= z2: return z2
         elif z4 > z2:
             ks = [k for k in K if z4 <= k]
