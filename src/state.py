@@ -42,7 +42,46 @@ class State: # State consists of local variables, operand stack and heap
 
         return ns
     
+    # use *args for things like K in the intervals widening etc. 
+    @classmethod
+    def merge_locals(cls, old_locals, new_locals, wide, *args):
+        union = set(old_locals) | set(new_locals)
+        merged = {}
+        
+        for i in union:
+            if i in old_locals and new_locals:
+                merged[i] = wide(old_locals[i], new_locals[i], args)
+            elif i in old_locals:
+                merged[i] = deepcopy(old_locals[i])
+            else: 
+                merged[i] = deepcopy(new_locals[i])
+        
+        return merged 
 
+    @classmethod
+    def merge_stacks(cls, old_stack, new_stack, wide, *args):
+        assert len(old_stack) == len(new_stack)
+        return [wide(o, n, *args) for o,n in zip(old_stack, new_stack)]
+
+    @classmethod
+    def merge_heaps(cls, old_heap, new_heap, wide, *args):
+        return {} 
+
+    @classmethod
+    def merge(cls, old_state, new_state, wide, *args): 
+        if old_state == None:
+            return new_state
+        
+        # old and new locals and stacks
+        olc, os, oh = old_state 
+        nlc, ns, nh = new_state 
+
+        # merged locals, merged stack and merged heap
+        mlc = cls.merge_locals(olc, nlc, wide, *args) 
+        ms = cls.merge_stacks(os, ns, wide, *args) 
+        mh = cls.merge_heaps(oh, nh, wide, *args)
+
+        return State(mlc, ms, mh)
 
 
 

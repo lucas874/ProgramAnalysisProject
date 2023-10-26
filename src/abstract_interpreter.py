@@ -58,42 +58,8 @@ class AbstractInterpreter:
 
             return locals 
 
-        # use *args for things like K in the intervals widening etc. 
-        def merge_locals(self, old_locals, new_locals, *args):
-            union = set(old_locals) | set(new_locals)
-            merged = {}
-            
-            for i in union:
-                if i in old_locals and new_locals:
-                    merged[i] = self.abstraction.wide(old_locals[i], new_locals[i], *args)
-                elif i in old_locals:
-                    merged[i] = old_locals[i]
-                else: 
-                    merged[i] = new_locals[i]
-            
-            return merged 
-
-        def merge_stacks(self, old_stack, new_stack, *args):
-            assert len(old_stack) == len(new_stack)
-            return [self.abstraction.wide(o, n, *args) for o,n in zip(old_stack, new_stack)]
-
-        def merge_heaps(self, old_heap, new_heap, *args):
-            return {} 
-
         def merge(self, old_state, new_state, *args): 
-            if old_state == None:
-                return new_state
-            
-            # old and new locals and stacks
-            olc, os, oh = old_state 
-            nlc, ns, nh = new_state 
-
-            # merged locals, merged stack and merged heap
-            mlc = self.merge_locals(olc, nlc, *args) 
-            ms = self.merge_stacks(os, ns, *args) 
-            mh = self.merge_heaps(oh, nh, *args)
-
-            return (mlc, ms)
+            return State.merge(old_state, new_state, self.abstraction.wide, *args)
 
         def merge_fwd(self, i, new_state, *args): # i points to an instruction. locals, state. K is list of integer constants in program
             res = self.merge(self.states[i], new_state, *args) 
