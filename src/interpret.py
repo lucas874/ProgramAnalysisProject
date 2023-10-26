@@ -96,59 +96,19 @@ class Interpreter:
         return_vals = []
         
         match b["condition"]:
-            case "gt":
-                if val1 > val2: return_vals.append((State.new_stack(state, deepcopy(state.stack[:-2])), b["target"]))
-                elif val1 <= val2: return_vals.append((State.new_stack(state, deepcopy(state.stack[:-2])), i+1))
-                else: 
-                    l_branch = deepcopy(state.locals)
-                    l_no_branch = deepcopy(state.locals)
-                    
-                    if val1.index is not None and val2.is_constant():
-                        new_h = max(val1.h, val2.h+1)
-                        new_l = max(val1.l, val2.h+1)
-                        l_branch[val1.index] = self.abstraction(new_l, new_h, None)
-                        
-                        new_h = val2.l
-                        new_l = min(val1.l, new_h)
-                        l_no_branch[val1.index] = self.abstraction(new_l, new_h, None)
-
-                    elif val2.index is not None and val1.is_constant(): 
-                        new_h = val1.l - 1
-                        new_l = min(val2.l, new_h)
-                        l_branch[val2.index] = self.abstraction(new_l, new_h, None)
-                        
-                        new_h = max(val1.h, val2.h)
-                        new_l = min(val1.h, new_h)
-                        l_no_branch[val2.index] = self.abstraction(new_l, new_h, None)
-
-                    
+            case "gt": # all cases except eq, neq follow this pattern. two 'easy cases'. two difficult cases. 
+                if val1 > val2: return_vals.append((State.new_stack(state, deepcopy(state.stack[:-2])), b["target"])) # return state that is old state with two elements popped from stack jump to target address
+                elif val1 <= val2: return_vals.append((State.new_stack(state, deepcopy(state.stack[:-2])), i+1)) # same but jump to next address 
+                else:
+                    l_branch, l_no_branch = self.abstraction.tricky_gt(deepcopy(state.locals), deepcopy(state.locals), val1, val2)
                     return_vals = [(State.new_locals(state, l_branch), b["target"]), (State.new_locals(state, l_no_branch), i+1)]
 
             case "ge":
-                if val1 >= val2: return_vals.append((l, s, b["target"]))
-                elif val1 < val2: return_vals.append((l, s, i+1))
-                else: 
-                    l_branch = deepcopy(l)
-                    l_no_branch = deepcopy(l)
-                    
-                    if val1.index is not None and val2.is_constant():
-                        new_h = max(val1.h, val2.h)
-                        new_l = max(val1.l, val2.h)
-                        l_branch[val1.index] = self.abstraction(new_l, new_h, None)
-                        new_h = val2.l
-                        new_l = min(val1.l, new_h)
-                        l_no_branch[val1.index] = self.abstraction(new_l, new_h, None)
-
-                    elif val2.index is not None and val1.is_constant():
-                        new_h = val1.l
-                        new_l = min(val1.l, new_h)
-                        l_branch[val2.index] = self.abstraction(new_l, new_h, None)
-                        new_h = max(val1.h, val2.l)
-                        new_l = max(val2.l, new_h)
-                        l_no_branch[val2.index] = self.abstraction(new_l, new_h, None)
- 
-                    return_vals = [(l_branch, deepcopy(s), b["target"]), (l_no_branch, deepcopy(s), i+1)]
-
+                if val1 >= val2: return_vals.append((State.new_stack(state, deepcopy(state.stack[:-2])), b["target"]))
+                elif val1 < val2: return_vals.append((State.new_stack(state, state.stack[:-2]), i+1))
+                else:
+                    l_branch, l_no_branch = self.abstraction.tricky_ge(deepcopy(state.locals), deepcopy(state.locals), val1, val2)                     
+                    return_vals = [(State.new_locals(state, l_branch), b["target"]), (State.new_locals(state, l_no_branch), i+1)] 
 
             case "lt":
                 if val1 < val2: return_vals.append((l, s, b["target"]))
@@ -224,7 +184,6 @@ class Interpreter:
                         return_vals.append((deepcopy(l), deepcopy(s), b["target"])) # branch
                     else:
                         return_vals.append((deepcopy(l), deepcopy(s), i+1)) # do not branch
-                    
 
         return return_vals  
            

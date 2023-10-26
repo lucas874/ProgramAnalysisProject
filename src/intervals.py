@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from helpers_constants import *
+from copy import deepcopy
 
 @dataclass(frozen=True)
 class Interval: # Integers represented as intervals 
@@ -25,7 +26,7 @@ class Interval: # Integers represented as intervals
     def from_integer(cls, value):
         return cls.checked(value, value)
 
-    @classmethod
+    @classmethod # RECONSIDER THIS
     def checked(cls, l, h, index=None):
         if l > h:
             raise Exception("ASDADADDA")
@@ -46,13 +47,57 @@ class Interval: # Integers represented as intervals
             if ks != []: return max(ks)
             else: return INT_MIN
 
-    def UB_k(z2, z4, K):
+    @classmethod
+    def UB_k(cls, z2, z4, K):
+        print("HELLO from UB_k")
         if z4 <= z2: return z2
         elif z4 > z2:
             ks = [k for k in K if z4 <= k]
             if ks != []: return min(ks)
             else: return INT_MAX
- 
+    
+    @classmethod
+    def tricky_gt(cls, l_branch, l_no_branch, val1, val2): 
+        if val1.index is not None and val2.is_constant():
+            new_h = max(val1.h, val2.h+1)
+            new_l = max(val1.l, val2.h+1)
+            l_branch[val1.index] = cls.checked(new_l, new_h, None)
+            
+            new_h = val2.l
+            new_l = min(val1.l, new_h)
+            l_no_branch[val1.index] = cls.checked(new_l, new_h, None)
+
+        elif val2.index is not None and val1.is_constant(): 
+            new_h = val1.l - 1
+            new_l = min(val2.l, new_h)
+            l_branch[val2.index] = cls.checked(new_l, new_h, None)
+            
+            new_h = max(val1.h, val2.h)
+            new_l = min(val1.h, new_h)
+            l_no_branch[val2.index] = cls.checked(new_l, new_h, None)
+
+        return (l_branch, l_no_branch)
+
+    @classmethod
+    def tricky_ge(cls, l_branch, l_no_branch, val1, val2): 
+        if val1.index is not None and val2.is_constant():
+            new_h = max(val1.h, val2.h)
+            new_l = max(val1.l, val2.h)
+            l_branch[val1.index] = cls.checked(new_l, new_h, None)
+            new_h = val2.l
+            new_l = min(val1.l, new_h)
+            l_no_branch[val1.index] = cls.checked(new_l, new_h, None)
+
+        elif val2.index is not None and val1.is_constant():
+            new_h = val1.l
+            new_l = min(val1.l, new_h)
+            l_branch[val2.index] = cls.checked(new_l, new_h, None)
+            new_h = max(val1.h, val2.l)
+            new_l = max(val2.l, new_h)
+            l_no_branch[val2.index] = cls.checked(new_l, new_h, None)
+
+        return (l_branch, l_no_branch)
+
     def is_constant(self):
         return self.l == self.h
 
@@ -125,4 +170,3 @@ class Interval: # Integers represented as intervals
     
     def __neq__(self, other):
         return not(self.__eq__(other))
-
