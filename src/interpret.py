@@ -35,8 +35,8 @@ class Interpreter:
             if len(s) < 2: raise Exception("Not enough values on stack") 
             return [(l, s[:-2], i + 1)] 
          
-    def return_m(self, b, l, s, i): 
-        return [] 
+    def return_m(self, bc, state, i): 
+        return [(State.cpy(state), i)]  # what to return here
    
     def load(self, b, state, i): 
         value = state.locals[b["index"]].cpy_set_index(b["index"])

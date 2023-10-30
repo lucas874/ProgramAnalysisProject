@@ -16,8 +16,7 @@ class State: # State consists of local variables, operand stack and heap
     def add_to_locals(cls, old_state, index, value):
         ns = deepcopy(old_state)
         ns.locals[index] = value 
-        print(id(old_state.locals), id(old_state.stack), id(old_state.heap))
-        print(id(ns.locals), id(ns.stack), id(ns.heap))
+
         return ns 
 
     @classmethod
@@ -56,8 +55,7 @@ class State: # State consists of local variables, operand stack and heap
     def merge_locals(cls, old_locals, new_locals, wide, *args):
         union = set(old_locals) | set(new_locals)
         merged = {}
-        print("UNION IS: ", union) 
-        print("OLD LOCALS: ", old_locals, "NEW LOCALS: ", new_locals)
+ 
         for i in union:
             if i in old_locals and new_locals:
                 merged[i] = wide(old_locals[i], new_locals[i], *args)
@@ -70,8 +68,7 @@ class State: # State consists of local variables, operand stack and heap
 
     @classmethod
     def merge_stacks(cls, old_stack, new_stack, wide, *args):
-        print("OLD STACK ", old_stack)
-        print("NEW STACK ", new_stack)
+
         assert len(old_stack) == len(new_stack)
         return [wide(o, n, *args) for o,n in zip(old_stack, new_stack)]
 
