@@ -118,7 +118,7 @@ class Interpreter:
                 elif val1 >= val2: return_vals.append((State.new_stack(state, new_stack), i+1)) 
                 else: 
                     l_branch, l_no_branch = self.abstraction.tricky_lt(deepcopy(state.locals), deepcopy(state.locals), val1, val2)                     
-                    return_vals = [(State.new_locals(state, l_branch), b["target"]), (State.new_locals(state, l_no_branch), i+1)]
+                    return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)]
 
             case "le": 
                 if val1 <= val2: return_vals.append((State.new_stack(state, new_stack), b["target"]))
@@ -139,8 +139,7 @@ class Interpreter:
                     return_vals = [(State.new_stack(state, new_stack), b["branch"]), (State.new_stack(state, new_stack), b["branch"])] 
 
         return return_vals  
-           
-    
+  
     def ifz(self, b, l, s, i): 
         val = s.pop()  
         zero = self.abstraction.from_integer(0)
