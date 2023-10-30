@@ -46,6 +46,11 @@ class State: # State consists of local variables, operand stack and heap
 
         return ns
     
+    @classmethod
+    def new_locals_new_stack(cls, old_state, new_locals, new_stack):
+        heap = deepcopy(old_state.heap)
+        return State(new_locals, new_stack, heap)
+    
     # use *args for things like K in the intervals widening etc. 
     @classmethod
     def merge_locals(cls, old_locals, new_locals, wide, *args):

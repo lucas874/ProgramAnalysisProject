@@ -99,6 +99,50 @@ class Interval: # Integers represented as intervals
             l_no_branch[val2.index] = cls.checked(new_l, new_h, None)
 
         return (l_branch, l_no_branch)
+    
+    @classmethod 
+    def tricky_lt(cls, l_branch, l_no_branch, val1, val2):
+        if val1.index is not None and val2.is_constant():
+            high_branch = val2.h-1
+            low_branch = min(val1.l, val2.l-1)
+            l_branch[val1.index] = cls.checked(low_branch, high_branch, None) 
+
+            high_no_branch = max(val1.h, val2.h)
+            low_no_branch = val2.h
+            l_no_branch = cls.checked(low_no_branch, high_no_branch, None)
+
+        elif val2.index is not None and val1.is_constant():
+            high_branch = max(val1.h+1, val2.h)
+            low_branch = max(val1.h+1, val2.l)
+            l_branch[val2.index] = cls.checked(low_branch, high_branch)
+
+            high_no_branch = min(val1.l, val2.h)
+            low_no_branch = min(high_no_branch, val2.l)
+            l_no_branch[val2.index] = cls.checked(low_no_branch, high_no_branch, None)
+
+        return l_branch, l_no_branch
+    
+    @classmethod
+    def tricky_le(cls, l_branch, l_no_branch, val1, val2):
+        if val1.index is not None and val2.is_constant():
+            new_h = max(val1.h, val2.h+1)
+            new_l = max(val1.l, val2.h+1)
+            l_no_branch[val1.index] = cls.checked(new_l, new_h, None)
+            
+            new_h = val2.l
+            new_l = min(val1.l, new_h)
+            l_branch[val1.index] = cls.checked(new_l, new_h, None)
+
+        elif val2.index is not None and val1.is_constant():
+            new_h = val1.l-1
+            new_l = min(val1.l, new_h)
+            l_no_branch[val2.index] = cls.checked(new_l, new_h, None)
+            
+            new_l = max(val1.h, val2.l)
+            new_h = max(new_l, val2.h) 
+            l_branch[val2.index] = cls.checked(new_l, new_h, None)
+
+        return l_branch, l_no_branch
 
     def is_constant(self):
         return self.l == self.h
@@ -171,4 +215,4 @@ class Interval: # Integers represented as intervals
         return self.l == other.l and self.h == other.h 
     
     def __neq__(self, other):
-        return not(self.__eq__(other))
+        return self.__lt__(other) or self.__gt__(other)

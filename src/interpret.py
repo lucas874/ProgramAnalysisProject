@@ -94,97 +94,49 @@ class Interpreter:
          
         val1 = state.stack[-2]
         val2 = state.stack[-1] 
+        new_stack = deepcopy(state.stack[:-2])
 
         return_vals = []
         
         match b["condition"]:
             case "gt": # all cases except eq, neq follow this pattern. two 'easy cases' and a difficult case leading to two new states
-                if val1 > val2: return_vals.append((State.new_stack(state, deepcopy(state.stack[:-2])), b["target"])) # return state that is old state with two elements popped from stack jump to target address
-                elif val1 <= val2: return_vals.append((State.new_stack(state, deepcopy(state.stack[:-2])), i+1)) # same but jump to next address 
+                if val1 > val2: return_vals.append((State.new_stack(state, new_stack), b["target"])) # return state that is old state with two elements popped from stack jump to target address
+                elif val1 <= val2: return_vals.append((State.new_stack(state, new_stack), i+1)) # same but jump to next address 
                 else:
                     l_branch, l_no_branch = self.abstraction.tricky_gt(deepcopy(state.locals), deepcopy(state.locals), val1, val2)
-                    return_vals = [(State.new_locals(state, l_branch), b["target"]), (State.new_locals(state, l_no_branch), i+1)]
+                    return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)]
 
             case "ge":
-                if val1 >= val2: return_vals.append((State.new_stack(state, deepcopy(state.stack[:-2])), b["target"]))
-                elif val1 < val2: return_vals.append((State.new_stack(state, state.stack[:-2]), i+1))
+                if val1 >= val2: return_vals.append((State.new_stack(state, new_stack), b["target"]))
+                elif val1 < val2: return_vals.append((State.new_stack(state, new_stack), i+1))
                 else:
                     l_branch, l_no_branch = self.abstraction.tricky_ge(deepcopy(state.locals), deepcopy(state.locals), val1, val2)                     
-                    return_vals = [(State.new_locals(state, l_branch), b["target"]), (State.new_locals(state, l_no_branch), i+1)] 
+                    return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)] 
 
             case "lt":
-                if val1 < val2: return_vals.append((l, s, b["target"]))
-                elif val1 >= val2: return_vals.append((l, s, i+1))
+                if val1 < val2: return_vals.append((State.new_stack(state, new_stack), b["target"]))
+                elif val1 >= val2: return_vals.append((State.new_stack(state, new_stack), i+1)) 
                 else: 
-                    l_branch = deepcopy(l)
-                    l_no_branch = deepcopy(l)
-                    
-                    if val1.index is not None:
-                        new_h = max(val1.h, val2.h)
-                        new_l = max(val1.l, val2.h)
-                        l_no_branch[val1.index] = self.abstraction(val1.l, val1.h, None)
-                        new_h = val2.l-1
-                        new_l = min(val1.l, val2.l-1)
-                        l_branch[val1.index] = self.abstraction(new_l, new_h, None)
-
-
-                    return_vals = [(l_branch, deepcopy(s), b["target"]), (l_no_branch, deepcopy(s), i+1)]
+                    l_branch, l_no_branch = self.abstraction.tricky_lt(deepcopy(state.locals), deepcopy(state.locals), val1, val2)                     
+                    return_vals = [(State.new_locals(state, l_branch), b["target"]), (State.new_locals(state, l_no_branch), i+1)]
 
             case "le": 
-                if val1 <= val2: return_vals.append((l, s, b["target"]))
-                elif val1 > val2: return_vals.append((l, s, i+1))
-                else: 
-                    l_branch = deepcopy(l)
-                    l_no_branch = deepcopy(l)
-                    
-                    if val1.index is not None and val2.is_constant():
-                        new_h = max(val1.h, val2.h+1)
-                        new_l = max(val1.l, val2.h+1)
-                        l_no_branch[val1.index] = self.abstraction(new_l, new_h, None)
-                        new_h = val2.l
-                        new_l = min(val1.l, new_h)
-                        l_branch[val1.index] = self.abstraction(new_l, new_h, None)
-
-                    elif val2.index is not None and val1.is_constant():
-                        new_h = val1.l-1
-                        new_l = min(val1.l, new_h)
-                        l_no_branch[val2.index] = self.abstraction(new_l, new_h, None)
-                        new_l = max(val1.h, val2.l)
-                        new_h = max(new_l, val2.h) 
-                        l_branch[val2.index] = self.abstraction(new_l, new_h, None)
+                if val1 <= val2: return_vals.append((State.new_stack(state, new_stack), b["target"]))
+                elif val1 > val2: return_vals.append((State.new_stack(state, new_stack), i+1)) 
+                else:  
+                    l_branch, l_no_branch = self.abstraction.tricky_le(deepcopy(state.locals), deepcopy(state.locals), val1, val2)                      
+                    return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)]
  
-                    return_vals = [(l_branch, deepcopy(s), b["target"]), (l_no_branch, deepcopy(s), i+1)]
-                
-        
             case "eq" | "is":
-                if isinstance(val1, self.abstraction):
-                    if val1 == val2:
-                        return_vals.append((deepcopy(l), deepcopy(s), b["target"])) # do not branch
-                    else:
-                        if val1.index is not None and val2.is_constant():  
-                            l_branch[val1.index] = self.abstraction(val2.l, val2.h, None)
-
-                        elif val2.index is not None and val1.is_constant(): 
-                            l_branch[val2.index] = self.abstraction(val1.l, val1.h, None)
-    
-                        return_vals = [(deepcopy(l), deepcopy(s), b["target"]), (deepcopy(l), deepcopy(s), i+1)]  # do not relly learn alot. could remove val2 as lower, if val2 exactly lower? or upper
+                if val1 == val2: return_vals.append((State.new_stack(state, new_stack), b["target"]))
+                elif val1 != val2: return_vals.append((State.new_stack(state, new_stack), i+1))
                 else:
-                    if val1 is not None:
-                        return_vals.append((deepcopy(l), deepcopy(s), b["target"])) # branch
-                    else:
-                        return_vals.append((deepcopy(l), deepcopy(s), i+1)) # do not branch 
-                
-            case "ne" | "isnot": 
-                if isinstance(val1, self.abstraction):
-                    if val1 == val2:
-                        return_vals.append((deepcopy(l), deepcopy(s), i+1)) # do not branch
-                    else:
-                        return_vals = [(deepcopy(l), deepcopy(s), b["target"]), (deepcopy(l), deepcopy(s), i+1)]  # do not relly learn alot. could remove val2 as lower, if val2 exactly lower? or upper
+                    return_vals = [(State.new_stack(state, new_stack), b["branch"]), (State.new_stack(state, new_stack), b["branch"])]
+            case "ne" | "isnot":
+                if val1 != val2: return_vals.append((State.new_stack(state, new_stack), b["target"]))
+                if val1 == val2: return_vals.append((State.new_stack(state, new_stack), i+1)) 
                 else:
-                    if val1 is not None:
-                        return_vals.append((deepcopy(l), deepcopy(s), b["target"])) # branch
-                    else:
-                        return_vals.append((deepcopy(l), deepcopy(s), i+1)) # do not branch
+                    return_vals = [(State.new_stack(state, new_stack), b["branch"]), (State.new_stack(state, new_stack), b["branch"])] 
 
         return return_vals  
            
