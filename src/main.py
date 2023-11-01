@@ -1,25 +1,29 @@
 from helpers_constants import *
 from abstract_interpreter import *
 from intervals import *
+import sys
 
+def usage(argv):
+    print(f"python3 {argv[0]} <some class. with package too. as path. relative to json file path look in code for this.> <some method>")
+    print(f"example: python3 main.py eu/bogoe/dtu/exceptional/Arithmetics neverThrows5")
 def main():
-    # read the json files
-    #json_file_path = "assignment_5\decompiled"
-    json_file_path = "../exceptional" 
+    if len(sys.argv) != 3:
+        usage(sys.argv)
+        sys.exit(1)
+
+    # read the json files  and get classes
+    json_file_path = "../course-02242-examples/"
     cls_json_files = extract_files_by_extension(json_file_path, "json")
     classes = get_classes(cls_json_files)
-    
-    
-    # program class usage
+     
+    # program holds all loaded methods
     program = Program(classes)
-
     interpreter = AbstractInterpreter(program, Interval)
-
-    #pretty_print_bytecode(program, ('eu/bogoe/dtu/exceptional/Arithmetics', 'speedVsPrecision'))
-    pretty_print_bytecode(program,('eu/bogoe/dtu/exceptional/Arithmetics', 'neverThrows5'))
-    #interpreter.analyse(('dtu/compute/exceptional/Arrays', 'bubbleSort'))
-    #interpreter.analyse(('eu/bogoe/dtu/exceptional/Arrays', 'selectionSort'))
-    interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'neverThrows5'))
+    class_ = sys.argv[1]
+    method = sys.argv[2] 
+    
+    pretty_print_bytecode(program,(class_, method))
+    interpreter.analyse((class_, method)) 
 
 if __name__ == "__main__":
     main()

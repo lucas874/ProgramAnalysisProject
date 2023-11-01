@@ -48,13 +48,16 @@ class AbstractInterpreter:
                     for v in state[1]:
                         if v in EXCEPTIONS: return True
 
+        def generate_value(self, param):
+            if "base" in param["type"]: return self.abstraction.from_type(param["type"]["base"])
+
         def get_args(self, m):
             query = f"methods[?name=='{m[1]}']"
             method = jmespath.search(query, self.program.classes[m[0]])[0] # hope it's actually there
             locals = {}
             
-            for i, p in enumerate(method["params"]):
-                locals[i] = self.abstraction.from_type(p["type"]["base"])
+            for i, p in enumerate(method["params"]): 
+                locals[i] = self.generate_value(p) 
 
             return locals 
 
@@ -78,4 +81,5 @@ class AbstractInterpreter:
             int_constants = {d["value"] for d in jmespath.search("[*].value ", bytecode) if d["type"] == "integer"}
             zeros = {0 for inst in bytecode if inst["opr"] == 'ifz'} 
             
-            return list(int_constants | zeros) 
+            return list(int_constants | zeros)
+

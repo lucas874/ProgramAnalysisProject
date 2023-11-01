@@ -7,6 +7,7 @@ class Interpreter:
     def __init__(self, abstraction, program):
         self.abstraction = abstraction
         self.program = program # just needed for get... which could be hardcoded anyway
+        self.arrays_allocated = 0 # have this field in interpreter is ok... maybe put in state but challenging because frozen
 
     def step(self, bc, state, i): 
             if bc["opr"] == "return":
@@ -38,9 +39,11 @@ class Interpreter:
     def return_m(self, bc, state, i): 
         return [(State.cpy(state), i)]  # what to return here
    
-    def load(self, b, state, i): 
-        value = state.locals[b["index"]].cpy_set_index(b["index"])
-
+    def load(self, b, state, i):
+        value = state.locals[b["index"]]
+        if isinstance(value, self.abstraction): # could be some value of our abstraction type OR a reference so check.
+            value = state.locals[b["index"]].cpy_set_index(b["index"])
+          
         return [(State.add_to_stack(state, value), i+1)]   
 
     def binary(self, b, state, i): 
@@ -183,7 +186,7 @@ class Interpreter:
             field_name = b["field"]["name"] 
             query_string = f"fields[?name=='{field_name}']"
             res = jmespath.search(query_string, self.program.classes[class_]) 
-            
+            print("RES IS ", res) 
             if res == [] or "value" not in res[0]: raise Exception("Review get() please") # should not happen?
             
             field_value = res[0]["value"]
@@ -217,3 +220,53 @@ class Interpreter:
         val = state.stack[-1]
         new_stack = deepcopy(state.stack[:-1]) + [self.abstraction(-val.h, -val.l, val.index)]
         return [(State.new_stack(state, new_stack), i + 1)]
+
+    # array is (length, [items...])
+    def check_bounds(self, arr, index):
+        length, _ = arr
+
+        if type(length) != type(index): raise Exception("Type error")
+        return index > length
+
+
+    def newarray(self, b, state, i):
+        if b["type"] == "boolean" or b["type"] == "char": raise Exception("Not implemented")
+
+        if b["dim"] != 1: raise Exception("Not implemented") # TODO multidimensional arrays. if we want to...
+
+        length = state.stack[-1]
+        new_arr_ref = "arr" + str(self.arrays_allocated)
+        self.arrays_allocated += 1
+        
+        
+        new_stack = deepcopy(state.stack[:-1]) + [new_arr_ref]
+        new_heap = deepcopy(state.heap)
+
+        # an actual list now because easier implementation wise. Not important for what we are focusing on. But that way we can just use the arithmetics we have instead of sth special for sets. if representing possible values as sets.
+        new_heap[new_arr_ref] = (length, [self.abstraction.from_integer(0) for _ in range(length.l)]) # consider whether to have length elements, set representing min max of all values or something else. in any event default val is 0.
+
+        return [(State.new_stack_new_heap(state, new_stack, new_heap), i+1)]
+
+    # https://docs.oracle.com/javase/specs/jvms/se19/html/jvms-6.html#jvms-6.5.aastore 
+    def array_store(self, b, state, i):
+        if len(state.stack) < 3: raise Exception("Expected stack of at least 3 elements")
+
+        # stack should be: ..., arrayref, index, value ->
+        arr_ref = state.stack[-3]
+        index = state.stack[-2]
+        value = state.stack[-1]
+        if not index.is_constant(): raise Exception("Index should have low=high")
+
+        new_stack = deepcopy(state.stack[:-3])
+        new_heap = deepcopy(state.heap)
+        
+        print("YO! ", new_heap[arr_ref][1])
+        
+        new_heap[arr_ref][1][index.l] = value
+        print(new_heap)
+        return [(State.new_stack_new_heap(state, new_stack, new_heap), i+1)]
+
+        
+
+
+
