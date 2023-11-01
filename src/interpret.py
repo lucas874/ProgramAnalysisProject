@@ -82,7 +82,7 @@ class Interpreter:
          
         idx = b["index"]
         new_l = deepcopy(state.locals)
-        print("NEW L IS ", new_l, type(new_l))
+        
         new_l[idx] += self.abstraction.from_integer(b["amount"])
         
         return [(State.new_locals(state, new_l), i+1)]
@@ -123,13 +123,9 @@ class Interpreter:
  
             case "eq" | "is":
                 if val1.eq(val2): return_vals.append((State.new_stack(state, new_stack), b["target"]))
-                elif val1.neq(val2): 
-                    print("neq ", val1, val2)
-                    print(val1 != val2)
+                elif val1.neq(val2):
                     return_vals.append((State.new_stack(state, new_stack), i+1))
-                    print(" RETURN VALS ", return_vals)
-                else:
-                    print("daskljdaslkj")
+                else: 
                     return_vals = [(State.new_stack(state, new_stack), b["target"]), (State.new_stack(state, new_stack), b["target"])]
             case "ne" | "isnot":
                 if val1.neq(val2): return_vals.append((State.new_stack(state, new_stack), b["target"]))
@@ -157,8 +153,7 @@ class Interpreter:
         
         match b["condition"]: 
             case "eq" | "is": 
-                if isinstance(val, self.abstraction):
-                    print("BOING BOING BABY")
+                if isinstance(val, self.abstraction): 
                     return self.conditional(b, state, val, zero, new_stack, i) 
                 else:
                     if val is None:
