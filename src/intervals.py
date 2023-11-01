@@ -207,9 +207,10 @@ class Interval: # Integers represented as intervals
         assert(isinstance(other, Interval))
         return self.h <= other.l
 
-    def __eq__(self, other):
-        assert(isinstance(other, Interval))
-        return self.l == other.l and self.h == other.h 
+    # We can't overwrite these because gives trouble when checking if states are equal in merge
+    def eq(self, other):
+        assert(isinstance(other, Interval)) 
+        return self.l == other.l and self.h == other.h and self.is_constant() 
     
-    def __neq__(self, other):
+    def neq(self, other): 
         return self.__lt__(other) or self.__gt__(other)

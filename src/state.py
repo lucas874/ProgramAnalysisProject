@@ -87,10 +87,3 @@ class State: # State consists of local variables, operand stack and heap
         mh = cls.merge_heaps(old_state.heap, new_state.heap, wide, *args)
 
         return State(mlc, ms, mh)
-
-
-
-    
-    
-    
-
