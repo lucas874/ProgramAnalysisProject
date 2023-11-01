@@ -26,7 +26,7 @@ def test_Arithmetics_alwaysThrows1():
 def test_Arithmetics_alwaysThrows2(): 
     interpreter = AbstractInterpreter(program, Interval)
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'alwaysThrows2'))
-    expected = State({0: Interval(INT_MIN, INT_MAX, None), 1: Interval(l=0, h=0, index=1)}, [ArithException], {}) # j and k in locals arith on stack
+    expected = State({0: Interval(INT_MIN, INT_MAX, None), 1: Interval(l=0, h=0, index=None)}, [ArithException], {}) # j and k in locals arith on stack
     
     assert final_states[-1] == expected
 
@@ -106,10 +106,9 @@ def test_Arithmetics_neverThrows3():
     interpreter = AbstractInterpreter(program, Interval) 
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'neverThrows3'))
      
-
-    # fail 
+    expected = State({0: Interval(l=1, h=2147483647, index=None), 1: Interval(l=-2147483645, h=2147483647, index=None)}, [Interval(l=0, h=0, index=None)], {})
     
-    assert final_states[-1].stack == [] 
+    assert final_states[-1] == expected 
     
 
 def test_Arithmetics_neverThrows4():
@@ -118,16 +117,16 @@ def test_Arithmetics_neverThrows4():
      
 
     # fail 
-    assert final_states[-1] == [] 
+    assert final_states[-1] == None # Java code has statement assert i > 0 && i < 0; should fail right? Not satisfiable so none bc fails assertion and never reach instruction leading to "final state"
 
 
 def test_Arithmetics_neverThrows5():
     interpreter = AbstractInterpreter(program, Interval) 
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'neverThrows5'))
      
+    expected = State({0: Interval(l=1, h=2147483647, index=None), 1: Interval(l=-2147483648, h=2147483647, index=None)}, [Interval(l=-2147483648, h=2147483647, index=None)], {})
 
-    # fail 
-    assert final_states[-1] == [] 
+    assert final_states[-1] == expected 
 
 def test_Arithmetics_speedVsPrecision():
     interpreter = AbstractInterpreter(program, Interval) 

@@ -215,5 +215,6 @@ class Interpreter:
     
     def negate(self, b, state, i):
         if b["type"] != "int": raise Exception("Not implemented")
-        val = state.stack[-1] 
-        return [(State.add_to_stack(state, self.abstraction(-val.h, -val.l, val.index)), i + 1)]
+        val = state.stack[-1]
+        new_stack = deepcopy(state.stack[:-1]) + [self.abstraction(-val.h, -val.l, val.index)]
+        return [(State.new_stack(state, new_stack), i + 1)]
