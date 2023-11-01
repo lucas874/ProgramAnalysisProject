@@ -173,7 +173,6 @@ class Interpreter:
             
             case _: 
                 return self.conditional(b, state, val, zero, new_stack, i)
-                    
 
         return return_vals  
     

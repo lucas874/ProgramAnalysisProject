@@ -115,8 +115,6 @@ def test_Arithmetics_neverThrows4():
     interpreter = AbstractInterpreter(program, Interval) 
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'neverThrows4'))
      
-
-    # fail 
     assert final_states[-1] == None # Java code has statement assert i > 0 && i < 0; should fail right? Not satisfiable so none bc fails assertion and never reach instruction leading to "final state"
 
 
@@ -131,7 +129,5 @@ def test_Arithmetics_neverThrows5():
 def test_Arithmetics_speedVsPrecision():
     interpreter = AbstractInterpreter(program, Interval) 
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'speedVsPrecision'))
-     
-
-    # fail 
-    assert final_states[-1].stack == [ArithException] 
+ 
+    assert final_states[-1].stack == [ArithException]
