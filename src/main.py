@@ -15,10 +15,11 @@ def main():
 
     interpreter = AbstractInterpreter(program, Interval)
 
-    pretty_print_bytecode(program, ('eu/bogoe/dtu/exceptional/Arrays', 'selectionSort'))
-
+    #pretty_print_bytecode(program, ('eu/bogoe/dtu/exceptional/Arithmetics', 'speedVsPrecision'))
+    pretty_print_bytecode(program,('eu/bogoe/dtu/exceptional/Arithmetics', 'neverThrows4'))
     #interpreter.analyse(('dtu/compute/exceptional/Arrays', 'bubbleSort'))
-    interpreter.analyse(('eu/bogoe/dtu/exceptional/Arrays', 'selectionSort'))
-     
+    #interpreter.analyse(('eu/bogoe/dtu/exceptional/Arrays', 'selectionSort'))
+    interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'neverThrows4'))
+
 if __name__ == "__main__":
     main()

@@ -106,7 +106,7 @@ class Interval: # Integers represented as intervals
 
             high_no_branch = max(val1.h, val2.h)
             low_no_branch = val2.h
-            l_no_branch = cls.checked(low_no_branch, high_no_branch, None)
+            l_no_branch[val1.index] = cls.checked(low_no_branch, high_no_branch, None)
 
         elif val2.index is not None and val1.is_constant():
             high_branch = max(val1.h+1, val2.h)

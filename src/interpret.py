@@ -82,22 +82,16 @@ class Interpreter:
          
         idx = b["index"]
         new_l = deepcopy(state.locals)
+        print("NEW L IS ", new_l, type(new_l))
         new_l[idx] += self.abstraction.from_integer(b["amount"])
         
         return [(State.new_locals(state, new_l), i+1)]
 
     def goto(self, b, state, i): 
-        return [(State.cpy(state), b["target"])]  
-    
-    def if_m(self, b, state, i):
-        if len(state.stack) < 2: raise Exception("Not enough operands on stack") # We must have at least two elements on stack
-         
-        val1 = state.stack[-2]
-        val2 = state.stack[-1] 
-        new_stack = deepcopy(state.stack[:-2])
+        return [(State.cpy(state), b["target"])]
 
+    def conditional(self, b, state, val1, val2, new_stack, i): # lots of arguments, but this way we can use same function for if and ifz
         return_vals = []
-        
         match b["condition"]:
             case "gt": # all cases except eq, neq follow this pattern. two 'easy cases' and a difficult case leading to two new states
                 if val1 > val2: return_vals.append((State.new_stack(state, new_stack), b["target"])) # return state that is old state with two elements popped from stack jump to target address
@@ -138,41 +132,93 @@ class Interpreter:
                 else:
                     return_vals = [(State.new_stack(state, new_stack), b["target"]), (State.new_stack(state, new_stack), b["target"])] 
 
-        return return_vals  
+        return return_vals
+
+    
+    def if_m(self, b, state, i):
+        if len(state.stack) < 2: raise Exception("Not enough operands on stack") # We must have at least two elements on stack
+         
+        val1 = state.stack[-2]
+        val2 = state.stack[-1] 
+        new_stack = deepcopy(state.stack[:-2])
+
+        return_vals = []
+        
+        """         match b["condition"]:
+            case "gt": # all cases except eq, neq follow this pattern. two 'easy cases' and a difficult case leading to two new states
+                if val1 > val2: return_vals.append((State.new_stack(state, new_stack), b["target"])) # return state that is old state with two elements popped from stack jump to target address
+                elif val1 <= val2: return_vals.append((State.new_stack(state, new_stack), i+1)) # same but jump to next address 
+                else:
+                    l_branch, l_no_branch = self.abstraction.tricky_gt(deepcopy(state.locals), deepcopy(state.locals), val1, val2)
+                    return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)]
+
+            case "ge":
+                if val1 >= val2: return_vals.append((State.new_stack(state, new_stack), b["target"]))
+                elif val1 < val2: return_vals.append((State.new_stack(state, new_stack), i+1))
+                else:
+                    l_branch, l_no_branch = self.abstraction.tricky_ge(deepcopy(state.locals), deepcopy(state.locals), val1, val2)                     
+                    return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)] 
+
+            case "lt":
+                if val1 < val2: return_vals.append((State.new_stack(state, new_stack), b["target"]))
+                elif val1 >= val2: return_vals.append((State.new_stack(state, new_stack), i+1)) 
+                else: 
+                    l_branch, l_no_branch = self.abstraction.tricky_lt(deepcopy(state.locals), deepcopy(state.locals), val1, val2)                     
+                    return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)]
+
+            case "le": 
+                if val1 <= val2: return_vals.append((State.new_stack(state, new_stack), b["target"]))
+                elif val1 > val2: return_vals.append((State.new_stack(state, new_stack), i+1)) 
+                else:  
+                    l_branch, l_no_branch = self.abstraction.tricky_le(deepcopy(state.locals), deepcopy(state.locals), val1, val2)                      
+                    return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)]
+ 
+            case "eq" | "is":
+                if val1 == val2: return_vals.append((State.new_stack(state, new_stack), b["target"]))
+                elif val1 != val2: return_vals.append((State.new_stack(state, new_stack), i+1))
+                else:
+                    return_vals = [(State.new_stack(state, new_stack), b["target"]), (State.new_stack(state, new_stack), b["target"])]
+            case "ne" | "isnot":
+                if val1 != val2: return_vals.append((State.new_stack(state, new_stack), b["target"]))
+                if val1 == val2: return_vals.append((State.new_stack(state, new_stack), i+1)) 
+                else:
+                    return_vals = [(State.new_stack(state, new_stack), b["target"]), (State.new_stack(state, new_stack), b["target"])]  """
+
+        return self.conditional(b, state, val1, val2, new_stack, i) 
   
     def ifz(self, b, state, i): 
-        val = state.stack[:-1]
+        val = state.stack[-1]
         zero = self.abstraction.from_integer(0)
+        new_stack = deepcopy(state.stack[:-1])
         return_vals = []
-
+        
         match b["condition"]: 
             case "eq" | "is": 
                 if isinstance(val, self.abstraction):
-                    return self.if_m(b, state, i) 
+                    return self.conditional(b, state, val, zero, new_stack, i) 
                 else:
                     if val is None:
-                        return_vals.append((deepcopy(l), deepcopy(s), b["target"])) # branch
+                        return_vals.append((State.new_stack(state, new_stack), b["target"])) #branch
+                        #return_vals.append(, b["target"])) # branch
                     else:
-                        return_vals.append((deepcopy(l), deepcopy(s), i+1)) # do not branch
+                        return_vals.append((State.new_stack(state, new_stack), i+1)) # do not branch
                 
             case "ne" | "isnot": 
-                if isinstance(val, Interval):
-                    if val == zero:
-                        return_vals.append((deepcopy(l), deepcopy(s), i+1)) # do not branch
-                    else:
-                        l_branch = deepcopy(l)
-                        l_branch[val.index] = self.abstraction(0, 0, val.index)
-                        return_vals = [(l_branch, deepcopy(s), b["target"]), (deepcopy(l), deepcopy(s), i+1)]  # do not relly learn alot. could remove zero as lower, if zero exactly lower? or upper
+                if isinstance(val, self.abstraction):
+                    return self.conditional(b, state, val, zero, new_stack, i)
                 else:
                     if val is not None:
-                        return_vals.append((deepcopy(l), deepcopy(s), b["target"])) # branch
+                        return_vals.append((State.new_stack(state, new_stack), b["target"])) # branch
                     else:
-                        return_vals.append((deepcopy(l), deepcopy(s), i+1)) # do not branch
+                        return_vals.append((State.new_stack(state, new_stack), i+1)) # do not branch
+            
+            case _: 
+                return self.conditional(b, state, val, zero, new_stack, i)
                     
 
         return return_vals  
     
-    def get(self, b, l, s, i):
+    def get(self, b, state, i):
         # not static the objectref will be on operand stack. else retrieve from class?
         if b["static"]:
             class_ = b["field"]["class"]
@@ -183,28 +229,32 @@ class Interpreter:
             if res == [] or "value" not in res[0]: raise Exception("Review get() please") # should not happen?
             
             field_value = res[0]["value"]
-            return [(l, s + [field_value], i+1)]
+            new_stack = deepcopy(state.stack) + [field_value]
+            
+            return [(State.new_stack(state, new_stack), i+1)]
          
         return [] 
             
-    def dup(self, b, l, s, i): 
+    def dup(self, b, state, i): 
         if b["words"] == 1:
-            if len(s) < 1: return False
-            return [(l, s+ [s[-1]], i+ 1)]
+            if len(state.stack) < 1: raise Exception("Expected non-empty stack") 
+            return [(State.add_to_stack(state, state.stack[-1]), i+1)]
         elif b["words"] == 2:
-            if len(s) < 2: return False
-            return [(l, s + [s[-2:]], i+ 1)] 
+            if len(state.stack) < 2: raise Exception("Expected at least two values on stack") 
+            new_stack = deepcopy(state.stack) + state.stack[-2:] 
+            return [(State.new_stack(state, new_stack), i+ 1)] 
         else:
             raise Exception("Not implemented") 
 
-    def new(self, b, l, s, i):
+    def new(self, b, state, i):
         if "class" in b:
             if b["class"] == "java/lang/AssertionError": 
                 #return self.new_stack_frame(l, s + [(hp.AssertError, )], pc+4) # new pc does not matter really. just skip 4 to keep on. but really we should just terminate? or not
-                return []#self.new_stack_frame(l, s,  pc+3) # TRY DO NOTHING INSTEAD. DO not continue with failed state
+                return [(State.cpy(state), i)]#self.new_stack_frame(l, s,  pc+3) # TRY DO NOTHING INSTEAD. DO not continue with failed state
+            
         raise Exception("Not implemented")
     
-    def negate(self, b, l, s, i):
+    def negate(self, b, state, i):
         if b["type"] != "int": raise Exception("Not implemented")
-        val = s.pop()
-        return [(l, s + [self.abstraction(-val.h, -val.l, val.index)], i + 1)]
+        val = state.stack[-1] 
+        return [(State.add_to_stack(state, self.abstraction(-val.h, -val.l, val.index)), i + 1)]

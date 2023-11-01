@@ -78,7 +78,7 @@ class State: # State consists of local variables, operand stack and heap
 
     @classmethod
     def merge(cls, old_state, new_state, wide, *args): 
-        if old_state == None:
+        if old_state == None: 
             return new_state
         
         # merged locals, merged stack and merged heap

@@ -32,10 +32,10 @@ class AbstractInterpreter:
                 i = self.worklist.pop()
                 bc = bytecode[i] 
 
-                for new_state, i_ in self.abstract_step(bc, i): 
+                for new_state, i_ in self.abstract_step(bc, i):  
+                    self.merge_fwd(i_, new_state, int_constants)
                     self.print_state(bytecode) 
                     print("\n\n")
-                    self.merge_fwd(i_, new_state, int_constants) 
 
             print("Final state: ")
             self.print_state(bytecode)
