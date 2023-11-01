@@ -131,101 +131,26 @@ class Interpreter:
                 if val1 == val2: return_vals.append((State.new_stack(state, new_stack), b["target"]))
                 elif val1 != val2: return_vals.append((State.new_stack(state, new_stack), i+1))
                 else:
-                    return_vals = [(State.new_stack(state, new_stack), b["branch"]), (State.new_stack(state, new_stack), b["branch"])]
+                    return_vals = [(State.new_stack(state, new_stack), b["target"]), (State.new_stack(state, new_stack), b["target"])]
             case "ne" | "isnot":
                 if val1 != val2: return_vals.append((State.new_stack(state, new_stack), b["target"]))
                 if val1 == val2: return_vals.append((State.new_stack(state, new_stack), i+1)) 
                 else:
-                    return_vals = [(State.new_stack(state, new_stack), b["branch"]), (State.new_stack(state, new_stack), b["branch"])] 
+                    return_vals = [(State.new_stack(state, new_stack), b["target"]), (State.new_stack(state, new_stack), b["target"])] 
 
         return return_vals  
   
-    def ifz(self, b, l, s, i): 
-        val = s.pop()  
+    def ifz(self, b, state, i): 
+        val = state.stack[:-1]
         zero = self.abstraction.from_integer(0)
         return_vals = []
 
-        match b["condition"]:
-            case "gt":
-                if val > zero: return_vals.append((l, s, b["target"]))
-                elif val <= zero: return_vals.append((l, s, i+1))
-                else: 
-                    l_branch = deepcopy(l)
-                    l_no_branch = deepcopy(l)
-                    
-                    if val.index is not None:
-                        new_h = max(val.h, zero.h+1)
-                        new_l = max(val.l, zero.h+1)
-                        l_branch[val.index] = self.abstraction(new_l, new_h, None)
-                        new_h = zero.l
-                        new_l = min(val.l, new_h)
-                        l_no_branch[val.index] = self.abstraction(new_l, new_h, None)
-
-                    return_vals = [(l_branch, deepcopy(s), b["target"]), (l_no_branch, deepcopy(s), i+1)]
-
-            case "ge":
-                if val >= zero: return_vals.append((l, s, b["target"]))
-                elif val < zero: return_vals.append((l, s, i+1))
-                else: 
-                    l_branch = deepcopy(l)
-                    l_no_branch = deepcopy(l)
-                    
-                    if val.index is not None:
-                        new_h = max(val.h, zero.h)
-                        new_l = max(val.l, zero.h)
-                        l_branch[val.index] = self.abstraction(val.l, val.h, None)
-                        new_h = zero.l
-                        new_l = min(val.l, zero.l)
-                        l_no_branch[val.index] = self.abstraction(new_l, new_h, None)
-
-                    return_vals = [(l_branch, deepcopy(s), b["target"]), (l_no_branch, deepcopy(s), i+1)]
-
-
-            case "lt":
-                if val < zero: return_vals.append((l, s, b["target"]))
-                elif val >= zero: return_vals.append((l, s, i+1))
-                else: 
-                    l_branch = deepcopy(l)
-                    l_no_branch = deepcopy(l)
-                    
-                    if val.index is not None:
-                        new_h = max(val.h, zero.h)
-                        new_l = max(val.l, zero.h)
-                        l_no_branch[val.index] = self.abstraction(val.l, val.h, None)
-                        new_h = zero.l-1
-                        new_l = min(val.l, zero.l-1)
-                        l_branch[val.index] = self.abstraction(new_l, new_h, None)
-
-
-                    return_vals = [(l_branch, deepcopy(s), b["target"]), (l_no_branch, deepcopy(s), i+1)]
-
-
-            case "le":
-                if val <= zero: return_vals.append((l, s, b["target"]))
-                elif val > zero: return_vals.append((l, s, i+1))
-                else: 
-                    l_branch = deepcopy(l)
-                    l_no_branch = deepcopy(l)
-                    
-                    if val.index is not None:
-                        new_h = max(val.h, zero.h)
-                        new_l = max(val.l, zero.h)
-                        l_no_branch[val.index] = self.abstraction(val.l, val.h, None)
-                        new_h = zero.l
-                        new_l = min(val.l, zero.l)
-                        l_branch[val.index] = self.abstraction(new_l, new_h, None)
-
-                    return_vals = [(l_branch, deepcopy(s), b["target"]), (l_no_branch, deepcopy(s), i+1)]
-                
-        
+        match b["condition"]: 
             case "eq" | "is": 
-                if isinstance(val, Interval):
-                    if val == zero:
-                        return_vals.append((deepcopy(l), deepcopy(s), b["target"])) # do not branch
-                    else:
-                        return_vals = [(deepcopy(l), deepcopy(s), b["target"]), (deepcopy(l), deepcopy(s), i+1)]  # do not relly learn alot. could remove zero as lower, if zero exactly lower? or upper
+                if isinstance(val, self.abstraction):
+                    return self.if_m(b, state, i) 
                 else:
-                    if val is not None:
+                    if val is None:
                         return_vals.append((deepcopy(l), deepcopy(s), b["target"])) # branch
                     else:
                         return_vals.append((deepcopy(l), deepcopy(s), i+1)) # do not branch
