@@ -195,14 +195,17 @@ class Interpreter:
         # not static the objectref will be on operand stack. else retrieve from class?
         if b["static"]:
             class_ = b["field"]["class"]
-            field_name = b["field"]["name"] 
-            query_string = f"fields[?name=='{field_name}']"
-            res = jmespath.search(query_string, self.program.classes[class_]) 
-            
-            if res == [] or "value" not in res[0]: raise Exception("Review get() please") # should not happen?
-            
-            field_value = res[0]["value"]
-            new_stack = deepcopy(state.stack) + [field_value]
+            if class_ == "java/lang/System": # hardcoding only really considering when we expect calls to println later
+                new_stack = deepcopy(state.stack) + [class_]
+            else:
+                field_name = b["field"]["name"] 
+                query_string = f"fields[?name=='{field_name}']"
+                res = jmespath.search(query_string, self.program.classes[class_]) 
+                
+                if res == [] or "value" not in res[0]: raise Exception("Review get() please") # should not happen?
+                
+                field_value = res[0]["value"]
+                new_stack = deepcopy(state.stack) + [field_value]
             
             return [(State.new_stack(state, new_stack), i+1)]
          

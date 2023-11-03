@@ -102,15 +102,15 @@ class Interval: # Integers represented as intervals
             new_h = max(val1.h, val2.h)
             new_l = max(val1.l, val2.h)
             l_branch[val1.index] = cls.checked(new_l, new_h, None)
-            new_h = val2.l
+            new_h = val2.l - 1 # REVIEW THIS
             new_l = min(val1.l, new_h)
             l_no_branch[val1.index] = cls.checked(new_l, new_h, None)
 
         elif val2.index is not None and val1.is_constant():
             new_h = val1.l
-            new_l = min(val1.l, new_h)
+            new_l = min(val2.l, new_h)
             l_branch[val2.index] = cls.checked(new_l, new_h, None)
-            new_h = max(val1.h, val2.l)
+            new_h = max(val1.h+1, val2.h)
             new_l = max(val2.l, new_h)
             l_no_branch[val2.index] = cls.checked(new_l, new_h, None)
 
