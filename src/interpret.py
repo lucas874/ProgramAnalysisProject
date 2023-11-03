@@ -243,7 +243,6 @@ class Interpreter:
         if type(length) != type(index): raise Exception("Type error")
         return index < length and index >= self.abstraction.from_integer(0)
 
-
     def newarray(self, b, state, i):
         if b["type"] == "boolean" or b["type"] == "char": raise Exception("Not implemented")
 

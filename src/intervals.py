@@ -119,8 +119,8 @@ class Interval: # Integers represented as intervals
     @classmethod 
     def tricky_lt(cls, l_branch, l_no_branch, val1, val2):
         if val1.index is not None and val2.is_constant():
-            high_branch = val2.h-1
-            low_branch = min(val1.l, val2.l-1)
+            high_branch = val2.l-1
+            low_branch = min(val1.l, high_branch)
             l_branch[val1.index] = cls.checked(low_branch, high_branch, None) 
 
             high_no_branch = max(val1.h, val2.h)
