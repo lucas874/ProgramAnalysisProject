@@ -92,8 +92,7 @@ class State: # State consists of local variables, operand stack and heap
         mlc = cls.merge_locals(old_state.locals, new_state.locals, wide, *args) 
         ms = cls.merge_stacks(old_state.stack, new_state.stack, wide, *args) 
         mh = cls.merge_heaps(old_state.heap, new_state.heap, wide, *args)
-
-        
+ 
         # This looks a bit weird. But we stop at the first exception. So old state should not have one. include in merge because makes things easier
         e = new_state.exception
 

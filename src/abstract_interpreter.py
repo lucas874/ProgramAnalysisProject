@@ -16,7 +16,7 @@ class AbstractInterpreter:
         def print_state(self, bytecode):
             for i, (inst, state) in enumerate(zip(bytecode, self.states)):
                 if state is None: print(f"{inst}: {state}")
-                else: print(f"i={i}: {inst['opr']}: locals: {state.locals} stack: {state.stack} heap: {state.heap}")
+                else: print(f"i={i}: {inst['opr']}: locals: {state.locals} stack: {state.stack} heap: {state.heap}: exception: {state.exception}")
 
         def analyse(self, m): # Expect m to be (class, method)
             locals = self.get_args(m)
@@ -42,13 +42,6 @@ class AbstractInterpreter:
             print("Final state: ")
             self.print_state(bytecode)
             return self.states
-
-        def exceptions(self):
-
-            for state in self.states:
-                if state is not None:
-                    for v in state[1]:
-                        if v in EXCEPTIONS: return True
 
         def generate_value(self, param):
             if "base" in param["type"]: return self.abstraction.from_type(param["type"]["base"])
