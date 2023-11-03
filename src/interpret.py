@@ -275,12 +275,8 @@ class Interpreter:
         new_heap = deepcopy(state.heap)
   
         if not self.within_bounds(new_heap[arr_ref], index): return [(State(deepcopy(state.locals), new_stack, new_heap, ExceptionType.IndexOutOfBoundsException), i+1)]
-        
-        new_heap[arr_ref][1][index.l] = value
+
+        new_heap[arr_ref] = self.abstraction.handle_array(new_heap[arr_ref], value)            
         
         return [(State.new_stack_new_heap(state, new_stack, new_heap), i+1)]
-
-        
-
-
 

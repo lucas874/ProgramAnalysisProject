@@ -63,7 +63,17 @@ class Interval: # Integers represented as intervals
             ks = [k for k in K if z4 <= k]
             if ks != []: return min(ks)
             else: return INT_MAX
-    
+
+    # expect arr is (count, val). if count == 1 replace val by new val. else take min max etc such that old is included in new
+    @classmethod
+    def handle_array(cls, arr, new_val):
+        if arr[0].eq(cls.from_integer(1)): 
+            return (arr[0], new_val)
+        else: 
+            new_l = min(new_val.l, arr[1].l)
+            new_h = max(new_val.h, arr[1].h)
+            return (arr[0], cls.checked(new_l, new_h))
+
     @classmethod
     def tricky_gt(cls, l_branch, l_no_branch, val1, val2): 
         if val1.index is not None and val2.is_constant():
