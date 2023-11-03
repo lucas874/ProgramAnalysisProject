@@ -234,11 +234,11 @@ class Interpreter:
         return [(State.new_stack(state, new_stack), i + 1)]
 
     # array is (length, [items...])
-    def check_bounds(self, arr, index):
+    def within_bounds(self, arr, index):
         length, _ = arr
 
         if type(length) != type(index): raise Exception("Type error")
-        return index >= length
+        return index < length
 
 
     def newarray(self, b, state, i):
@@ -251,13 +251,13 @@ class Interpreter:
 
         new_arr_ref = "arr" + str(self.arrays_allocated)
         self.arrays_allocated += 1
-        
-        
+        new_arr = self.abstraction.generate_array(count, init_val=self.abstraction.from_integer(0))
+         
         new_stack = deepcopy(state.stack[:-1]) + [new_arr_ref]
         new_heap = deepcopy(state.heap)
 
         # an actual list now because easier implementation wise. Not important for what we are focusing on. But that way we can just use the arithmetics we have instead of sth special for sets. if representing possible values as sets.
-        new_heap[new_arr_ref] = (count, [self.abstraction.from_integer(0) for _ in range(count.l)]) # consider whether to have length elements, set representing min max of all values or something else. in any event default val is 0.
+        new_heap[new_arr_ref] = new_arr # consider whether to have length elements, set representing min max of all values or something else. in any event default val is 0.
 
         return [(State.new_stack_new_heap(state, new_stack, new_heap), i+1)]
 
@@ -274,7 +274,7 @@ class Interpreter:
         new_stack = deepcopy(state.stack[:-3])
         new_heap = deepcopy(state.heap)
   
-        if self.check_bounds(new_heap[arr_ref], index): return [(State(deepcopy(state.locals), new_stack, new_heap, ExceptionType.IndexOutOfBoundsException), i+1)]
+        if not self.within_bounds(new_heap[arr_ref], index): return [(State(deepcopy(state.locals), new_stack, new_heap, ExceptionType.IndexOutOfBoundsException), i+1)]
         
         new_heap[arr_ref][1][index.l] = value
         

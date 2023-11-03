@@ -31,12 +31,18 @@ class Interval: # Integers represented as intervals
         if l > h:
             raise Exception("ASDADADDA")
         return Interval(max(l, INT_MIN), min(h, INT_MAX), index)
+    
+    @classmethod # This method creates an array. Not sure how to represent the items. preferably a set. look at Formal Methods an Appetizer p. 55. Maybe not important since we focus on bounds.
+    def generate_array(cls, count=None, init_val=None):
+        if count == None: count = cls.checked(INT_MIN, INT_MAX)
+        if init_val == None: init_val = cls.checked(INT_MIN, INT_MAX)
+        return (count, init_val)
 
     @classmethod # slides and p. 228 in book. more so p. 228. K is the set of integers explicitly mentioned in bytecode. 
     def wide(cls, v1, v2, K):
         if is_exception(v1): return v1
         if is_exception(v2): return v2 # hmmm ?
-        if isinstance(v1, str) or isinstance(v2, str): # In case of references
+        if isinstance(v1, str): # In case of references
             assert v1 == v2
             return v1
         return cls.checked(cls.LB_k(v1.l, v2.l, K), cls.UB_k(v1.h, v2.h, K)) 

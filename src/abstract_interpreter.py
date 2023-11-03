@@ -19,14 +19,14 @@ class AbstractInterpreter:
                 else: print(f"i={i}: {inst['opr']}: locals: {state.locals} stack: {state.stack} heap: {state.heap}: exception: {state.exception}")
 
         def analyse(self, m): # Expect m to be (class, method)
-            locals = self.get_args(m)
+            locals, heap = self.get_args(m)
             stack = []
             bytecode = self.program.bytecode[m]
             self.states = [None for inst in bytecode] 
             int_constants = self.get_integer_constants(bytecode) # figure out how to handle this elsewhere...
 
             self.worklist = [0] # start at first instruction
-            self.states[0] = State(locals, stack, {})
+            self.states[0] = State(locals, stack, heap)
              
             while self.worklist:# and not self.exceptions():
                 i = self.worklist.pop()
@@ -44,17 +44,26 @@ class AbstractInterpreter:
             return self.states
 
         def generate_value(self, param):
-            if "base" in param["type"]: return self.abstraction.from_type(param["type"]["base"])
+            return self.abstraction.from_type(param["type"]["base"])
+        
+        def generate_array(self): 
+            return self.abstraction.generate_array()
 
         def get_args(self, m):
             query = f"methods[?name=='{m[1]}']"
             method = jmespath.search(query, self.program.classes[m[0]])[0] # hope it's actually there
             locals = {}
+            heap = {} 
             
             for i, p in enumerate(method["params"]): 
-                locals[i] = self.generate_value(p) 
-
-            return locals 
+                if "base" in p["type"]: locals[i] = self.generate_value(p)
+                elif "kind" in p["type"] and p["type"]["kind"] == "array":
+                    arr_ref = f"arr_arg{i}"
+                    arr = self.generate_array()
+                    locals[i] = arr_ref
+                    heap[arr_ref] = arr
+            
+            return locals, heap
 
         def merge(self, old_state, new_state, *args): 
             return State.merge(old_state, new_state, self.abstraction.wide, *args)
