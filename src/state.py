@@ -79,9 +79,23 @@ class State: # State consists of local variables, operand stack and heap
         assert len(old_stack) == len(new_stack)
         return [wide(o, n, *args) for o,n in zip(old_stack, new_stack)]
 
-    @classmethod
-    def merge_heaps(cls, old_heap, new_heap, wide, args):
-        return {} 
+    @classmethod 
+    def merge_heaps(cls, old_heap, new_heap, wide, *args):
+        union = set(old_heap) | set(new_heap)
+        merged = {}
+ 
+        for i in union:
+            if i in old_heap and new_heap:
+                if "arr" in i: # kind of sketchy but works ig.
+                    assert old_heap[i][0] == new_heap[i][0]
+                    merged[i] = (old_heap[i][0], wide(old_heap[i][1], new_heap[i][1], *args))
+                else: merged[i] = wide(old_heap[i], new_heap[i], *args)
+            elif i in old_heap:
+                merged[i] = deepcopy(old_heap[i])
+            else: 
+                merged[i] = deepcopy(new_heap[i])
+        
+        return merged 
 
     @classmethod
     def merge(cls, old_state, new_state, wide, *args): 
@@ -93,7 +107,7 @@ class State: # State consists of local variables, operand stack and heap
         ms = cls.merge_stacks(old_state.stack, new_state.stack, wide, *args) 
         mh = cls.merge_heaps(old_state.heap, new_state.heap, wide, *args)
  
-        # This looks a bit weird. But we stop at the first exception. So old state should not have one. include in merge because makes things easier
+        # This looks a bit weird. But we stop at the first exception. So old state should not have one. include in merge because makes things easier??
         e = new_state.exception
 
         return State(mlc, ms, mh, e)

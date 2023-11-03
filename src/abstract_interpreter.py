@@ -32,10 +32,9 @@ class AbstractInterpreter:
                 i = self.worklist.pop()
                 bc = bytecode[i] 
 
-                for new_state, i_ in self.abstract_step(bc, i):
-                    if new_state.is_exception_state(): self.worklist = []  # Stop intepretation if exception?
-                    
+                for new_state, i_ in self.abstract_step(bc, i): 
                     self.merge_fwd(i_, new_state, int_constants)
+                    if new_state.is_exception_state(): self.worklist = []  # Stop intepretation if exception?
                     self.print_state(bytecode) 
                     print("\n\n")
 
@@ -45,7 +44,8 @@ class AbstractInterpreter:
 
         def generate_value(self, param):
             return self.abstraction.from_type(param["type"]["base"])
-        
+
+        # When generating array, set count to top like with integer values. implementation of comparison for abstraction should take care of rest 
         def generate_array(self): 
             return self.abstraction.generate_array()
 

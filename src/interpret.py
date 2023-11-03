@@ -198,7 +198,7 @@ class Interpreter:
             field_name = b["field"]["name"] 
             query_string = f"fields[?name=='{field_name}']"
             res = jmespath.search(query_string, self.program.classes[class_]) 
-            print("RES IS ", res) 
+            
             if res == [] or "value" not in res[0]: raise Exception("Review get() please") # should not happen?
             
             field_value = res[0]["value"]
@@ -233,19 +233,22 @@ class Interpreter:
         new_stack = deepcopy(state.stack[:-1]) + [self.abstraction(-val.h, -val.l, val.index)]
         return [(State.new_stack(state, new_stack), i + 1)]
 
-    # array is (length, [items...])
+    # array is (length, [items...]). Index arg has to be greater than or eq 0 and less than length to pass 
     def within_bounds(self, arr, index):
         length, _ = arr
 
         if type(length) != type(index): raise Exception("Type error")
-        return index < length
+        return index < length and index >= self.abstraction.from_integer(0)
 
 
     def newarray(self, b, state, i):
         if b["type"] == "boolean" or b["type"] == "char": raise Exception("Not implemented")
 
         if b["dim"] != 1: raise Exception("Not implemented") # TODO multidimensional arrays. if we want to...
+        if len(state.stack) < 1: raise Exception("Expected stack of at least 1 element")
 
+        # Stack should be ..., count -> 
+        # becomes ..., arrayref ->  
         count = state.stack[-1]
         if count < self.abstraction.from_integer(0): return [(State(deepcopy(state.locals), deepcopy(state.stack[:-1]), deepcopy(state.heap), ExceptionType.NegativeArraySizeException), i+1)]
 
@@ -266,17 +269,48 @@ class Interpreter:
         if len(state.stack) < 3: raise Exception("Expected stack of at least 3 elements")
 
         # stack should be: ..., arrayref, index, value ->
+        # becomes ... ->
         arr_ref = state.stack[-3]
         index = state.stack[-2]
-        value = state.stack[-1]
-        if not index.is_constant(): raise Exception("Index should have low=high")
+        value = state.stack[-1] 
 
         new_stack = deepcopy(state.stack[:-3])
         new_heap = deepcopy(state.heap)
-  
+
+        # Check bounds and go to exception state if out of bounds
         if not self.within_bounds(new_heap[arr_ref], index): return [(State(deepcopy(state.locals), new_stack, new_heap, ExceptionType.IndexOutOfBoundsException), i+1)]
 
         new_heap[arr_ref] = self.abstraction.handle_array(new_heap[arr_ref], value)            
         
         return [(State.new_stack_new_heap(state, new_stack, new_heap), i+1)]
 
+    def array_load(self, b, state, i):
+        if len(state.stack) < 2: raise Exception("Expected stack of at least 2 elements")       
+
+        # stack should be: ..., arrayref, index ->
+        # becomes ..., value ->
+        arr_ref = state.stack[-2]
+        index = state.stack[-1]
+
+        new_stack = deepcopy(state.stack[:-2])
+
+        # Check bounds and go to exception state if out of bounds
+        if not self.within_bounds(state.heap[arr_ref], index): return [(State(deepcopy(state.locals), new_stack, deepcopy(state.heap), ExceptionType.IndexOutOfBoundsException), i+1)]
+
+        # Array is tuple (count, items). Items represented as a single value of the astraction
+        new_stack += [state.heap[arr_ref][1]]
+
+        return [(State.new_stack(state, new_stack), i+1)]
+
+    def arraylength(self, b, state, i):
+        if len(state.stack) < 1: raise Exception("Expected stack of at least 1 elements")       
+
+        # stack should be ..., arrayref ->
+        arr_ref = state.stack[-1]
+        
+        if arr_ref not in state.heap: raise Exception("Array ref not defined") # We do not perform this check elsewhere. just remove assume never happens
+
+        new_stack = deepcopy(state.stack[:-1]) + [state.heap[arr_ref][0]]
+        return [(State.new_stack(state, new_stack), i+1)]
+
+        
