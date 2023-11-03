@@ -238,7 +238,7 @@ class Interpreter:
         length, _ = arr
 
         if type(length) != type(index): raise Exception("Type error")
-        return index > length
+        return index >= length
 
 
     def newarray(self, b, state, i):
@@ -246,7 +246,9 @@ class Interpreter:
 
         if b["dim"] != 1: raise Exception("Not implemented") # TODO multidimensional arrays. if we want to...
 
-        length = state.stack[-1]
+        count = state.stack[-1]
+        if count < self.abstraction.from_integer(0): return [(State(deepcopy(state.locals), deepcopy(state.stack[:-1]), deepcopy(state.heap), ExceptionType.NegativeArraySizeException), i+1)]
+
         new_arr_ref = "arr" + str(self.arrays_allocated)
         self.arrays_allocated += 1
         
@@ -255,7 +257,7 @@ class Interpreter:
         new_heap = deepcopy(state.heap)
 
         # an actual list now because easier implementation wise. Not important for what we are focusing on. But that way we can just use the arithmetics we have instead of sth special for sets. if representing possible values as sets.
-        new_heap[new_arr_ref] = (length, [self.abstraction.from_integer(0) for _ in range(length.l)]) # consider whether to have length elements, set representing min max of all values or something else. in any event default val is 0.
+        new_heap[new_arr_ref] = (count, [self.abstraction.from_integer(0) for _ in range(count.l)]) # consider whether to have length elements, set representing min max of all values or something else. in any event default val is 0.
 
         return [(State.new_stack_new_heap(state, new_stack, new_heap), i+1)]
 
@@ -271,11 +273,11 @@ class Interpreter:
 
         new_stack = deepcopy(state.stack[:-3])
         new_heap = deepcopy(state.heap)
-        
-        print("YO! ", new_heap[arr_ref][1])
+  
+        if self.check_bounds(new_heap[arr_ref], index): return [(State(deepcopy(state.locals), new_stack, new_heap, ExceptionType.IndexOutOfBoundsException), i+1)]
         
         new_heap[arr_ref][1][index.l] = value
-        print(new_heap)
+        
         return [(State.new_stack_new_heap(state, new_stack, new_heap), i+1)]
 
         
