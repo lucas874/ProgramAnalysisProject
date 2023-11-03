@@ -34,8 +34,8 @@ class Interval: # Integers represented as intervals
 
     @classmethod # slides and p. 228 in book. more so p. 228. K is the set of integers explicitly mentioned in bytecode. 
     def wide(cls, v1, v2, K):
-        if v1 in EXCEPTIONS: return v1
-        if v2 in EXCEPTIONS: return v2 # hmmm ?
+        if is_exception(v1): return v1
+        if is_exception(v2): return v2 # hmmm ?
         return cls.checked(cls.LB_k(v1.l, v2.l, K), cls.UB_k(v1.h, v2.h, K)) 
     
     # LBk UBk Principles of Program Analysis p.228. 
@@ -175,7 +175,7 @@ class Interval: # Integers represented as intervals
     
     def __truediv__(self, other):  # integer division
         assert( isinstance(other, Interval))
-        if 0 in range(other.l, other.h+1): return ArithException
+        if 0 in range(other.l, other.h+1): return ExceptionType.ArithmeticException
         
         pairs = [(n1, n2) for n1 in list(self) for n2 in list(other)]
         results = list(map(lambda tup: int(tup[0] / tup[1]), pairs))
@@ -184,7 +184,7 @@ class Interval: # Integers represented as intervals
     
     def __mod__(self, other):  # integer division
         assert( isinstance(other, Interval))
-        if 0 in range(other.l, other.h+1): return ArithException
+        if 0 in range(other.l, other.h+1): return ExceptionType.ArithmeticException
         
         pairs = [(n1, n2) for n1 in list(self) for n2 in list(other)]
         results = list(map(lambda tup: tup[0] % tup[1], pairs))

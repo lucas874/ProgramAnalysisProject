@@ -1,4 +1,5 @@
 import jmespath 
+from enum import Enum
 
 INT_MIN = -(2**31)
 INT_MAX = 2**31 - 1
@@ -8,8 +9,14 @@ ArithException = "ArithmeticException"
 NullPtrException = "NullPointerException"
 UnspptdOpException = "UnsupportedOperationException" 
 AssertError = "Assertion Failed"
+NegativeArraySizeException = "NegativeArraySizeException"
 
-EXCEPTIONS = set([IndexException, ArithException, NullPtrException, UnspptdOpException])
+EXCEPTIONS = set([IndexException, ArithException, NullPtrException, UnspptdOpException, NegativeArraySizeException])
+
+ExceptionType = Enum('Exception', [IndexException, ArithException, NullPtrException, UnspptdOpException, NegativeArraySizeException])
+
+def is_exception(e):
+    return isinstance(e, ExceptionType)
 
 class Program: 
     def __init__(self, classes):

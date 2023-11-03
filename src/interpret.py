@@ -2,6 +2,7 @@ from copy import deepcopy
 import jmespath 
 from intervals import Interval
 from state import State
+from helpers_constants import *
 
 class Interpreter:
     def __init__(self, abstraction, program):
@@ -59,20 +60,31 @@ class Interpreter:
         match b["operant"]:
             case "add":
                 #return [(l, s[:-2]+[val1 + val2], i+1)] 
-                new_stack += [val1 + val2]
+                #new_stack += [val1 + val2]
+                result = val1 + val2
             case "sub":
                 #return [(l, s[:-2]+[val1 - val2], i+1)] 
-                new_stack += [val1 - val2]
+                #new_stack += [val1 - val2]
+                result = val1 - val2
             case "mul":
                 #return [(l, s[:-2]+[val1 * val2], i+1)] 
-                new_stack += [val1 * val2]
+                #new_stack += [val1 * val2]
+                result = val1 * val2
             case "div": 
                 #return [(l, s[:-2]+[val1 / val2], i+1)] # Exception checked in AbstractInt
-                new_stack += [val1 / val2]
+                #new_stack += [val1 / val2]
+                result = val1 / val2
             case "rem":
                 #return [(l, s[:-2]+[val1 % val2], i+1)] 
-                new_stack += [val1 % val2]
+                #new_stack += [val1 % val2]
+                result = val1 % val2
 
+        new_stack += [result]
+        
+        if is_exception(result): # Weird to include exception on stack too. but we do that so that we can merge states still 
+            return [(State(deepcopy(state.locals), new_stack, deepcopy(state.heap), result), i+1)] 
+        
+        
         return [(State.new_stack(state, new_stack), i+1)] 
      
     def store(self, b, state, i): 

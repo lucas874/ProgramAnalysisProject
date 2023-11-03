@@ -1,12 +1,14 @@
 from dataclasses import dataclass
 from helpers_constants import *
 from copy import deepcopy 
+from typing import Optional
 
 @dataclass(frozen=True)
 class State: # State consists of local variables, operand stack and heap
     locals: dict
     stack: list 
     heap: dict
+    exception: Optional[ExceptionType] = None # Store exception in state. Check for exceptions and stop interpretation if so somewhere else. 
 
     @classmethod
     def cpy(cls, other):
@@ -91,4 +93,12 @@ class State: # State consists of local variables, operand stack and heap
         ms = cls.merge_stacks(old_state.stack, new_state.stack, wide, *args) 
         mh = cls.merge_heaps(old_state.heap, new_state.heap, wide, *args)
 
-        return State(mlc, ms, mh)
+        
+        # This looks a bit weird. But we stop at the first exception. So old state should not have one. include in merge because makes things easier
+        e = new_state.exception
+
+        return State(mlc, ms, mh, e)
+    
+    # Not a classmethod on purpose. should it be though? 
+    def is_exception_state(self):
+        return is_exception(self.exception)
