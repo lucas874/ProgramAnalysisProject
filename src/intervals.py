@@ -34,7 +34,7 @@ class Interval: # Integers represented as intervals
     
     @classmethod # This method creates an array. Not sure how to represent the items. preferably a set. look at Formal Methods an Appetizer p. 55. Maybe not important since we focus on bounds.
     def generate_array(cls, count=None, init_val=None):
-        if count == None: count = cls.checked(INT_MIN, INT_MAX)
+        if count == None: count = cls.checked(0, INT_MAX)
         if init_val == None: init_val = cls.checked(INT_MIN, INT_MAX)
         return (count, init_val)
 
