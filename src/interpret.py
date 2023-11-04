@@ -58,25 +58,15 @@ class Interpreter:
         new_stack = deepcopy(state.stack[:-2])
 
         match b["operant"]:
-            case "add":
-                #return [(l, s[:-2]+[val1 + val2], i+1)] 
-                #new_stack += [val1 + val2]
+            case "add": 
                 result = val1 + val2
-            case "sub":
-                #return [(l, s[:-2]+[val1 - val2], i+1)] 
-                #new_stack += [val1 - val2]
+            case "sub": 
                 result = val1 - val2
-            case "mul":
-                #return [(l, s[:-2]+[val1 * val2], i+1)] 
-                #new_stack += [val1 * val2]
+            case "mul": 
                 result = val1 * val2
-            case "div": 
-                #return [(l, s[:-2]+[val1 / val2], i+1)] # Exception checked in AbstractInt
-                #new_stack += [val1 / val2]
+            case "div":  
                 result = val1 / val2
-            case "rem":
-                #return [(l, s[:-2]+[val1 % val2], i+1)] 
-                #new_stack += [val1 % val2]
+            case "rem": 
                 result = val1 % val2
 
         new_stack += [result]
