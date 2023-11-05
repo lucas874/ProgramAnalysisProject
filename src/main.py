@@ -18,7 +18,7 @@ def main():
      
     # program holds all loaded methods
     program = Program(classes)
-    interpreter = AbstractInterpreter(program, Interval)
+    interpreter = AbstractInterpreter(program, Interval, debug=True)
     class_ = sys.argv[1]
     method = sys.argv[2] 
     

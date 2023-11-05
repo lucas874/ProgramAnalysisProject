@@ -6,12 +6,13 @@ from copy import deepcopy
 from state import State
 
 class AbstractInterpreter:
-        def __init__(self, program : Program, abstraction):
+        def __init__(self, program : Program, abstraction, debug=False):
             self.program = program
             self.abstraction = abstraction
             self.worklist = []
             self.states = []
             self.interpret = Interpreter(abstraction, program) 
+            self.debug = debug
 
         def print_state(self, bytecode):
             for i, (inst, state) in enumerate(zip(bytecode, self.states)):
@@ -35,11 +36,13 @@ class AbstractInterpreter:
                 for new_state, i_ in self.abstract_step(bc, i): 
                     self.merge_fwd(i_, new_state, int_constants)
                     if new_state.is_exception_state(): self.worklist = []  # Stop intepretation if exception?
-                    self.print_state(bytecode) 
-                    print("\n\n")
+                    if self.debug: 
+                        self.print_state(bytecode) 
+                        print("\n\n")
 
-            print("Final state: ")
-            self.print_state(bytecode)
+            if self.debug:
+                print("Final state: ")
+                self.print_state(bytecode)
             return self.states
 
         def generate_value(self, param):
