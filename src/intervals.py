@@ -64,6 +64,10 @@ class Interval: # Integers represented as intervals
             if ks != []: return min(ks)
             else: return INT_MAX
 
+    @classmethod
+    def meet(cls, v1, v2): #index??
+        return cls.checked(max(v1.l, v2.l), min(v1.h, v2.h))
+
     # expect arr is (count, val). if count == 1 replace val by new val. else take min max etc such that old is included in new
     @classmethod
     def handle_array(cls, arr, new_val):

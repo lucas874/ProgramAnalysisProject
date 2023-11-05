@@ -1,18 +1,18 @@
 from dataclasses import dataclass
 from helpers_constants import *
 from copy import deepcopy
+from intervals import * 
 
 @dataclass(frozen=True)
 class Pentagon: # Integers represented as intervals 
-    l: int
-    h: int
+    intv: Interval
     index: int # Use when loading from locals 
     strictly_less_than: set
 
     @classmethod
     def from_type(cls, typename):
         if typename == "int" or typename == "float":
-            return Pentagon(INT_MIN, INT_MAX, None, set())
+            return Pentagon(Interval.from_type(typename), None, set())
         else:
             raise Exception("Type not implemented")
 
@@ -31,40 +31,26 @@ class Pentagon: # Integers represented as intervals
     def checked(cls, l, h, index=None, strictly_lt=set()):
         if l > h:
             raise Exception("ASDADADDA")
-        return Pentagon(max(l, INT_MIN), min(h, INT_MAX), index, strictly_lt)
-    
+        return Pentagon(Interval.checked(l, h, index), index, strictly_lt)
+
+    # TODO
     @classmethod # This method creates an array. Not sure how to represent the items. preferably a set. look at Formal Methods an Appetizer p. 55. Maybe not important since we focus on bounds.
     def generate_array(cls, count=None, init_val=None):
         if count == None: count = cls.checked(0, INT_MAX)
         if init_val == None: init_val = cls.checked(INT_MIN, INT_MAX)
         return (count, init_val)
 
+    @classmethod  # using definition from two column version of the article. 2008
+    def widen_set(cls, v1, v2):
+        if v1.strictly_less_than >= v2.strictly_less_than: return v2.strictly_less_than
+        else: return set()
+
     @classmethod # slides and p. 228 in book. more so p. 228. K is the set of integers explicitly mentioned in bytecode. 
     def wide(cls, v1, v2, K):
-        if is_exception(v1): return v1
-        if is_exception(v2): return v2 # hmmm ?
-        if isinstance(v1, str): # In case of references
-            assert v1 == v2
-            return v1
-        return cls.checked(cls.LB_k(v1.l, v2.l, K), cls.UB_k(v1.h, v2.h, K)) 
-    
-    # LBk UBk Principles of Program Analysis p.228. 
-    @classmethod # Gives a lot of min/max when slie one would have given z3/z4??
-    def LB_k(cls, z1, z3, K): 
-        if z1 <= z3: return z1
-        elif z1 > z3: 
-            ks = [k for k in K if k <= z3]
-            if ks != []: return max(ks)
-            else: return INT_MIN
-
-    @classmethod
-    def UB_k(cls, z2, z4, K): 
-        if z4 <= z2: return z2
-        elif z4 > z2:
-            ks = [k for k in K if z4 <= k]
-            if ks != []: return min(ks)
-            else: return INT_MAX
-
+        intv = Interval.wide(v1.intv, v2.intv, K)
+        strictly_lt = cls.widen_set(v1, v2)
+        return cls.checked(intv.l, intv.h, index=None, strictly_lt=strictly_lt) # What about index?
+        
     # expect arr is (count, val). if count == 1 replace val by new val. else take min max etc such that old is included in new
     @classmethod
     def handle_array(cls, arr, new_val):
