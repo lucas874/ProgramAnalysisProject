@@ -1,6 +1,7 @@
 from helpers_constants import *
 from abstract_interpreter import *
 from intervals import *
+from pentagons import *
 import sys
 
 def usage(argv):
@@ -18,7 +19,7 @@ def main():
      
     # program holds all loaded methods
     program = Program(classes)
-    interpreter = AbstractInterpreter(program, Interval, debug=True)
+    interpreter = AbstractInterpreter(program, Pentagon, debug=True)
     class_ = sys.argv[1]
     method = sys.argv[2] 
     
