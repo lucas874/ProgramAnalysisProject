@@ -43,7 +43,7 @@ class Interpreter:
     def load(self, b, state, i):
         value = state.locals[b["index"]]
         if isinstance(value, self.abstraction): # could be some value of our abstraction type OR a reference so check.
-            value = state.locals[b["index"]].cpy_set_index(b["index"])
+            value = state.locals[b["index"]].cpy_set_ptrs(index=b["index"])
           
         return [(State.add_to_stack(state, value), i+1)]   
 
@@ -244,10 +244,11 @@ class Interpreter:
         count = state.stack[-1]
         if count < self.abstraction.from_integer(0): return [(State(deepcopy(state.locals), deepcopy(state.stack[:-1]), deepcopy(state.heap), ExceptionType.NegativeArraySizeException), i+1)]
 
+        # When creating new array we set the heap_ptr of count and items to new_arr_ref. May be redundant but also we may need it. 
         new_arr_ref = "arr" + str(self.arrays_allocated)
         self.arrays_allocated += 1
-        new_arr = self.abstraction.generate_array(arr_ref=new_arr_ref, count=count, init_val=self.abstraction.from_integer(0))
-         
+        new_arr = self.abstraction.generate_array(arr_ref=new_arr_ref, count=count.cpy_set_ptrs(heap_ptr=new_arr_ref), init_val=self.abstraction.from_integer(0, heap_ptr=new_arr_ref))
+        
         new_stack = deepcopy(state.stack[:-1]) + [new_arr_ref]
         new_heap = deepcopy(state.heap)
 
@@ -272,7 +273,8 @@ class Interpreter:
         # Check bounds and go to exception state if out of bounds
         if not self.within_bounds(new_heap[arr_ref], index): return [(State(deepcopy(state.locals), new_stack, new_heap, ExceptionType.IndexOutOfBoundsException), i+1)]
 
-        new_heap[arr_ref] = self.abstraction.handle_array(new_heap[arr_ref], value)            
+        # update array values in heap...
+        new_heap[arr_ref] = self.abstraction.handle_array(new_heap[arr_ref], value, arr_ref)            
         
         return [(State.new_stack_new_heap(state, new_stack, new_heap), i+1)]
 

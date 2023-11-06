@@ -11,22 +11,22 @@ class Interval: # Integers represented as intervals
     heap_ptr: Optional[str] = None
 
     @classmethod
-    def from_type(cls, typename):
+    def from_type(cls, typename, index=None, heap_ptr=None):
         if typename == "int" or typename == "float":
-            return Interval(INT_MIN, INT_MAX)
+            return Interval(INT_MIN, INT_MAX, index, heap_ptr)
         else:
             raise Exception("Type not implemented")
 
     @classmethod 
-    def from_value(cls, value): # From value field in bytecode json
+    def from_value(cls, value, index=None, heap_ptr=None): # From value field in bytecode json
         if value["type"] == "integer":
-            return cls.from_integer(value["value"])
+            return cls.from_integer(value["value"], index=index, heap_ptr=heap_ptr)
         else:
             raise Exception("Type not implemented")
 
     @classmethod 
-    def from_integer(cls, value):
-        return cls.checked(value, value)
+    def from_integer(cls, value, index=None, heap_ptr=None):
+        return cls.checked(value, value, index=index, heap_ptr=heap_ptr)
 
     @classmethod # RECONSIDER THIS
     def checked(cls, l, h, index=None, heap_ptr=None):
@@ -72,15 +72,16 @@ class Interval: # Integers represented as intervals
     def meet(cls, v1, v2): #index??
         return cls.checked(max(v1.l, v2.l), min(v1.h, v2.h))
 
+    # When manipulating array values. Used in array_store 
     # expect arr is (count, val). if count == 1 replace val by new val. else take min max etc such that old is included in new
     @classmethod
-    def handle_array(cls, arr, new_val):
+    def handle_array(cls, arr, new_val, arr_ref):
         if arr[0].eq(cls.from_integer(1)): 
             return (arr[0], new_val)
         else: 
             new_l = min(new_val.l, arr[1].l)
             new_h = max(new_val.h, arr[1].h)
-            return (arr[0], cls.checked(new_l, new_h))
+            return (arr[0], cls.checked(new_l, new_h, heap_ptr=arr_ref))
 
     @classmethod
     def tricky_gt(cls, l_branch, l_no_branch, val1, val2): 
@@ -175,8 +176,8 @@ class Interval: # Integers represented as intervals
     def wide1(cls, v1, v2):
         return cls.checked(min(v1.l, v2.l), max(v1.h, v2.h)) 
     
-    def cpy_set_index(self, index):
-        return self.checked(self.l, self.h, index)
+    def cpy_set_ptrs(self, index=None, heap_ptr=None):
+        return self.checked(self.l, self.h, index, heap_ptr)
     
     def cpy(self):
         return self.checked(self.l, self.h)

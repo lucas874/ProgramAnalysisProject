@@ -32,7 +32,7 @@ class AbstractInterpreter:
             while self.worklist:# and not self.exceptions():
                 i = self.worklist.pop()
                 bc = bytecode[i] 
-
+                print(i, bc)
                 for new_state, i_ in self.abstract_step(bc, i): 
                     self.merge_fwd(i_, new_state, int_constants)
                     if new_state.is_exception_state(): self.worklist = []  # Stop intepretation if exception?
