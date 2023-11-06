@@ -49,8 +49,8 @@ class AbstractInterpreter:
             return self.abstraction.from_type(param["type"]["base"])
 
         # When generating array, set count to top like with integer values. implementation of comparison for abstraction should take care of rest 
-        def generate_array(self): 
-            return self.abstraction.generate_array()
+        def generate_array(self, arr_ref): 
+            return self.abstraction.generate_array(arr_ref)
 
         def get_args(self, m):
             query = f"methods[?name=='{m[1]}']"
@@ -62,7 +62,7 @@ class AbstractInterpreter:
                 if "base" in p["type"]: locals[i] = self.generate_value(p)
                 elif "kind" in p["type"] and p["type"]["kind"] == "array":
                     arr_ref = f"arr_arg{i}"
-                    arr = self.generate_array()
+                    arr = self.generate_array(arr_ref)
                     locals[i] = arr_ref
                     heap[arr_ref] = arr
             

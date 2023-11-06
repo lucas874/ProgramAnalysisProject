@@ -246,7 +246,7 @@ class Interpreter:
 
         new_arr_ref = "arr" + str(self.arrays_allocated)
         self.arrays_allocated += 1
-        new_arr = self.abstraction.generate_array(count, init_val=self.abstraction.from_integer(0))
+        new_arr = self.abstraction.generate_array(arr_ref=new_arr_ref, count=count, init_val=self.abstraction.from_integer(0))
          
         new_stack = deepcopy(state.stack[:-1]) + [new_arr_ref]
         new_heap = deepcopy(state.heap)

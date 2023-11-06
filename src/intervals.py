@@ -1,17 +1,19 @@
 from dataclasses import dataclass
 from helpers_constants import *
 from copy import deepcopy
+from typing import Optional
 
 @dataclass(frozen=True)
 class Interval: # Integers represented as intervals 
     l: int
     h: int
-    index: int # Use when loading from locals 
+    index: Optional[int] = None # Use when loading from locals 
+    heap_ptr: Optional[str] = None
 
     @classmethod
     def from_type(cls, typename):
         if typename == "int" or typename == "float":
-            return Interval(INT_MIN, INT_MAX, None)
+            return Interval(INT_MIN, INT_MAX)
         else:
             raise Exception("Type not implemented")
 
@@ -27,15 +29,15 @@ class Interval: # Integers represented as intervals
         return cls.checked(value, value)
 
     @classmethod # RECONSIDER THIS
-    def checked(cls, l, h, index=None):
+    def checked(cls, l, h, index=None, heap_ptr=None):
         if l > h:
             raise Exception("ASDADADDA")
-        return Interval(max(l, INT_MIN), min(h, INT_MAX), index)
+        return Interval(max(l, INT_MIN), min(h, INT_MAX), index, heap_ptr)
     
     @classmethod # This method creates an array. Not sure how to represent the items. preferably a set. look at Formal Methods an Appetizer p. 55. Maybe not important since we focus on bounds.
-    def generate_array(cls, count=None, init_val=None):
-        if count == None: count = cls.checked(0, INT_MAX)
-        if init_val == None: init_val = cls.checked(INT_MIN, INT_MAX)
+    def generate_array(cls, arr_ref=None, count=None, init_val=None):
+        if count == None: count = cls.checked(0, INT_MAX, heap_ptr=arr_ref)
+        if init_val == None: init_val = cls.checked(0, 0, heap_ptr=arr_ref) # default value 0 in java
         return (count, init_val)
 
     @classmethod # slides and p. 228 in book. more so p. 228. K is the set of integers explicitly mentioned in bytecode. 
@@ -46,7 +48,8 @@ class Interval: # Integers represented as intervals
             assert v1 == v2
             return v1
         if v1.index != None: assert v1.index == v2.index
-        return cls.checked(cls.LB_k(v1.l, v2.l, K), cls.UB_k(v1.h, v2.h, K), v1.index) 
+        if v1.heap_ptr != None: assert v1.heap_ptr == v2.heap_ptr
+        return cls.checked(cls.LB_k(v1.l, v2.l, K), cls.UB_k(v1.h, v2.h, K), v1.index, v1.heap_ptr) 
     
     # LBk UBk Principles of Program Analysis p.228. 
     @classmethod # Gives a lot of min/max when slie one would have given z3/z4??
