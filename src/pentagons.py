@@ -2,11 +2,12 @@ from dataclasses import dataclass
 from helpers_constants import *
 from copy import deepcopy
 from intervals import * 
+from functools import reduce
 
 @dataclass(frozen=True)
 class Pentagon: # Integers represented as intervals 
     intv: Interval 
-    strictly_less_than: set
+    greater_variables: set # instance is strictly less than elements in this set. 
     
     @classmethod
     def from_type(cls, typename, index=None, heap_ptr=None):
@@ -45,7 +46,7 @@ class Pentagon: # Integers represented as intervals
     
     @classmethod  # using definition from two column version of the article. 2008
     def widen_set(cls, v1, v2):
-        if v1.strictly_less_than >= v2.strictly_less_than: return v2.strictly_less_than
+        if v1.greater_variables >= v2.greater_variables: return v2.greater_variables
         else: return set()
 
     @classmethod # slides and p. 228 in book. more so p. 228. K is the set of integers explicitly mentioned in bytecode. 
@@ -62,14 +63,14 @@ class Pentagon: # Integers represented as intervals
         items = arr[1].intv
         
         count, items = Interval.handle_array((count, items), new_val)
-        return (Pentagon(count, arr[0].strictly_less_than), Pentagon(items, arr[1].strictly_less_than))
+        return (Pentagon(count, arr[0].greater_variables), Pentagon(items, arr[1].greater_variables))
 
     @classmethod
     def tricky_gt(cls, l_branch, l_no_branch, val1, val2): 
         if val1.index is not None and val2.is_constant():
             new_h = max(val1.h, val2.h+1)
             new_l = max(val1.l, val2.h+1)
-            l_branch[val1.index] = cls.checked(new_l, new_h, None)
+            l_branch[val1.index] = cls.checked(new_l, new_h, None) # Reconsider this we need to make sure old value is partly included in new state.
             
             new_h = val2.l
             new_l = min(val1.l, new_h)
@@ -202,15 +203,19 @@ class Pentagon: # Integers represented as intervals
     
     def __gt__(self, other):
         assert(isinstance(other, Pentagon))
-        return self.l > other.h
+        pass 
+
+        
 
     def __ge__(self, other):
         assert(isinstance(other, Pentagon)) 
         return self.l >= other.h
 
-    def __lt__(self, other):
+    def __lt__(self, other): # Two column version p. 186 bottom of page. Actually we need the entire state for this. 
         assert(isinstance(other, Pentagon))
-        return self.h < other.l
+        pass 
+        
+
 
     def __le__(self, other): 
         assert(isinstance(other, Pentagon))

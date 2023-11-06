@@ -75,8 +75,8 @@ class Interval: # Integers represented as intervals
     # When manipulating array values. Used in array_store 
     # expect arr is (count, val). if count == 1 replace val by new val. else take min max etc such that old is included in new
     @classmethod
-    def handle_array(cls, arr, new_val, arr_ref):
-        if arr[0].eq(cls.from_integer(1)): 
+    def handle_array(cls, arr, new_val, arr_ref, state):
+        if arr[0].eq(cls.from_integer(1), state): 
             return (arr[0], new_val)
         else: 
             new_l = min(new_val.l, arr[1].l)
@@ -235,10 +235,22 @@ class Interval: # Integers represented as intervals
         assert(isinstance(other, Interval))
         return self.h <= other.l
 
+    def gt(self, other, state): # Updated. we need to use this functions when comparisons instead of overloaded directly bc of the way pentagons do comparisons and have the same interface
+        return self > other
+    
+    def ge(self, other, state):
+        return self >= other
+    
+    def lt(self, other, state):
+        return self < other
+    
+    def le(self, other, state):
+        return self <= other
+
     # We can't overwrite these because gives trouble when checking if states are equal in merge
-    def eq(self, other):
+    def eq(self, other, state):
         assert(isinstance(other, Interval)) 
         return self.l == other.l and self.h == other.h and self.is_constant() 
     
-    def neq(self, other): 
+    def neq(self, other, state): 
         return self.__lt__(other) or self.__gt__(other)

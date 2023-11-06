@@ -5,6 +5,8 @@ from intervals import *
 from utilities import *
 from state import *
 
+# always... should be successful. dependsOnLattice.. should not
+
 @pytest.fixture(scope="session", autouse=True)
 def setup():
     global program

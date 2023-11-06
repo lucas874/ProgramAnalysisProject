@@ -5,6 +5,8 @@ from intervals import *
 from utilities import *
 from state import *
 
+# All tests should be successful
+
 @pytest.fixture(scope="session", autouse=True)
 def setup():
     global program
