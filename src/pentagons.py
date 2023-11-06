@@ -5,41 +5,44 @@ from intervals import *
 
 @dataclass(frozen=True)
 class Pentagon: # Integers represented as intervals 
-    intv: Interval
-    index: int # Use when loading from locals 
+    intv: Interval 
     strictly_less_than: set
-
+    
     @classmethod
-    def from_type(cls, typename):
+    def from_type(cls, typename, index=None, heap_ptr=None):
         if typename == "int" or typename == "float":
-            return Pentagon(Interval.from_type(typename), None, set())
+            intv = Interval.from_type(typename, index=index, heap_ptr=heap_ptr)
+            return Pentagon(intv, set()) 
         else:
             raise Exception("Type not implemented")
 
     @classmethod 
-    def from_value(cls, value): # From value field in bytecode json
+    def from_value(cls, value, index=None, heap_ptr=None): # From value field in bytecode json
         if value["type"] == "integer":
-            return cls.from_integer(value["value"])
+            intv = Interval.from_integer(value["value"], index=index, heap_ptr=heap_ptr)
+            return Pentagon(intv, set()) 
         else:
             raise Exception("Type not implemented")
 
     @classmethod 
-    def from_integer(cls, value):
-        return cls.checked(value, value)
+    def from_integer(cls, value, index=None, heap_ptr=None):
+        return cls.checked(value, value, index=index, heap_ptr=heap_ptr)
 
     @classmethod # RECONSIDER THIS
-    def checked(cls, l, h, index=None, strictly_lt=set()):
+    def checked(cls, l, h, index=None, heap_ptr=None, strictly_lt=set()):
         if l > h:
             raise Exception("ASDADADDA")
-        return Pentagon(Interval.checked(l, h, index), index, strictly_lt)
-
-    # TODO
+        
+        intv = Interval.checked(l, h, index=index, heap_ptr=heap_ptr)
+        return Pentagon(intv, strictly_lt) 
+    
     @classmethod # This method creates an array. Not sure how to represent the items. preferably a set. look at Formal Methods an Appetizer p. 55. Maybe not important since we focus on bounds.
-    def generate_array(cls, count=None, init_val=None):
-        if count == None: count = cls.checked(0, INT_MAX)
-        if init_val == None: init_val = cls.checked(INT_MIN, INT_MAX)
-        return (count, init_val)
+    def generate_array(cls, arr_ref=None, count=None, init_val=None):
+        
+        count, items = Interval.generate_array(arr_ref=arr_ref, count=count, init_val=init_val)
 
+        return (Pentagon(count, set()), Pentagon(items, set()))
+    
     @classmethod  # using definition from two column version of the article. 2008
     def widen_set(cls, v1, v2):
         if v1.strictly_less_than >= v2.strictly_less_than: return v2.strictly_less_than
@@ -50,16 +53,16 @@ class Pentagon: # Integers represented as intervals
         intv = Interval.wide(v1.intv, v2.intv, K)
         strictly_lt = cls.widen_set(v1, v2)
         return cls.checked(intv.l, intv.h, index=None, strictly_lt=strictly_lt) # What about index?
-        
+
+    # When manipulating array values. Used in array_store 
     # expect arr is (count, val). if count == 1 replace val by new val. else take min max etc such that old is included in new
     @classmethod
     def handle_array(cls, arr, new_val):
-        if arr[0].eq(cls.from_integer(1)): 
-            return (arr[0], new_val)
-        else: 
-            new_l = min(new_val.l, arr[1].l)
-            new_h = max(new_val.h, arr[1].h)
-            return (arr[0], cls.checked(new_l, new_h))
+        count = arr[0].intv
+        items = arr[1].intv
+        
+        count, items = Interval.handle_array((count, items), new_val)
+        return (Pentagon(count, arr[0].strictly_less_than), Pentagon(items, arr[1].strictly_less_than))
 
     @classmethod
     def tricky_gt(cls, l_branch, l_no_branch, val1, val2): 
@@ -166,7 +169,7 @@ class Pentagon: # Integers represented as intervals
 
     def __add__(self, other):
         assert(isinstance(other, Pentagon))
-        return self.checked(self.l + other.l, self.h + other.h, self.index)  
+        return self.checked(self.l + other.l, self.h + other.h, self.index) # Should not have index here. 
         
     def __sub__(self, other):
         assert( isinstance(other, Pentagon))        
