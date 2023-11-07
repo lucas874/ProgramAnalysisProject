@@ -87,8 +87,9 @@ class Interpreter:
          
         idx = b["index"]
         new_l = deepcopy(state.locals)
-        
-        new_l[idx] += self.abstraction.from_integer(b["amount"])
+        new_val = new_l[idx] + self.abstraction.from_integer(b["amount"])
+        new_val = self.abstraction.cpy_ptrs(new_val, new_l[idx])
+        new_l[idx] = new_val
         
         return [(State.new_locals(state, new_l), i+1)]
 

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from helpers_constants import *
 from copy import deepcopy
 from typing import Optional
+from math import fmod
 
 @dataclass(frozen=True)
 class Interval: # Integers represented as intervals 
@@ -75,7 +76,7 @@ class Interval: # Integers represented as intervals
     # When manipulating array values. Used in array_store 
     # expect arr is (count, val). if count == 1 replace val by new val. else take min max etc such that old is included in new
     @classmethod
-    def handle_array(cls, arr, new_val, arr_ref, state):
+    def handle_array(cls, arr, new_val, arr_ref, state): 
         if arr[0].eq(cls.from_integer(1), state): 
             return (arr[0], new_val)
         else: 
@@ -172,15 +173,24 @@ class Interval: # Integers represented as intervals
     def is_constant(self):
         return self.l == self.h
 
-    @classmethod
-    def wide1(cls, v1, v2):
-        return cls.checked(min(v1.l, v2.l), max(v1.h, v2.h)) 
+    def is_negative(self):
+        return self.h < 0
+    
+    def is_positive(self):
+        return self.h > 0
+    
+    def is_zero(self):
+        return self.l == 0 and self.h == 0
     
     def cpy_set_ptrs(self, index=None, heap_ptr=None):
         return self.checked(self.l, self.h, index, heap_ptr)
     
     def cpy(self):
         return self.checked(self.l, self.h)
+
+    @classmethod 
+    def cpy_ptrs(cls, v1, other): 
+        return Interval(v1.l, v1.h, other.index, other.heap_ptr)
 
     def __iter__(self):
         for elem in [self.l, self.h]:
@@ -215,7 +225,7 @@ class Interval: # Integers represented as intervals
         if 0 in range(other.l, other.h+1): return ExceptionType.ArithmeticException
         
         pairs = [(n1, n2) for n1 in list(self) for n2 in list(other)]
-        results = list(map(lambda tup: tup[0] % tup[1], pairs))
+        results = list(map(lambda tup: int(fmod(tup[0], tup[1])), pairs)) # Use fmod to get same mod semantics as java. see: https://en.wikipedia.org/wiki/Modulo#In_programming_languages
 
         return self.checked(min(results), max(results))
     

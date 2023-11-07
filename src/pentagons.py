@@ -38,10 +38,10 @@ class Pentagon: # Integers represented as intervals
         return Pentagon(intv, strictly_lt) 
     
     @classmethod # This method creates an array. Not sure how to represent the items. preferably a set. look at Formal Methods an Appetizer p. 55. Maybe not important since we focus on bounds.
-    def generate_array(cls, arr_ref=None, count=None, init_val=None):
-        
-        count, items = Interval.generate_array(arr_ref=arr_ref, count=count, init_val=init_val) 
-        return (Pentagon(count, set()), Pentagon(items, set()))
+    def generate_array(cls, arr_ref=None, count=None, init_val=None): 
+        if count == None: count = cls.checked(0, INT_MAX, heap_ptr=arr_ref)
+        if init_val == None: init_val = cls.checked(0, 0, heap_ptr=arr_ref) # default value 0 in java
+        return (count, init_val)
     
     @classmethod  # using definition from two column version of the article. 2008
     def widen_set(cls, v1, v2):
@@ -50,6 +50,12 @@ class Pentagon: # Integers represented as intervals
 
     @classmethod # slides and p. 228 in book. more so p. 228. K is the set of integers explicitly mentioned in bytecode. 
     def wide(cls, v1, v2, K):
+        if is_exception(v1): return v1
+        if is_exception(v2): return v2 # hmmm ?
+        if isinstance(v1, str): # In case of references
+            assert v1 == v2
+            return v1
+        print(v1, v2)
         intv = Interval.wide(v1.intv, v2.intv, K)
         strictly_lt = cls.widen_set(v1, v2)
         return cls.checked(intv.l, intv.h, index=None, strictly_lt=strictly_lt) # What about index?
@@ -57,12 +63,17 @@ class Pentagon: # Integers represented as intervals
     # When manipulating array values. Used in array_store 
     # expect arr is (count, val). if count == 1 replace val by new val. else take min max etc such that old is included in new
     @classmethod
-    def handle_array(cls, arr, new_val):
+    def handle_array(cls, arr, new_val, arr_ref, state):
         count = arr[0].intv
-        items = arr[1].intv
+        items = arr[1].intv 
         
-        count, items = Interval.handle_array((count, items), new_val)
+        count, items = Interval.handle_array((count, items), new_val.intv, arr_ref, state)
         return (Pentagon(count, arr[0].greater_variables), Pentagon(items, arr[1].greater_variables))
+
+    @classmethod # Check if p1 is a program variable that appears in p2s set of variables greater than p2
+    def p1_in_p2_gt_set(cls, p1, p2):
+        return (p1.intv.index is not None and p1.index in p2.greater_variables) \
+            or (p1.intv.heap_ptr is not None and p1.intv.heap_ptr in p2.greater_variables)
 
     @classmethod
     def tricky_gt(cls, l_branch, l_no_branch, val1, val2): 
@@ -150,6 +161,12 @@ class Pentagon: # Integers represented as intervals
 
         return l_branch, l_no_branch
 
+    def get_ptrs(self):
+        ptrs = set()
+        if self.intv.index is not None: ptrs.add(self.intv.index)
+        if self.intv.heap_ptr is not None: ptrs.add(self.intv.heap_ptr)
+        return ptrs
+
     def is_constant(self):
         return self.l == self.h
  
@@ -163,42 +180,53 @@ class Pentagon: # Integers represented as intervals
     def cpy(self):
         return self.checked(self.l, self.h)
 
+    @classmethod 
+    def cpy_ptrs(cls, v1, v2_copy_these_ptrs):
+        return Pentagon(Interval.cpy_ptrs(v1.intv, v2_copy_these_ptrs.intv), v1.greater_variables) 
+ 
     def __iter__(self):
         for elem in [self.l, self.h]:
             yield elem 
 
     def __add__(self, other):
-        assert(isinstance(other, Pentagon))
-        return self.checked(self.l + other.l, self.h + other.h, self.index) # Should not have index here. 
+        assert(isinstance(other, Pentagon))        
+        if other.intv.is_negative():
+            return self.__sub__(other)
+        intv = self.intv + other.intv # Come back and refine maybe
+        return Pentagon(intv, set())
         
     def __sub__(self, other):
-        assert( isinstance(other, Pentagon))        
-        return self.checked(self.l - other.h, self.h - other.l, self.index)
-
-    def __mul__(self, other): 
         assert( isinstance(other, Pentagon))
-        pairs = [(n1, n2) for n1 in list(self) for n2 in list(other)]
-        results = list(map(lambda tup: tup[0]*tup[1], pairs))
+        if Pentagon.p1_in_p2_gt_set(self, other): meet_val = Interval(1, INT_MAX) # if self > other  
+        else: meet_val = Interval(INT_MIN, INT_MAX)  
+        
+        intv = Interval.meet(self.intv - other.intv, meet_val)
 
-        return self.checked(min(results), max(results))
+        greater_vars = self.get_ptrs | self.greater_variables if other.intv.l > 0 else set() 
+
+        return Pentagon(intv, greater_vars) 
+
+    def __mul__(self, other): # Come back and refine
+        assert(isinstance(other, Pentagon))
+        intv = self.intv * other.intv
+        return Pentagon(intv, set()) 
     
     def __truediv__(self, other):  # integer division
         assert( isinstance(other, Pentagon))
-        if 0 in range(other.l, other.h+1): return ExceptionType.ArithmeticException
+        if 0 in range(other.intv.l, other.intv.h+1): return ExceptionType.ArithmeticException
         
-        pairs = [(n1, n2) for n1 in list(self) for n2 in list(other)]
-        results = list(map(lambda tup: int(tup[0] / tup[1]), pairs))
+        intv = self.intv / other.intv 
 
-        return self.checked(min(results), max(results))
+        return Pentagon(intv, set()) 
     
-    def __mod__(self, other):  # integer division
+    def __mod__(self, other):  # By using fmod in interval __mod__ i think we achieved same mod semantics as java. 
         assert( isinstance(other, Pentagon))
-        if 0 in range(other.l, other.h+1): return ExceptionType.ArithmeticException
+        if 0 in range(other.intv.l, other.intv.h+1): return ExceptionType.ArithmeticException
         
-        pairs = [(n1, n2) for n1 in list(self) for n2 in list(other)]
-        results = list(map(lambda tup: tup[0] % tup[1], pairs))
+        intv = self.intv % other.intv 
+        greater_vars = other.get_ptrs() if other.intv.l >= 0 else set()
 
-        return self.checked(min(results), max(results))
+        return Pentagon(intv, greater_vars) 
     
     def gt(self, other, state):
         assert(isinstance(other, Pentagon))
