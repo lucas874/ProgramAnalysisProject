@@ -80,7 +80,16 @@ class Interpreter:
     def store(self, b, state, i): 
         idx = b["index"]
         # hope I understood it correctly. Think we remove the element from the operand stack too.
-        return [(State.store(state, idx), i+1)] 
+        new_stack = deepcopy(state.stack)
+        val = new_stack.pop()
+        #val = val.cpy_set_ptrs(index=idx) # CONSIDER THIS
+
+        new_locals = deepcopy(state.locals)
+        new_locals[idx] = val 
+
+        return [(State(new_locals, new_stack, state.heap, state.exception), i+1)]
+
+        #return [(State.store(state, idx), i+1)] 
 
     def incr(self, b, state, i):
         #increment local in $index by $amount

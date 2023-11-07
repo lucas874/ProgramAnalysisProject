@@ -54,11 +54,10 @@ class Pentagon: # Integers represented as intervals
         if is_exception(v2): return v2 # hmmm ?
         if isinstance(v1, str): # In case of references
             assert v1 == v2
-            return v1
-        print(v1, v2)
+            return v1 
         intv = Interval.wide(v1.intv, v2.intv, K)
         strictly_lt = cls.widen_set(v1, v2)
-        return cls.checked(intv.l, intv.h, index=None, strictly_lt=strictly_lt) # What about index?
+        return Pentagon(intv, strictly_lt) 
 
     # When manipulating array values. Used in array_store 
     # expect arr is (count, val). if count == 1 replace val by new val. else take min max etc such that old is included in new
@@ -68,6 +67,7 @@ class Pentagon: # Integers represented as intervals
         items = arr[1].intv 
         
         count, items = Interval.handle_array((count, items), new_val.intv, arr_ref, state)
+        
         return (Pentagon(count, arr[0].greater_variables), Pentagon(items, arr[1].greater_variables))
 
     @classmethod # Check if p1 is a program variable that appears in p2s set of variables greater than p2
@@ -140,7 +140,7 @@ class Pentagon: # Integers represented as intervals
         return l_branch, l_no_branch
     
     @classmethod
-    def tricky_le(cls, l_branch, l_no_branch, val1, val2):
+    def tricky_le(cls, l_branch, l_no_branch, val1, val2, state):
         if val1.index is not None and val2.is_constant():
             new_h = max(val1.h, val2.h+1)
             new_l = max(val1.l, val2.h+1)
@@ -202,7 +202,7 @@ class Pentagon: # Integers represented as intervals
         
         intv = Interval.meet(self.intv - other.intv, meet_val)
 
-        greater_vars = self.get_ptrs | self.greater_variables if other.intv.l > 0 else set() 
+        greater_vars = self.get_ptrs() | self.greater_variables if other.intv.l > 0 else set() 
 
         return Pentagon(intv, greater_vars) 
 

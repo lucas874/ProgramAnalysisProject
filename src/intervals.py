@@ -48,9 +48,9 @@ class Interval: # Integers represented as intervals
         if isinstance(v1, str): # In case of references
             assert v1 == v2
             return v1
-        if v1.index != None: assert v1.index == v2.index
-        if v1.heap_ptr != None: assert v1.heap_ptr == v2.heap_ptr
-        return cls.checked(cls.LB_k(v1.l, v2.l, K), cls.UB_k(v1.h, v2.h, K), v1.index, v1.heap_ptr) 
+        if v1.index != None: assert v1.index == v2.index # REVIEW INDEX CHECK
+        if v1.heap_ptr != None or v2.heap_ptr != None: assert v1.heap_ptr == v2.heap_ptr 
+        return cls.checked(cls.LB_k(v1.l, v2.l, K), cls.UB_k(v1.h, v2.h, K), index=v1.index, heap_ptr=v1.heap_ptr) 
     
     # LBk UBk Principles of Program Analysis p.228. 
     @classmethod # Gives a lot of min/max when slie one would have given z3/z4??
@@ -78,11 +78,11 @@ class Interval: # Integers represented as intervals
     @classmethod
     def handle_array(cls, arr, new_val, arr_ref, state): 
         if arr[0].eq(cls.from_integer(1), state): 
-            return (arr[0], new_val)
+            return (arr[0], Interval(new_val.l, new_val.h, index=arr[1].index, heap_ptr=arr[1].heap_ptr))
         else: 
             new_l = min(new_val.l, arr[1].l)
-            new_h = max(new_val.h, arr[1].h)
-            return (arr[0], cls.checked(new_l, new_h, heap_ptr=arr_ref))
+            new_h = max(new_val.h, arr[1].h) 
+            return (arr[0], cls.checked(new_l, new_h, index=arr[1].index, heap_ptr=arr_ref))
 
     @classmethod
     def tricky_gt(cls, l_branch, l_no_branch, val1, val2, state): 
