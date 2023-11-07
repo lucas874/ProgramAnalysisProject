@@ -84,7 +84,7 @@ class Interval: # Integers represented as intervals
             return (arr[0], cls.checked(new_l, new_h, heap_ptr=arr_ref))
 
     @classmethod
-    def tricky_gt(cls, l_branch, l_no_branch, val1, val2): 
+    def tricky_gt(cls, l_branch, l_no_branch, val1, val2, state): 
         if val1.index is not None and val2.is_constant():
             new_h = max(val1.h, val2.h+1)
             new_l = max(val1.l, val2.h+1)
@@ -106,7 +106,7 @@ class Interval: # Integers represented as intervals
         return (l_branch, l_no_branch)
 
     @classmethod
-    def tricky_ge(cls, l_branch, l_no_branch, val1, val2): 
+    def tricky_ge(cls, l_branch, l_no_branch, val1, val2, state): 
         if val1.index is not None and val2.is_constant():
             new_h = max(val1.h, val2.h)
             new_l = max(val1.l, val2.h)
@@ -126,7 +126,7 @@ class Interval: # Integers represented as intervals
         return (l_branch, l_no_branch)
     
     @classmethod 
-    def tricky_lt(cls, l_branch, l_no_branch, val1, val2):
+    def tricky_lt(cls, l_branch, l_no_branch, val1, val2, state):
         if val1.index is not None and val2.is_constant():
             high_branch = val2.l-1
             low_branch = min(val1.l, high_branch)
@@ -148,7 +148,7 @@ class Interval: # Integers represented as intervals
         return l_branch, l_no_branch
     
     @classmethod
-    def tricky_le(cls, l_branch, l_no_branch, val1, val2):
+    def tricky_le(cls, l_branch, l_no_branch, val1, val2, state):
         if val1.index is not None and val2.is_constant():
             new_h = max(val1.h, val2.h+1)
             new_l = max(val1.l, val2.h+1)
