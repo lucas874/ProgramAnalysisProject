@@ -233,7 +233,7 @@ class Interpreter:
     def negate(self, b, state, i):
         if b["type"] != "int": raise Exception("Not implemented")
         val = state.stack[-1]
-        new_stack = deepcopy(state.stack[:-1]) + [self.abstraction(-val.h, -val.l, val.index)]
+        new_stack = deepcopy(state.stack[:-1]) + [self.abstraction.negate(val)]
         return [(State.new_stack(state, new_stack), i + 1)]
 
     # array is (length, [items...]). Index arg has to be greater than or eq 0 and less than length to pass 

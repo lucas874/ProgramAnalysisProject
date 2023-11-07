@@ -169,6 +169,10 @@ class Interval: # Integers represented as intervals
             l_branch[val2.index] = cls.checked(new_l, new_h, None)
 
         return l_branch, l_no_branch
+    
+    @classmethod
+    def negate(cls, val):
+        return cls.checked(-val.h, -val.l, index=val.index, heap_ptr=val.heap_ptr)
 
     def is_constant(self):
         return self.l == self.h
