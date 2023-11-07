@@ -228,10 +228,7 @@ class Interpreter:
 
     # array is (length, [items...]). Index arg has to be greater than or eq 0 and less than length to pass 
     def within_bounds(self, arr, index):
-        length, _ = arr
-
-        if type(length) != type(index): raise Exception("Type error")
-        return index < length and index >= self.abstraction.from_integer(0)
+        return self.abstraction.within_bounds(arr, index) 
 
     def newarray(self, b, state, i):
         if b["type"] == "boolean" or b["type"] == "char": raise Exception("Not implemented")
@@ -242,7 +239,9 @@ class Interpreter:
         # Stack should be ..., count -> 
         # becomes ..., arrayref ->  
         count = state.stack[-1]
-        if count < self.abstraction.from_integer(0): return [(State(deepcopy(state.locals), deepcopy(state.stack[:-1]), deepcopy(state.heap), ExceptionType.NegativeArraySizeException), i+1)]
+        
+        # Nice to have but not important come back
+        #if count < self.abstraction.from_integer(0): return [(State(deepcopy(state.locals), deepcopy(state.stack[:-1]), deepcopy(state.heap), ExceptionType.NegativeArraySizeException), i+1)]
 
         # When creating new array we set the heap_ptr of count and items to new_arr_ref. May be redundant but also we may need it. 
         new_arr_ref = "arr" + str(self.arrays_allocated)

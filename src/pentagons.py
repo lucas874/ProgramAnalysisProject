@@ -40,8 +40,7 @@ class Pentagon: # Integers represented as intervals
     @classmethod # This method creates an array. Not sure how to represent the items. preferably a set. look at Formal Methods an Appetizer p. 55. Maybe not important since we focus on bounds.
     def generate_array(cls, arr_ref=None, count=None, init_val=None):
         
-        count, items = Interval.generate_array(arr_ref=arr_ref, count=count, init_val=init_val)
-
+        count, items = Interval.generate_array(arr_ref=arr_ref, count=count, init_val=init_val) 
         return (Pentagon(count, set()), Pentagon(items, set()))
     
     @classmethod  # using definition from two column version of the article. 2008
@@ -153,10 +152,10 @@ class Pentagon: # Integers represented as intervals
 
     def is_constant(self):
         return self.l == self.h
-
-    @classmethod
-    def wide1(cls, v1, v2):
-        return cls.checked(min(v1.l, v2.l), max(v1.h, v2.h)) 
+ 
+    def cpy_set_ptrs(self, index=None, heap_ptr=None):
+        intv = self.intv.checked(self.intv.l, self.intv.h, index, heap_ptr)
+        return Pentagon(intv, deepcopy(self.greater_variables))
     
     def cpy_set_index(self, index):
         return self.checked(self.l, self.h, index)
@@ -207,7 +206,7 @@ class Pentagon: # Integers represented as intervals
             return True 
         if self.intv.heap_ptr is not None and self.intv.heap_ptr in other.greater_variables:
             return True  
-        if self.intv.gt(other.intv): 
+        if self.intv.gt(other.intv, state): 
             return True
         return False        
 
@@ -217,7 +216,7 @@ class Pentagon: # Integers represented as intervals
             return True 
         if self.intv.heap_ptr is not None and self.intv.heap_ptr in other.greater_variables:
             return True  
-        if self.intv.ge(other.intv): 
+        if self.intv.ge(other.intv, state): 
             return True
         return False 
 
@@ -227,7 +226,7 @@ class Pentagon: # Integers represented as intervals
             return True
         if other.intv.heap_ptr is not None and other.intv.heap_ptr in self.greater_variables:
             return True
-        if self.intv.lt(other.intv): 
+        if self.intv.lt(other.intv, state): 
             return True
         return False
 
@@ -237,14 +236,31 @@ class Pentagon: # Integers represented as intervals
             return True
         if other.intv.heap_ptr is not None and other.intv.heap_ptr in self.greater_variables:
             return True
-        if self.intv.le(other.intv):
+        if self.intv.le(other.intv, state):
             return True 
         return False
  
     def eq(self, other, state):
         assert(isinstance(other, Pentagon)) 
-        return self.intv.eq(other.intv)
+        return self.intv.eq(other.intv, state)
     
     def neq(self, other, state):
         assert(isinstance(other, Pentagon))
-        return  self.lt(other) or self.gt(other) or self.intv.neq(other.intv)
+        return  self.lt(other, state) or self.gt(other, state) or self.intv.neq(other.intv, state)
+    
+    @classmethod
+    def within_bounds(cls, arr, index):
+        length, _ = arr
+        if type(length) != type(index): raise Exception("Type error") 
+        
+        # GET RID OF STATE PARAMETER if we do not need it. 
+        return index.lt(length, None) and index.intv >= Interval.from_integer(0)
+        
+        
+        
+       
+       
+       
+
+       
+    

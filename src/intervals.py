@@ -256,6 +256,12 @@ class Interval: # Integers represented as intervals
         assert(isinstance(other, Interval)) 
         return self.__lt__(other) or self.__gt__(other)
     
+    @classmethod
+    def within_bounds(cls, arr, index):
+        length, _ = arr
+        if type(length) != type(index): raise Exception("Type error")
+        return index < length and index >= cls.from_integer(0)
+    
     # corresponds to square bracket ordering. intv1 order intv2 if intv1.l >= intv2.l and intv1.h <= intv2.h. in other words intv1 included in intv2.
     def order(self, other):
         return self.l >= other.l and self.h <= other.h
