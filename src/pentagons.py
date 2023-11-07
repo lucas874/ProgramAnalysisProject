@@ -140,6 +140,14 @@ class Pentagon: # Integers represented as intervals
             low_no_branch = min(high_no_branch, val2.intv.l)
             l_no_branch[val2.intv.index] = Pentagon(Interval.checked(low_no_branch, high_no_branch, None), val2.greater_variables - val1.get_ptrs())
 
+        if val1.intv.index is not None:
+            l_branch[val1.intv.index] = Pentagon(Interval.checked(val1.intv.l, val1.intv.h, None), val1.greater_variables | val2.get_ptrs() | val2.greater_variables) # v1 < v2. add to set accordingly 
+            l_no_branch[val1.intv.index] = Pentagon(Interval.checked(val1.intv.l, val1.intv.h, None), val1.greater_variables - val2.get_ptrs()) # v1 <= v2. remove v2 from v1 set if there
+
+        elif val2.intv.index is not None and val1.intv.is_constant():
+            l_branch[val2.intv.index] = Pentagon(Interval.checked(val2.intv.l, val2.intv.h), val2.greater_variables - val1.get_ptrs()) 
+            l_no_branch[val2.intv.index] = Pentagon(Interval.checked(val2.intv.l, val2.intv.h, None), val2.greater_variables - val1.get_ptrs())
+
         return l_branch, l_no_branch
     
     @classmethod
