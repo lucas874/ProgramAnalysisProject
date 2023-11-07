@@ -201,30 +201,50 @@ class Pentagon: # Integers represented as intervals
 
         return self.checked(min(results), max(results))
     
-    def __gt__(self, other):
+    def gt(self, other, state):
         assert(isinstance(other, Pentagon))
-        pass 
+        if self.intv.index is not None and self.intv.index in other.greater_variables:
+            return True 
+        if self.intv.heap_ptr is not None and self.intv.heap_ptr in other.greater_variables:
+            return True  
+        if self.intv.gt(other.intv): 
+            return True
+        return False        
 
-        
-
-    def __ge__(self, other):
+    def ge(self, other, state):
         assert(isinstance(other, Pentagon)) 
-        return self.l >= other.h
+        if self.intv.index is not None and self.intv.index in other.greater_variables:
+            return True 
+        if self.intv.heap_ptr is not None and self.intv.heap_ptr in other.greater_variables:
+            return True  
+        if self.intv.ge(other.intv): 
+            return True
+        return False 
 
-    def __lt__(self, other): # Two column version p. 186 bottom of page. Actually we need the entire state for this. 
-        assert(isinstance(other, Pentagon))
-        pass 
-        
-
-
-    def __le__(self, other): 
-        assert(isinstance(other, Pentagon))
-        return self.h <= other.l
-
-    # We can't overwrite these because gives trouble when checking if states are equal in merge
-    def eq(self, other):
+    def lt(self, other, state): # Two column version p. 186 bottom of page. Actually we need the entire state for this. No no no talks about ORDER  not this. 
         assert(isinstance(other, Pentagon)) 
-        return self.l == other.l and self.h == other.h and self.is_constant() 
+        if other.intv.index is not None and other.intv.index in self.greater_variables:
+            return True
+        if other.intv.heap_ptr is not None and other.intv.heap_ptr in self.greater_variables:
+            return True
+        if self.intv.lt(other.intv): 
+            return True
+        return False
+
+    def le(self, other, state): 
+        assert(isinstance(other, Pentagon))
+        if other.intv.index is not None and other.intv.index in self.greater_variables:
+            return True
+        if other.intv.heap_ptr is not None and other.intv.heap_ptr in self.greater_variables:
+            return True
+        if self.intv.le(other.intv):
+            return True 
+        return False
+ 
+    def eq(self, other, state):
+        assert(isinstance(other, Pentagon)) 
+        return self.intv.eq(other.intv)
     
-    def neq(self, other): 
-        return self.__lt__(other) or self.__gt__(other)
+    def neq(self, other, state):
+        assert(isinstance(other, Pentagon))
+        return  self.lt(other) or self.gt(other) or self.intv.neq(other.intv)
