@@ -76,28 +76,8 @@ class Pentagon: # Integers represented as intervals
         return (p1.intv.index is not None and p1.intv.index in p2.greater_variables) \
             or (p1.intv.heap_ptr is not None and p1.intv.heap_ptr in p2.greater_variables)
 
-    @classmethod
+    @classmethod # Refactor pleaseeeee
     def tricky_gt(cls, l_branch, l_no_branch, val1, val2, state): 
-        """         if val1.intv.index is not None and val2.intv.is_constant():
-            new_h = max(val1.intv.h, val2.intv.h+1)
-            new_l = max(val1.intv.l, val2.intv.h+1)
-
-            l_branch[val1.intv.index] = Pentagon(Interval.checked(new_l, new_h, None), val1.greater_variables - val2.get_ptrs()) # Reconsider this we need to make sure old value is partly included in new state, applies to bounds. Remove v2 from v1s set
-            
-            new_h = val2.intv.l
-            new_l = min(val1.intv.l, new_h)
-            l_no_branch[val1.intv.index] = Pentagon(Interval.checked(new_l, new_h, None), val1.greater_variables - val2.get_ptrs()) # We have to remove v2 (if it is there) because leq may be equal
-
-        elif val2.intv.index is not None and val1.intv.is_constant(): 
-            new_h = val1.intv.l - 1
-            new_l = min(val2.intv.l, new_h)
-            l_branch[val2.intv.index] = Pentagon(Interval.checked(new_l, new_h, None), val2.greater_variables | val1.get_ptrs() | val1.greater_variables) # Know we know v1 > v2, which means all variables greater than v1 also greater than v2
-            
-            new_h = max(val1.intv.h, val2.intv.h)
-            new_l = min(val1.intv.h, new_h)
-            l_no_branch[val2.intv.index] = Pentagon(Interval.checked(new_l, new_h, None), val2.greater_variables - val1.get_ptrs()) # We have to remove becaue maybe eq
-
-        return (l_branch, l_no_branch) """
         if val1.intv.index is not None:
             val1_branch_set = val1.greater_variables - val2.get_ptrs() # Remove v2 from v1 set if there
             val1_no_branch_set = val1.greater_variables - val2.get_ptrs()   # We have to remove v2 (if it is there) because leq may be equal

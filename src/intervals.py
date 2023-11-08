@@ -85,8 +85,26 @@ class Interval: # Integers represented as intervals
             return (arr[0], cls.checked(new_l, new_h, index=arr[1].index, heap_ptr=arr_ref))
 
     @classmethod
-    def tricky_gt(cls, l_branch, l_no_branch, val1, val2, state): 
+    def adjust_values_gt(cls, val1, val2):  # Return four intervals. Do like we do in the ifs with the values right now.
+        val1_branch =  cls.checked(max(val1.l, val2.h+1), max(val1.h, val2.h+1), None) # val1_branch, val1_no_branch, val2_branch, val2_no_branch. Select which ones to use later 
+        val1_no_branch = cls.checked(min(val1.l, val2.l), val2.l, None)
+        val2_branch = cls.checked(min(val2.l, val1.l-1), val1.l-1)
+        val2_no_branch = cls.checked(min(val1.h, max(val1.h, val2.h)), max(val1.h, val2.h))
+
+        return val1_branch, val1_no_branch, val2_branch, val2_no_branch
+
+
+    @classmethod
+    def tricky_gt(cls, l_branch, l_no_branch, val1, val2, state):
+        val1_branch, val1_no_branch, val2_branch, val2_no_branch = cls.adjust_values_gt(val1, val2)
         if val1.index is not None and val2.is_constant():
+            l_branch[val1.index] = val1_branch
+            l_no_branch[val1.index] = val1_no_branch
+        elif val2.index is not None and val1.is_constant():
+            l_branch[val2.index] = val2_branch
+            l_no_branch[val2.index] = val2_no_branch
+ 
+        """ if val1.index is not None and val2.is_constant():
             new_h = max(val1.h, val2.h+1)
             new_l = max(val1.l, val2.h+1)
             l_branch[val1.index] = cls.checked(new_l, new_h, None)
@@ -102,13 +120,31 @@ class Interval: # Integers represented as intervals
             
             new_h = max(val1.h, val2.h)
             new_l = min(val1.h, new_h)
-            l_no_branch[val2.index] = cls.checked(new_l, new_h, None)
+            l_no_branch[val2.index] = cls.checked(new_l, new_h, None) """
 
         return (l_branch, l_no_branch)
 
     @classmethod
+    def adjust_values_ge(cls, val1, val2):
+        val1_branch = cls.checked(max(val1.l, val2.h), max(val1.h, val2.h))
+        val1_no_branch = cls.checked(min(val1.l, val2.l - 1), val2.l - 1) # Review pls 
+        val2_branch = cls.checked(min(val2.l, val1.l), val1.l)
+        val2_no_branch = cls.checked(max(val2.l, max(val1.h+1, val2.h)), max(val1.h+1, val2.h))
+        return val1_branch, val1_no_branch, val2_branch, val2_no_branch
+
+    @classmethod
     def tricky_ge(cls, l_branch, l_no_branch, val1, val2, state): 
+        val1_branch, val1_no_branch, val2_branch, val2_no_branch = cls.adjust_values_ge(val1, val2)
+
         if val1.index is not None and val2.is_constant():
+            l_branch[val1.index] = val1_branch
+            l_no_branch[val1.index] = val1_no_branch
+        elif val2.index is not None and val1.is_constant():
+            l_branch[val2.index] = val2_branch
+            l_no_branch[val2.index] = val2_no_branch
+
+        return (l_branch, l_no_branch)
+        """ if val1.index is not None and val2.is_constant():
             new_h = max(val1.h, val2.h)
             new_l = max(val1.l, val2.h)
             l_branch[val1.index] = cls.checked(new_l, new_h, None)
@@ -122,13 +158,33 @@ class Interval: # Integers represented as intervals
             l_branch[val2.index] = cls.checked(new_l, new_h, None)
             new_h = max(val1.h+1, val2.h)
             new_l = max(val2.l, new_h)
-            l_no_branch[val2.index] = cls.checked(new_l, new_h, None)
+            l_no_branch[val2.index] = cls.checked(new_l, new_h, None) """
 
-        return (l_branch, l_no_branch)
-    
+        #return (l_branch, l_no_branch)
+
+    @classmethod
+    def adjust_values_lt(cls, val1, val2):
+        val1_branch = cls.checked(min(val1.l, val2.l-1), val2.l-1)
+        val1_no_branch = cls.checked(val2.h, max(val1.h, val2.h))
+        val2_branch = cls.checked(max(val1.h+1, val2.l), max(val1.h+1, val2.h))
+        val2_no_branch = cls.checked(min(min(val1.l, val2.h), val2.l), min(val1.l, val2.h))
+
+        return val1_branch, val1_no_branch, val2_branch, val2_no_branch
+
     @classmethod 
     def tricky_lt(cls, l_branch, l_no_branch, val1, val2, state):
+        val1_branch, val1_no_branch, val2_branch, val2_no_branch = cls.adjust_values_lt(val1, val2)
+
         if val1.index is not None and val2.is_constant():
+            l_branch[val1.index] = val1_branch
+            l_no_branch[val1.index] = val1_no_branch
+        elif val2.index is not None and val1.is_constant():
+            l_branch[val2.index] = val2_branch
+            l_no_branch[val2.index] = val2_no_branch
+
+        return (l_branch, l_no_branch)        
+        
+        """         if val1.index is not None and val2.is_constant():
             high_branch = val2.l-1
             low_branch = min(val1.l, high_branch)
             l_branch[val1.index] = cls.checked(low_branch, high_branch, None) 
@@ -146,11 +202,30 @@ class Interval: # Integers represented as intervals
             low_no_branch = min(high_no_branch, val2.l)
             l_no_branch[val2.index] = cls.checked(low_no_branch, high_no_branch, None)
 
-        return l_branch, l_no_branch
-    
+        return l_branch, l_no_branch """
+
+    @classmethod
+    def adjust_values_le(cls, val1, val2): 
+        val1_branch = cls.checked(min(val1.l, val2.l), val2.l)
+        val1_no_branch = cls.checked(max(val1.l, val2.h+1), max(val1.h, val2.h+1))
+        val2_branch = cls.checked(max(val1.h, val2.l), max(max(val1.h, val2.l), val2.h))
+        val2_no_branch = cls.checked(min(val2.l, val1.l-1), val1.l-1)
+        return val1_branch, val1_no_branch, val2_branch, val2_no_branch
+
     @classmethod
     def tricky_le(cls, l_branch, l_no_branch, val1, val2, state):
+        val1_branch, val1_no_branch, val2_branch, val2_no_branch = cls.adjust_values_le(val1, val2)
+
         if val1.index is not None and val2.is_constant():
+            l_branch[val1.index] = val1_branch
+            l_no_branch[val1.index] = val1_no_branch
+        elif val2.index is not None and val1.is_constant():
+            l_branch[val2.index] = val2_branch
+            l_no_branch[val2.index] = val2_no_branch
+
+        return (l_branch, l_no_branch)        
+               
+        """         if val1.index is not None and val2.is_constant():
             new_h = max(val1.h, val2.h+1)
             new_l = max(val1.l, val2.h+1)
             l_no_branch[val1.index] = cls.checked(new_l, new_h, None)
@@ -168,7 +243,7 @@ class Interval: # Integers represented as intervals
             new_h = max(new_l, val2.h) 
             l_branch[val2.index] = cls.checked(new_l, new_h, None)
 
-        return l_branch, l_no_branch
+        return l_branch, l_no_branch """
     
     @classmethod
     def negate(cls, val):
