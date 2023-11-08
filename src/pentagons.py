@@ -102,51 +102,36 @@ class Pentagon: # Integers represented as intervals
                 l_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_branch_set)
                 l_no_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_no_branch_set)
  
-
-
-
-
-        """ if val1.intv.index is not None:
-            val1_branch_set = val1.greater_variables - val2.get_ptrs() # Remove v2 from v1 set if there
-            val1_no_branch_set = val1.greater_variables - val2.get_ptrs()   # We have to remove v2 (if it is there) because leq may be equal
-            
-            high_branch = val1.intv.h
-            low_branch = val1.intv.l
-            high_no_branch = val1.intv.h
-            low_no_branch = val1.intv.l
-
-            if val2.intv.is_constant():
-                high_branch = max(val1.intv.h, val2.intv.h+1)
-                low_branch = max(val1.intv.l, val2.intv.h+1) # Reconsider this we need to make sure old value is partly included in new state, applies to bounds.
-                high_no_branch = val2.intv.l
-                low_no_branch = min(val1.intv.l, high_no_branch)
-            
-            l_branch[val1.intv.index] = Pentagon(Interval.checked(low_branch, high_branch, None), val1_branch_set) 
-            l_no_branch[val1.intv.index] = Pentagon(Interval.checked(low_no_branch, high_no_branch, None), val1_no_branch_set) 
-
-        elif val2.intv.index is not None: 
-            val2_branch_set = val2.greater_variables | val1.get_ptrs() | val1.greater_variables # Know we know v1 > v2, which means all variables greater than v1 also greater than v2 
-            val2_no_branch_set = val2.greater_variables - val1.get_ptrs() # We have to remove becaue maybe eq
-            
-            high_branch = val2.intv.h
-            low_branch = val2.intv.l
-            high_no_branch = val2.intv.h
-            low_no_branch = val2.intv.l
-
-            if val1.intv.is_constant():
-                high_branch = val1.intv.l - 1
-                low_branch = min(val2.intv.l, high_branch)
-                high_no_branch = max(val1.intv.h, val2.intv.h)
-                low_no_branch = min(val1.intv.h, high_no_branch) 
-            
-            l_branch[val2.intv.index] = Pentagon(Interval.checked(low_branch, high_branch, None), val2_branch_set)
-            l_no_branch[val2.intv.index] = Pentagon(Interval.checked(low_no_branch, high_no_branch, None), val2_no_branch_set)
- """
         return (l_branch, l_no_branch)
 
     @classmethod
-    def tricky_ge(cls, l_branch, l_no_branch, val1, val2, state): 
-        if val1.intv.index is not None and val2.intv.is_constant():
+    def tricky_ge(cls, l_branch, l_no_branch, val1, val2, state):
+        intv1_branch, intv1_no_branch, intv2_branch, intv2_no_branch = Interval.adjust_values_ge(val1.intv, val2.intv)
+        
+        if val1.intv.index is not None:
+            val1_branch_set = val1.greater_variables - val2.get_ptrs() # We can not longer know for sure v1 > v2 so remove v2 from v1s set if it was there 
+            val1_no_branch_set = val1.greater_variables | val2.get_ptrs() | val2.greater_variables # v1 < v2
+            
+            if val2.intv.is_constant():
+                l_branch[val1.intv.index] = Pentagon(intv1_branch, val1_branch_set) 
+                l_no_branch[val1.intv.index] = Pentagon(intv1_no_branch, val1_no_branch_set) 
+            else: 
+                l_branch[val1.intv.index] = Pentagon(deepcopy(val1.intv), val1_branch_set) 
+                l_no_branch[val1.intv.index] = Pentagon(deepcopy(val1.intv), val1_no_branch_set) 
+ 
+        if val2.intv.index is not None:
+            val2_branch_set = val2.greater_variables - val1.get_ptrs() # We can not longer know for sure v1 > v2 so remove from set if it was there 
+            val2_no_branch_set = val2.greater_variables - val1.get_ptrs()
+ 
+            if val1.intv.is_constant():
+                l_branch[val2.intv.index] = Pentagon(intv2_branch, val2_branch_set)
+                l_no_branch[val2.intv.index] = Pentagon(intv2_no_branch, val2_no_branch_set)
+            else:
+                l_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_branch_set)
+                l_no_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_no_branch_set)
+ 
+        return (l_branch, l_no_branch)
+        """ if val1.intv.index is not None and val2.intv.is_constant():
             new_h = max(val1.intv.h, val2.intv.h)
             new_l = max(val1.intv.l, val2.intv.h)
             l_branch[val1.intv.index] = Pentagon(Interval.checked(new_l, new_h, None), val1.greater_variables - val2.get_ptrs()) # We can not longer know for sure v1 > v2 so remove v2 from v1s set if it was there 
@@ -163,11 +148,36 @@ class Pentagon: # Integers represented as intervals
             new_l = max(val2.intv.l, new_h)
             l_no_branch[val2.intv.index] = Pentagon(Interval.checked(new_l, new_h, None), val2.greater_variables - val1.get_ptrs())
 
-        return (l_branch, l_no_branch)
+        return (l_branch, l_no_branch) """
     
     @classmethod 
     def tricky_lt(cls, l_branch, l_no_branch, val1, val2, state):
-        if val1.intv.index is not None and val2.intv.is_constant():
+        intv1_branch, intv1_no_branch, intv2_branch, intv2_no_branch = Interval.adjust_values_lt(val1.intv, val2.intv)
+        
+        if val1.intv.index is not None:
+            val1_branch_set = val1.greater_variables | val2.get_ptrs() | val2.greater_variables # v1 < v2. add to set accordingly
+            val1_no_branch_set = val1.greater_variables - val2.get_ptrs() # v1 <= v2. remove v2 from v1 set if there
+            
+            if val2.intv.is_constant():
+                l_branch[val1.intv.index] = Pentagon(intv1_branch, val1_branch_set) 
+                l_no_branch[val1.intv.index] = Pentagon(intv1_no_branch, val1_no_branch_set) 
+            else: 
+                l_branch[val1.intv.index] = Pentagon(deepcopy(val1.intv), val1_branch_set) 
+                l_no_branch[val1.intv.index] = Pentagon(deepcopy(val1.intv), val1_no_branch_set) 
+ 
+        if val2.intv.index is not None:
+            val2_branch_set = val2.greater_variables - val1.get_ptrs()
+            val2_no_branch_set = val2.greater_variables - val1.get_ptrs()
+ 
+            if val1.intv.is_constant():
+                l_branch[val2.intv.index] = Pentagon(intv2_branch, val2_branch_set)
+                l_no_branch[val2.intv.index] = Pentagon(intv2_no_branch, val2_no_branch_set)
+            else:
+                l_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_branch_set)
+                l_no_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_no_branch_set)
+ 
+        return (l_branch, l_no_branch)
+        """ if val1.intv.index is not None and val2.intv.is_constant():
             high_branch = val2.intv.l-1
             low_branch = min(val1.intv.l, high_branch)
             l_branch[val1.intv.index] = Pentagon(Interval.checked(low_branch, high_branch, None), val1.greater_variables | val2.get_ptrs() | val2.greater_variables) # v1 < v2. add to set accordingly
@@ -193,11 +203,37 @@ class Pentagon: # Integers represented as intervals
             l_branch[val2.intv.index] = Pentagon(Interval.checked(val2.intv.l, val2.intv.h), val2.greater_variables - val1.get_ptrs()) 
             l_no_branch[val2.intv.index] = Pentagon(Interval.checked(val2.intv.l, val2.intv.h, None), val2.greater_variables - val1.get_ptrs())
 
-        return l_branch, l_no_branch
+        return l_branch, l_no_branch """
     
     @classmethod
     def tricky_le(cls, l_branch, l_no_branch, val1, val2, state):
-        if val1.intv.index is not None and val2.intv.is_constant():
+        intv1_branch, intv1_no_branch, intv2_branch, intv2_no_branch = Interval.adjust_values_le(val1.intv, val2.intv)
+        
+        if val1.intv.index is not None:
+            val1_branch_set = val1.greater_variables - val2.get_ptrs()
+            val1_no_branch_set = val1.greater_variables - val2.get_ptrs()
+            
+            if val2.intv.is_constant():
+                l_branch[val1.intv.index] = Pentagon(intv1_branch, val1_branch_set) 
+                l_no_branch[val1.intv.index] = Pentagon(intv1_no_branch, val1_no_branch_set) 
+            else: 
+                l_branch[val1.intv.index] = Pentagon(deepcopy(val1.intv), val1_branch_set) 
+                l_no_branch[val1.intv.index] = Pentagon(deepcopy(val1.intv), val1_no_branch_set) 
+ 
+        if val2.intv.index is not None:
+            val2_branch_set = val2.greater_variables - val1.get_ptrs()
+            val2_no_branch_set = val2.greater_variables | val1.get_ptrs() | val2.greater_variables
+ 
+            if val1.intv.is_constant():
+                l_branch[val2.intv.index] = Pentagon(intv2_branch, val2_branch_set)
+                l_no_branch[val2.intv.index] = Pentagon(intv2_no_branch, val2_no_branch_set)
+            else:
+                l_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_branch_set)
+                l_no_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_no_branch_set)
+ 
+        return (l_branch, l_no_branch)
+
+        """ if val1.intv.index is not None and val2.intv.is_constant():
             new_h = val2.intv.l
             new_l = min(val1.intv.l, new_h)
             l_branch[val1.intv.index] = Pentagon(Interval.checked(new_l, new_h, None), val1.greater_variables - val2.get_ptrs())
@@ -223,7 +259,7 @@ class Pentagon: # Integers represented as intervals
             l_branch[val2.intv.index] = Pentagon(Interval.checked(val2.intv.l, val2.intv.h, None), val2.greater_variables - val1.get_ptrs())
             l_no_branch[val2.intv.index] = Pentagon(Interval.checked(val2.intv.l, val2.intv.h, None), val2.greater_variables | val1.get_ptrs() | val2.greater_variables)
 
-        return l_branch, l_no_branch
+        return l_branch, l_no_branch """
 
     @classmethod
     def negate(cls, val):
