@@ -77,8 +77,36 @@ class Pentagon: # Integers represented as intervals
             or (p1.intv.heap_ptr is not None and p1.intv.heap_ptr in p2.greater_variables)
 
     @classmethod # Refactor pleaseeeee
-    def tricky_gt(cls, l_branch, l_no_branch, val1, val2, state): 
+    def tricky_gt(cls, l_branch, l_no_branch, val1, val2, state):
+        intv1_branch, intv1_no_branch, intv2_branch, intv2_no_branch = Interval.adjust_values_gt(val1.intv, val2.intv)
+        
         if val1.intv.index is not None:
+            val1_branch_set = val1.greater_variables - val2.get_ptrs() # Remove v2 from v1 set if there
+            val1_no_branch_set = val1.greater_variables - val2.get_ptrs()   # We have to remove v2 (if it is there) because leq may be equal
+            
+            if val2.intv.is_constant():
+                l_branch[val1.intv.index] = Pentagon(intv1_branch, val1_branch_set) 
+                l_no_branch[val1.intv.index] = Pentagon(intv1_no_branch, val1_no_branch_set) 
+            else: 
+                l_branch[val1.intv.index] = Pentagon(deepcopy(val1.intv), val1_branch_set) 
+                l_no_branch[val1.intv.index] = Pentagon(deepcopy(val1.intv), val1_no_branch_set) 
+ 
+        if val2.intv.index is not None:
+            val2_branch_set = val2.greater_variables | val1.get_ptrs() | val1.greater_variables # Know we know v1 > v2, which means all variables greater than v1 also greater than v2 
+            val2_no_branch_set = val2.greater_variables - val1.get_ptrs() # We have to remove becaue maybe eq
+ 
+            if val1.intv.is_constant():
+                l_branch[val2.intv.index] = Pentagon(intv2_branch, val2_branch_set)
+                l_no_branch[val2.intv.index] = Pentagon(intv2_no_branch, val2_no_branch_set)
+            else:
+                l_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_branch_set)
+                l_no_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_no_branch_set)
+ 
+
+
+
+
+        """ if val1.intv.index is not None:
             val1_branch_set = val1.greater_variables - val2.get_ptrs() # Remove v2 from v1 set if there
             val1_no_branch_set = val1.greater_variables - val2.get_ptrs()   # We have to remove v2 (if it is there) because leq may be equal
             
@@ -113,7 +141,7 @@ class Pentagon: # Integers represented as intervals
             
             l_branch[val2.intv.index] = Pentagon(Interval.checked(low_branch, high_branch, None), val2_branch_set)
             l_no_branch[val2.intv.index] = Pentagon(Interval.checked(low_no_branch, high_no_branch, None), val2_no_branch_set)
-
+ """
         return (l_branch, l_no_branch)
 
     @classmethod
