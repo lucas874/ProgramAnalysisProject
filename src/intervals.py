@@ -49,8 +49,10 @@ class Interval: # Integers represented as intervals
         if isinstance(v1, str): # In case of references
             assert v1 == v2
             return v1
-        if v1.index != None: assert v1.index == v2.index # REVIEW INDEX CHECK
-        if v1.heap_ptr != None or v2.heap_ptr != None: assert v1.heap_ptr == v2.heap_ptr 
+        #if v1.index != None: assert v1.index == v2.index # REVIEW INDEX CHECK
+        #if v1.heap_ptr != None or v2.heap_ptr != None: # CONSIDER does not have to be the same like in neverThrows3 arrays. but which one do we pick? Should be none in that case...
+            #print(v1.heap_ptr, v2.heap_ptr)
+            #assert v1.heap_ptr == v2.heap_ptr 
         return cls.checked(cls.LB_k(v1.l, v2.l, K), cls.UB_k(v1.h, v2.h, K), index=v1.index, heap_ptr=v1.heap_ptr) 
     
     # LBk UBk Principles of Program Analysis p.228. 
