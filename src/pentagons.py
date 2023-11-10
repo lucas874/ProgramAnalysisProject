@@ -188,18 +188,18 @@ class Pentagon: # Integers represented as intervals
         return Pentagon(intv, deepcopy(self.greater_variables))
     
     def cpy_set_index(self, index):
-        return self.checked(self.l, self.h, index)
+        return Pentagon(intv=Interval.checked(self.intv.l, self.intv.h, index=index, heap_ptr=self.intv.index), greater_variables=deepcopy(self.greater_variables))
     
     def cpy(self):
-        return self.checked(self.l, self.h)
+        return Pentagon(deepcopy(self.intv), deepcopy(self.greater_variables)) 
 
     @classmethod 
     def cpy_ptrs(cls, v1, v2_copy_these_ptrs):
         return Pentagon(Interval.cpy_ptrs(v1.intv, v2_copy_these_ptrs.intv), v1.greater_variables) 
- 
-    def __iter__(self):
-        for elem in [self.l, self.h]:
-            yield elem 
+    
+    #def __iter__(self):
+    #    for elem in [self.l, self.h]:
+    #        yield elem 
 
     def __add__(self, other):
         assert(isinstance(other, Pentagon))        
