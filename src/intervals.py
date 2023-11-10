@@ -87,36 +87,36 @@ class Interval: # Integers represented as intervals
 
     @classmethod
     def adjust_values_gt(cls, val1, val2):  # Return four intervals. Do like we do in the ifs with the values right now.
-        val1_branch =  cls.checked(max(val1.l, val2.h+1), max(val1.h, val2.h+1), None) # val1_branch, val1_no_branch, val2_branch, val2_no_branch. Select which ones to use later 
-        val1_no_branch = cls.checked(min(val1.l, val2.l), val2.l, None)
-        val2_branch = cls.checked(min(val2.l, val1.l-1), val1.l-1)
-        val2_no_branch = cls.checked(min(val1.h, max(val1.h, val2.h)), max(val1.h, val2.h))
+        val1_branch =  cls.checked(max(val1.l, val2.h+1), max(val1.h, val2.h+1), index=val1.index, heap_ptr=val1.heap_ptr) # val1_branch, val1_no_branch, val2_branch, val2_no_branch. Select which ones to use later 
+        val1_no_branch = cls.checked(min(val1.l, val2.l), val2.l, index=val1.index, heap_ptr=val1.heap_ptr)
+        val2_branch = cls.checked(min(val2.l, val1.l-1), val1.l-1, index=val2.index, heap_ptr=val2.heap_ptr)
+        val2_no_branch = cls.checked(min(val1.h, max(val1.h, val2.h)), max(val1.h, val2.h), index=val2.index, heap_ptr=val2.heap_ptr)
 
         return val1_branch, val1_no_branch, val2_branch, val2_no_branch
 
     @classmethod
     def adjust_values_ge(cls, val1, val2):
-        val1_branch = cls.checked(max(val1.l, val2.h), max(val1.h, val2.h))
-        val1_no_branch = cls.checked(min(val1.l, val2.l - 1), val2.l - 1) # Review pls 
-        val2_branch = cls.checked(min(val2.l, val1.l), val1.l)
-        val2_no_branch = cls.checked(max(val2.l, max(val1.h+1, val2.h)), max(val1.h+1, val2.h))
+        val1_branch = cls.checked(max(val1.l, val2.h), max(val1.h, val2.h), index=val1.index, heap_ptr=val1.heap_ptr)
+        val1_no_branch = cls.checked(min(val1.l, val2.l - 1), val2.l - 1, index=val1.index, heap_ptr=val1.heap_ptr) # Review pls 
+        val2_branch = cls.checked(min(val2.l, val1.l), val1.l, index=val2.index, heap_ptr=val2.heap_ptr)
+        val2_no_branch = cls.checked(max(val2.l, max(val1.h+1, val2.h)), max(val1.h+1, val2.h), index=val2.index, heap_ptr=val2.heap_ptr)
         return val1_branch, val1_no_branch, val2_branch, val2_no_branch
 
     @classmethod
     def adjust_values_lt(cls, val1, val2):
-        val1_branch = cls.checked(min(val1.l, val2.l-1), val2.l-1)
-        val1_no_branch = cls.checked(val2.h, max(val1.h, val2.h))
-        val2_branch = cls.checked(max(val1.h+1, val2.l), max(val1.h+1, val2.h))
-        val2_no_branch = cls.checked(min(min(val1.l, val2.h), val2.l), min(val1.l, val2.h))
+        val1_branch = cls.checked(min(val1.l, val2.l-1), val2.l-1, index=val1.index, heap_ptr=val1.heap_ptr)
+        val1_no_branch = cls.checked(val2.h, max(val1.h, val2.h), index=val1.index, heap_ptr=val1.heap_ptr)
+        val2_branch = cls.checked(max(val1.h+1, val2.l), max(val1.h+1, val2.h), index=val2.index, heap_ptr=val2.heap_ptr)
+        val2_no_branch = cls.checked(min(min(val1.l, val2.h), val2.l), min(val1.l, val2.h), index=val2.index, heap_ptr=val2.heap_ptr)
 
         return val1_branch, val1_no_branch, val2_branch, val2_no_branch
 
     @classmethod
     def adjust_values_le(cls, val1, val2): 
-        val1_branch = cls.checked(min(val1.l, val2.l), val2.l)
-        val1_no_branch = cls.checked(max(val1.l, val2.h+1), max(val1.h, val2.h+1))
-        val2_branch = cls.checked(max(val1.h, val2.l), max(max(val1.h, val2.l), val2.h))
-        val2_no_branch = cls.checked(min(val2.l, val1.l-1), val1.l-1)
+        val1_branch = cls.checked(min(val1.l, val2.l), val2.l, index=val1.index, heap_ptr=val1.heap_ptr)
+        val1_no_branch = cls.checked(max(val1.l, val2.h+1), max(val1.h, val2.h+1), index=val1.index, heap_ptr=val1.heap_ptr)
+        val2_branch = cls.checked(max(val1.h, val2.l), max(max(val1.h, val2.l), val2.h), index=val2.index, heap_ptr=val2.heap_ptr)
+        val2_no_branch = cls.checked(min(val2.l, val1.l-1), val1.l-1, index=val2.index, heap_ptr=val2.heap_ptr)
         return val1_branch, val1_no_branch, val2_branch, val2_no_branch
     
     @classmethod
@@ -130,7 +130,6 @@ class Interval: # Integers represented as intervals
                 return cls.adjust_values_lt(val1, val2)
             case "le":
                 return cls.adjust_values_le(val1, val2)
-
 
     @classmethod
     def tricky_comparison(cls, val1, val2, state, new_stack, op):

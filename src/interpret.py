@@ -151,8 +151,7 @@ class Interpreter:
                 if val1.eq(val2, state): return_vals.append((State.new_stack(state, new_stack), i+1)) 
                 else:
                     return_vals = [(State.new_stack(state, new_stack), b["target"]), (State.new_stack(state, new_stack), i+1)] 
-
-        print("\n\nRETURN VALS:", return_vals, "\n\n")
+ 
         return return_vals
 
     
@@ -320,5 +319,16 @@ class Interpreter:
 
         new_stack = deepcopy(state.stack[:-1]) + [state.heap[arr_ref][0]]
         return [(State.new_stack(state, new_stack), i+1)]
+
+    def invoke(self, b, state, i): 
+        if b["access"] == "virtual":
+            method = b["method"]
+            n_args = len(method["args"])
+            args = state.stack[-n_args:]
+            if state.stack[-(n_args+1)] == "java/lang/System" and (method["name"] == "println" or method["name"] == "print"):
+                print(f"\n\n{args}\n\n")
+            
+            return [(State.new_stack(state, deepcopy(state.stack[-(n_args+1):])), i+1)]
+            
 
         

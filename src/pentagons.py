@@ -215,8 +215,9 @@ class Pentagon: # Integers represented as intervals
         
         intv = Interval.meet(self.intv - other.intv, meet_val)
 
+        print("SELF OTHER: ", self, other)
         greater_vars = self.get_ptrs() | self.greater_variables if other.intv.l > 0 else set() 
-
+        print("\n\n IN SUB: ", Pentagon(intv, greater_vars), "\n\n")
         return Pentagon(intv, greater_vars) 
 
     def __mul__(self, other): # Come back and refine
