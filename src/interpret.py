@@ -136,9 +136,7 @@ class Interpreter:
             case "le": 
                 if val1.le(val2, state): return_vals.append((State.new_stack(state, new_stack), b["target"]))
                 elif val1.gt(val2, state): return_vals.append((State.new_stack(state, new_stack), i+1)) 
-                else:  
-                    #l_branch, l_no_branch = self.abstraction.tricky_le(deepcopy(state.locals), deepcopy(state.locals), val1, val2, state)                      
-                    #return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)]
+                else:   
                     state_branch, state_no_branch = self.abstraction.tricky_comparison(val1, val2, state, new_stack, "le")
                     return_vals = [(state_branch, b["target"]), (state_no_branch, i+1)]
  
@@ -154,6 +152,7 @@ class Interpreter:
                 else:
                     return_vals = [(State.new_stack(state, new_stack), b["target"]), (State.new_stack(state, new_stack), i+1)] 
 
+        print("\n\nRETURN VALS:", return_vals, "\n\n")
         return return_vals
 
     

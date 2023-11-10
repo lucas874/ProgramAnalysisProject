@@ -95,75 +95,12 @@ class Interval: # Integers represented as intervals
         return val1_branch, val1_no_branch, val2_branch, val2_no_branch
 
     @classmethod
-    def tricky_gt(cls, l_branch, l_no_branch, val1, val2, state):
-        val1_branch, val1_no_branch, val2_branch, val2_no_branch = cls.adjust_values_gt(val1, val2)
-        if val1.index is not None and val2.is_constant():
-            l_branch[val1.index] = val1_branch
-            l_no_branch[val1.index] = val1_no_branch
-        elif val2.index is not None and val1.is_constant():
-            l_branch[val2.index] = val2_branch
-            l_no_branch[val2.index] = val2_no_branch
-
-        return (l_branch, l_no_branch)
-
-    @classmethod
     def adjust_values_ge(cls, val1, val2):
         val1_branch = cls.checked(max(val1.l, val2.h), max(val1.h, val2.h))
         val1_no_branch = cls.checked(min(val1.l, val2.l - 1), val2.l - 1) # Review pls 
         val2_branch = cls.checked(min(val2.l, val1.l), val1.l)
         val2_no_branch = cls.checked(max(val2.l, max(val1.h+1, val2.h)), max(val1.h+1, val2.h))
         return val1_branch, val1_no_branch, val2_branch, val2_no_branch
-
-    @classmethod
-    def tricky_comparison(cls, val1, val2, state, new_stack, op):
-        locals_branch = deepcopy(state.locals)
-        stack_branch = new_stack 
-        heap_branch = deepcopy(state.heap)
-        locals_no_branch = deepcopy(state.locals)
-        stack_no_branch = deepcopy(new_stack) 
-        heap_no_branch = deepcopy(state.heap)
-
-
-        match op:
-            case "gt":
-                val1_branch, val1_no_branch, val2_branch, val2_no_branch = cls.adjust_values_gt(val1, val2)
-            case "ge":
-                val1_branch, val1_no_branch, val2_branch, val2_no_branch = cls.adjust_values_ge(val1, val2)
-            case "lt":
-                val1_branch, val1_no_branch, val2_branch, val2_no_branch = cls.adjust_values_lt(val1, val2)
-            case "le":
-                val1_branch, val1_no_branch, val2_branch, val2_no_branch = cls.adjust_values_le(val1, val2)
-
-        if val1.index is not None and val2.is_constant():
-            locals_branch[val1.index] = val1_branch
-            locals_no_branch[val1.index] = val1_no_branch
-        elif val2.index is not None and val1.is_constant():
-            locals_branch[val2.index] = val2_branch
-            locals_no_branch[val2.index] = val2_no_branch
-
-        if val1.heap_ptr is not None and val2.is_constant():
-            heap_branch[val1.heap_ptr] = (val1.heap_ptr[0], val1_branch)
-            heap_no_branch[val1.heap_ptr] = (val1.heap_ptr[0], val1_no_branch)
-        elif val2.heap_ptr is not None and val1.is_constant():
-            heap_branch[val2.heap_ptr] = (val2.heap_ptr[0], val2_branch)
-            heap_no_branch[val2.heap_ptr] = (val2.heap_ptr[0], val2_no_branch)
-        print("in tricky comp: ", (State(locals_branch, stack_branch, heap_branch), State(locals_no_branch, stack_no_branch, heap_no_branch)) ) 
-        return (State(locals_branch, stack_branch, heap_branch), State(locals_no_branch, stack_no_branch, heap_no_branch)) 
-
-       
-
-    @classmethod
-    def tricky_ge(cls, l_branch, l_no_branch, val1, val2, state): 
-        val1_branch, val1_no_branch, val2_branch, val2_no_branch = cls.adjust_values_ge(val1, val2)
-
-        if val1.index is not None and val2.is_constant():
-            l_branch[val1.index] = val1_branch
-            l_no_branch[val1.index] = val1_no_branch
-        elif val2.index is not None and val1.is_constant():
-            l_branch[val2.index] = val2_branch
-            l_no_branch[val2.index] = val2_no_branch
-
-        return (l_branch, l_no_branch)
 
     @classmethod
     def adjust_values_lt(cls, val1, val2):
@@ -174,19 +111,6 @@ class Interval: # Integers represented as intervals
 
         return val1_branch, val1_no_branch, val2_branch, val2_no_branch
 
-    @classmethod 
-    def tricky_lt(cls, l_branch, l_no_branch, val1, val2, state):
-        val1_branch, val1_no_branch, val2_branch, val2_no_branch = cls.adjust_values_lt(val1, val2)
-
-        if val1.index is not None and val2.is_constant():
-            l_branch[val1.index] = val1_branch
-            l_no_branch[val1.index] = val1_no_branch
-        elif val2.index is not None and val1.is_constant():
-            l_branch[val2.index] = val2_branch
-            l_no_branch[val2.index] = val2_no_branch
-
-        return (l_branch, l_no_branch) 
-
     @classmethod
     def adjust_values_le(cls, val1, val2): 
         val1_branch = cls.checked(min(val1.l, val2.l), val2.l)
@@ -194,20 +118,47 @@ class Interval: # Integers represented as intervals
         val2_branch = cls.checked(max(val1.h, val2.l), max(max(val1.h, val2.l), val2.h))
         val2_no_branch = cls.checked(min(val2.l, val1.l-1), val1.l-1)
         return val1_branch, val1_no_branch, val2_branch, val2_no_branch
+    
+    @classmethod
+    def adjust_values(cls, val1, val2, op):
+        match op:
+            case "gt":
+                return cls.adjust_values_gt(val1, val2)
+            case "ge":
+                return cls.adjust_values_ge(val1, val2)
+            case "lt":
+                return cls.adjust_values_lt(val1, val2)
+            case "le":
+                return cls.adjust_values_le(val1, val2)
+
 
     @classmethod
-    def tricky_le(cls, l_branch, l_no_branch, val1, val2, state):
-        val1_branch, val1_no_branch, val2_branch, val2_no_branch = cls.adjust_values_le(val1, val2)
+    def tricky_comparison(cls, val1, val2, state, new_stack, op):
+        locals_branch = deepcopy(state.locals)
+        stack_branch = new_stack 
+        heap_branch = deepcopy(state.heap)
+        locals_no_branch = deepcopy(state.locals)
+        stack_no_branch = deepcopy(new_stack) 
+        heap_no_branch = deepcopy(state.heap)
+
+        val1_branch, val1_no_branch, val2_branch, val2_no_branch = cls.adjust_values(val1, val2, op)
 
         if val1.index is not None and val2.is_constant():
-            l_branch[val1.index] = val1_branch
-            l_no_branch[val1.index] = val1_no_branch
+            locals_branch[val1.index] = val1_branch
+            locals_no_branch[val1.index] = val1_no_branch
         elif val2.index is not None and val1.is_constant():
-            l_branch[val2.index] = val2_branch
-            l_no_branch[val2.index] = val2_no_branch
+            locals_branch[val2.index] = val2_branch
+            locals_no_branch[val2.index] = val2_no_branch
 
-        return (l_branch, l_no_branch)        
-    
+        if val1.heap_ptr is not None and val2.is_constant():
+            heap_branch[val1.heap_ptr] = (val1_branch, heap_branch[val1.heap_ptr][1])
+            heap_no_branch[val1.heap_ptr] = (val1_no_branch, heap_branch[val1.heap_ptr][1])
+        elif val2.heap_ptr is not None and val1.is_constant():
+            heap_branch[val2.heap_ptr] = (val2_branch, heap_branch[val2.heap_ptr][1])
+            heap_no_branch[val2.heap_ptr] = (val2_no_branch, heap_branch[val2.heap_ptr][1])
+        
+        return (State(locals_branch, stack_branch, heap_branch), State(locals_no_branch, stack_no_branch, heap_no_branch)) 
+  
     @classmethod
     def negate(cls, val):
         return cls.checked(-val.h, -val.l, index=val.index, heap_ptr=val.heap_ptr)

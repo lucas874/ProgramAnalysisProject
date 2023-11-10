@@ -76,6 +76,99 @@ class Pentagon: # Integers represented as intervals
         return (p1.intv.index is not None and p1.intv.index in p2.greater_variables) \
             or (p1.intv.heap_ptr is not None and p1.intv.heap_ptr in p2.greater_variables)
 
+    @classmethod
+    def adjust_sets_gt(cls, val1, val2):
+        val1_branch_set = val1.greater_variables - val2.get_ptrs() # Remove v2 from v1 set if there
+        val1_no_branch_set = val1.greater_variables - val2.get_ptrs()   # We have to remove v2 (if it is there) because leq may be equal
+        val2_branch_set = val2.greater_variables | val1.get_ptrs() | val1.greater_variables # Know we know v1 > v2, which means all variables greater than v1 also greater than v2 
+        val2_no_branch_set = val2.greater_variables - val1.get_ptrs() # We have to remove becaue maybe eq
+ 
+        return val1_branch_set, val1_no_branch_set, val2_branch_set, val2_no_branch_set
+    
+    @classmethod
+    def adjust_sets_ge(cls, val1, val2):
+        val1_branch_set = val1.greater_variables - val2.get_ptrs() # We can not longer know for sure v1 > v2 so remove v2 from v1s set if it was there 
+        val1_no_branch_set = val1.greater_variables | val2.get_ptrs() | val2.greater_variables # v1 < v2
+        val2_branch_set = val2.greater_variables - val1.get_ptrs() # We can not longer know for sure v1 > v2 so remove from set if it was there 
+        val2_no_branch_set = val2.greater_variables - val1.get_ptrs()
+        return val1_branch_set, val1_no_branch_set, val2_branch_set, val2_no_branch_set
+
+    @classmethod
+    def adjust_sets_lt(cls, val1, val2):
+        val1_branch_set = val1.greater_variables | val2.get_ptrs() | val2.greater_variables # v1 < v2. add to set accordingly
+        val1_no_branch_set = val1.greater_variables - val2.get_ptrs() # v1 <= v2. remove v2 from v1 set if there
+        val2_branch_set = val2.greater_variables - val1.get_ptrs()
+        val2_no_branch_set = val2.greater_variables - val1.get_ptrs()
+        return val1_branch_set, val1_no_branch_set, val2_branch_set, val2_no_branch_set
+    
+    @classmethod
+    def adjust_sets_le(cls, val1, val2):
+        val1_branch_set = val1.greater_variables - val2.get_ptrs()
+        val1_no_branch_set = val1.greater_variables - val2.get_ptrs()       
+        val2_branch_set = val2.greater_variables - val1.get_ptrs()
+        val2_no_branch_set = val2.greater_variables | val1.get_ptrs() | val2.greater_variables
+        return val1_branch_set, val1_no_branch_set, val2_branch_set, val2_no_branch_set
+
+    @classmethod
+    def adjust_sets_comparison(cls, val1, val2, op):
+        match op:
+            case "gt":
+                return cls.adjust_sets_gt(val1, val2)
+            case "ge":
+                return cls.adjust_sets_ge(val1, val2)
+            case "lt":
+                return cls.adjust_sets_lt(val1, val2)
+            case "le":
+                return cls.adjust_sets_le(val1, val2)
+
+    @classmethod
+    def tricky_comparison(cls, val1, val2, state, new_stack, op):
+        locals_branch = deepcopy(state.locals)
+        stack_branch = new_stack 
+        heap_branch = deepcopy(state.heap)
+        locals_no_branch = deepcopy(state.locals)
+        stack_no_branch = deepcopy(new_stack) 
+        heap_no_branch = deepcopy(state.heap)
+        intv1_branch, intv1_no_branch, intv2_branch, intv2_no_branch = Interval.adjust_values(val1.intv, val2.intv, op)
+        val1_branch_set, val1_no_branch_set, val2_branch_set, val2_no_branch_set = cls.adjust_sets_comparison(val1, val2, op)
+        print("HELLO SETS: ", val1_branch_set, val1_no_branch_set, val2_branch_set, val2_no_branch_set) 
+        if val1.intv.index is not None:        
+            if val2.intv.is_constant():
+                locals_branch[val1.intv.index] = Pentagon(intv1_branch, val1_branch_set) 
+                locals_no_branch[val1.intv.index] = Pentagon(intv1_no_branch, val1_no_branch_set) 
+            else: 
+                locals_branch[val1.intv.index] = Pentagon(deepcopy(val1.intv), val1_branch_set) 
+                locals_no_branch[val1.intv.index] = Pentagon(deepcopy(val1.intv), val1_no_branch_set)
+
+        if val1.intv.heap_ptr is not None:
+            if val2.is_constant():
+                heap_branch[val1.intv.heap_ptr] = (Pentagon(intv1_branch, val1_branch_set), heap_branch[val1.intv.heap_ptr][1])
+                heap_no_branch[val1.intv.heap_ptr] = (Pentagon(intv1_no_branch, val1_no_branch_set), heap_branch[val1.intv.heap_ptr][1])
+            else:
+                heap_branch[val1.intv.heap_ptr] = (Pentagon(deepcopy(val1.intv), val1_branch_set), heap_branch[val1.intv.heap_ptr][1])
+                heap_no_branch[val1.intv.heap_ptr] = (Pentagon(deepcopy(val1.intv), val1_no_branch_set), heap_branch[val1.intv.heap_ptr][1])
+ 
+        if val2.intv.index is not None:
+            val2_branch_set = val2.greater_variables | val1.get_ptrs() | val1.greater_variables # Know we know v1 > v2, which means all variables greater than v1 also greater than v2 
+            val2_no_branch_set = val2.greater_variables - val1.get_ptrs() # We have to remove becaue maybe eq
+ 
+            if val1.intv.is_constant():
+                locals_branch[val2.intv.index] = Pentagon(intv2_branch, val2_branch_set)
+                locals_no_branch[val2.intv.index] = Pentagon(intv2_no_branch, val2_no_branch_set)
+            else:
+                locals_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_branch_set)
+                locals_no_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_no_branch_set)       
+
+        if val2.intv.heap_ptr is not None:
+            if val1.is_constant():     
+                heap_branch[val2.intv.heap_ptr] = (Pentagon(intv2_branch, val2_branch_set), heap_branch[val2.intv.heap_ptr][1])
+                heap_no_branch[val2.intv.heap_ptr] = (Pentagon(intv2_no_branch, val2_no_branch_set), heap_no_branch[val2.intv.heap_ptr][1])
+            else:
+                heap_branch[val2.intv.heap_ptr] = (Pentagon(deepcopy(val2.intv), val2_branch_set), heap_branch[val2.intv.heap_ptr][1])
+                heap_no_branch[val2.intv.heap_ptr] = (Pentagon(deepcopy(val2.intv), val2_no_branch_set), heap_no_branch[val2.intv.heap_ptr][1])
+
+        return (State(locals_branch, stack_branch, heap_branch), State(locals_no_branch, stack_no_branch, heap_no_branch))
+
     @classmethod # Refactor pleaseeeee
     def tricky_gt(cls, l_branch, l_no_branch, val1, val2, state):
         intv1_branch, intv1_no_branch, intv2_branch, intv2_no_branch = Interval.adjust_values_gt(val1.intv, val2.intv)
@@ -83,7 +176,7 @@ class Pentagon: # Integers represented as intervals
         if val1.intv.index is not None:
             val1_branch_set = val1.greater_variables - val2.get_ptrs() # Remove v2 from v1 set if there
             val1_no_branch_set = val1.greater_variables - val2.get_ptrs()   # We have to remove v2 (if it is there) because leq may be equal
-            
+
             if val2.intv.is_constant():
                 l_branch[val1.intv.index] = Pentagon(intv1_branch, val1_branch_set) 
                 l_no_branch[val1.intv.index] = Pentagon(intv1_no_branch, val1_no_branch_set) 
@@ -200,7 +293,7 @@ class Pentagon: # Integers represented as intervals
         return ptrs
 
     def is_constant(self):
-        return self.l == self.h
+        return self.intv.is_constant() 
  
     def cpy_set_ptrs(self, index=None, heap_ptr=None):
         intv = self.intv.checked(self.intv.l, self.intv.h, index, heap_ptr)
