@@ -112,41 +112,47 @@ class Interpreter:
                 if val1.gt(val2, state): return_vals.append((State.new_stack(state, new_stack), b["target"])) # return state that is old state with two elements popped from stack jump to target address
                 elif val1.le(val2, state): return_vals.append((State.new_stack(state, new_stack), i+1)) # same but jump to next address 
                 else:
-                    l_branch, l_no_branch = self.abstraction.tricky_gt(deepcopy(state.locals), deepcopy(state.locals), val1, val2, state)
-                    return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)]
-
+                    state_branch, state_no_branch = self.abstraction.tricky_comparison(val1, val2, state, new_stack, "gt")
+                    #l_branch, l_no_branch = self.abstraction.tricky_gt(deepcopy(state.locals), deepcopy(state.locals), val1, val2, state)
+                    #return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)]
+                    return_vals = [(state_branch, b["target"]), (state_no_branch, i+1)]
             case "ge":
                 if val1.ge(val2, state): return_vals.append((State.new_stack(state, new_stack), b["target"]))
                 elif val1.lt(val2, state): return_vals.append((State.new_stack(state, new_stack), i+1))
                 else:
-                    l_branch, l_no_branch = self.abstraction.tricky_ge(deepcopy(state.locals), deepcopy(state.locals), val1, val2, state)                     
-                    return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)] 
-
+                    #l_branch, l_no_branch = self.abstraction.tricky_ge(deepcopy(state.locals), deepcopy(state.locals), val1, val2, state)                     
+                    #return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)] 
+                    state_branch, state_no_branch = self.abstraction.tricky_comparison(val1, val2, state, new_stack, "ge")
+                    return_vals = [(state_branch, b["target"]), (state_no_branch, i+1)]
             case "lt":
                 if val1.lt(val2, state): return_vals.append((State.new_stack(state, new_stack), b["target"]))
                 elif val1.ge(val2, state): return_vals.append((State.new_stack(state, new_stack), i+1)) 
                 else: 
-                    l_branch, l_no_branch = self.abstraction.tricky_lt(deepcopy(state.locals), deepcopy(state.locals), val1, val2, state)                     
-                    return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)]
-
+                    #l_branch, l_no_branch = self.abstraction.tricky_lt(deepcopy(state.locals), deepcopy(state.locals), val1, val2, state)                     
+                    #return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)]
+                    state_branch, state_no_branch = self.abstraction.tricky_comparison(val1, val2, state, new_stack, "lt")
+                    return_vals = [(state_branch, b["target"]), (state_no_branch, i+1)]
+ 
             case "le": 
                 if val1.le(val2, state): return_vals.append((State.new_stack(state, new_stack), b["target"]))
                 elif val1.gt(val2, state): return_vals.append((State.new_stack(state, new_stack), i+1)) 
                 else:  
-                    l_branch, l_no_branch = self.abstraction.tricky_le(deepcopy(state.locals), deepcopy(state.locals), val1, val2, state)                      
-                    return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)]
+                    #l_branch, l_no_branch = self.abstraction.tricky_le(deepcopy(state.locals), deepcopy(state.locals), val1, val2, state)                      
+                    #return_vals = [(State.new_locals_new_stack(state, l_branch, new_stack), b["target"]), (State.new_locals_new_stack(state, l_no_branch, new_stack), i+1)]
+                    state_branch, state_no_branch = self.abstraction.tricky_comparison(val1, val2, state, new_stack, "le")
+                    return_vals = [(state_branch, b["target"]), (state_no_branch, i+1)]
  
             case "eq" | "is":
                 if val1.eq(val2, state): return_vals.append((State.new_stack(state, new_stack), b["target"]))
                 elif val1.neq(val2, state):
                     return_vals.append((State.new_stack(state, new_stack), i+1))
                 else: 
-                    return_vals = [(State.new_stack(state, new_stack), b["target"]), (State.new_stack(state, new_stack), b["target"])]
+                    return_vals = [(State.new_stack(state, new_stack), b["target"]), (State.new_stack(state, new_stack), i+1)]
             case "ne" | "isnot":
                 if val1.neq(val2, state): return_vals.append((State.new_stack(state, new_stack), b["target"]))
                 if val1.eq(val2, state): return_vals.append((State.new_stack(state, new_stack), i+1)) 
                 else:
-                    return_vals = [(State.new_stack(state, new_stack), b["target"]), (State.new_stack(state, new_stack), b["target"])] 
+                    return_vals = [(State.new_stack(state, new_stack), b["target"]), (State.new_stack(state, new_stack), i+1)] 
 
         return return_vals
 
@@ -157,7 +163,7 @@ class Interpreter:
         val1 = state.stack[-2]
         val2 = state.stack[-1] 
         new_stack = deepcopy(state.stack[:-2])
-
+        
         return self.conditional(b, state, val1, val2, new_stack, i) 
   
     def ifz(self, b, state, i): 

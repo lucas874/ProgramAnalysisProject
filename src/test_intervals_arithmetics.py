@@ -38,6 +38,7 @@ def test_Arithmetics_alwaysThrows3():
 
 def test_Arithmetics_alwaysThrows4():
     interpreter = AbstractInterpreter(program, Interval)
+    pretty_print_bytecode(program, ('eu/bogoe/dtu/exceptional/Arithmetics', 'alwaysThrows4'))
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'alwaysThrows4'))
     
     assert final_states[-1].exception == ExceptionType.ArithmeticException
