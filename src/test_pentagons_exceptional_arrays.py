@@ -53,21 +53,23 @@ def test_Arrays_itDependsOnLattice1():
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arrays', 'dependsOnLattice1'))
     
     # Fails. But a perfectly precise abstraction would not. 
-    expected = State({0: 'arr_arg0', 1: Pentagon(l=0, h=2147483647, index=None)}, [Interval(l=-2147483648, h=2147483647, index=None)], {'arr_arg0': (Interval(l=0, h=2147483647, index=None), Interval(l=-2147483648, h=2147483647, index=None))})
+    expected = State({0: 'arr_arg0', 1: Pentagon(intv=Interval(l=0, h=2147483647, index=1, heap_ptr=None), greater_variables={'arr_arg0'})}, [Pentagon(intv=Interval(l=0, h=0, index=None, heap_ptr='arr_arg0'), greater_variables=set())], {'arr_arg0': (Pentagon(intv=Interval(l=0, h=2147483647, index=None, heap_ptr='arr_arg0'), greater_variables=set()), Pentagon(intv=Interval(l=0, h=0, index=None, heap_ptr='arr_arg0'), greater_variables=set()))}, exception=None) 
     assert final_states[-1] == expected
 
 def test_Arrays_itDependsOnLattice2():
     interpreter = AbstractInterpreter(program, Pentagon)
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arrays', 'dependsOnLattice2'))
     
-    expected = State({0: 'arr_arg0', 1: Pentagon(l=0, h=0, index=None)}, [Interval(l=-2147483648, h=2147483647, index=None)], {'arr_arg0': (Interval(l=0, h=2147483647, index=None), Interval(l=-2147483648, h=2147483647, index=None))})
+    expected = State({0: 'arr_arg0', 1: Pentagon(Interval(l=0, h=0), set())}, [Pentagon(intv=Interval(l=0, h=0, index=None, heap_ptr='arr_arg0'), greater_variables=set())], {'arr_arg0': (Pentagon(Interval(l=1, h=2147483647, index=None, heap_ptr="arr_arg0"), set()), Pentagon(Interval(l=0, h=0, index=None, heap_ptr="arr_arg0"), set()))}, exception=None)
     assert final_states[-1] == expected
 
 def test_Arrays_itDependsOnLattice3():
     interpreter = AbstractInterpreter(program, Pentagon)
     
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arrays', 'dependsOnLattice3'))
-    expected = State({0: 'arr_arg0'}, [], {'arr_arg0': (Pentagon(l=0, h=2147483647, index=None), Interval(l=-2147483648, h=2147483647, index=None))}) 
+    #expected = [State(locals={0: 'arr_arg0'}, stack=[], heap={'arr_arg0': (Pentagon(intv=Interval(l=1, h=2147483647, index=None, heap_ptr='arr_arg0'), greater_variables=set()), Pentagon(intv=Interval(l=0, h=0, index=None, heap_ptr='arr_arg0'), greater_variables=set()))}, exception=None)] 
+    expected = State({0: 'arr_arg0'}, stack=[], heap={'arr_arg0': (Pentagon(intv=Interval(l=1, h=2147483647, index=None, heap_ptr='arr_arg0'), greater_variables=set()), Pentagon(intv=Interval(l=0, h=0, index=None, heap_ptr='arr_arg0'), greater_variables=set()))}, exception=None) 
+    
     assert final_states[-1] == expected
 """
 def test_Arrays_itDependsOnLattice4():

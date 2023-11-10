@@ -325,10 +325,13 @@ class Interpreter:
             method = b["method"]
             n_args = len(method["args"])
             args = state.stack[-n_args:]
+            
             if state.stack[-(n_args+1)] == "java/lang/System" and (method["name"] == "println" or method["name"] == "print"):
                 print(f"\n\n{args}\n\n")
             
-            return [(State.new_stack(state, deepcopy(state.stack[-(n_args+1):])), i+1)]
+            return [(State.new_stack(state, deepcopy(state.stack[:-(n_args+2)])), i+1)]
+        else:
+            raise Exception("Not implemented")
             
 
         

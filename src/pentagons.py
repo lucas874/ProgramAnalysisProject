@@ -204,7 +204,7 @@ class Pentagon: # Integers represented as intervals
     def __add__(self, other):
         assert(isinstance(other, Pentagon))        
         if other.intv.is_negative():
-            return self.__sub__(other)
+            return self.__sub__(Pentagon(intv=Interval.negate(other.intv), greater_variables=other.greater_variables))
         intv = self.intv + other.intv # Come back and refine maybe
         return Pentagon(intv, set())
         
@@ -214,10 +214,9 @@ class Pentagon: # Integers represented as intervals
         else: meet_val = Interval(INT_MIN, INT_MAX)  
         
         intv = Interval.meet(self.intv - other.intv, meet_val)
-
-        print("SELF OTHER: ", self, other)
+ 
         greater_vars = self.get_ptrs() | self.greater_variables if other.intv.l > 0 else set() 
-        print("\n\n IN SUB: ", Pentagon(intv, greater_vars), "\n\n")
+        
         return Pentagon(intv, greater_vars) 
 
     def __mul__(self, other): # Come back and refine

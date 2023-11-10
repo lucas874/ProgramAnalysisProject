@@ -17,7 +17,7 @@ class AbstractInterpreter:
         def print_state(self, bytecode):
             for i, (inst, state) in enumerate(zip(bytecode, self.states)):
                 if state is None: print(f"{inst}: {state}")
-                else: print(f"i={i}: {inst['opr']}: locals: {state.locals} stack: {state.stack} heap: {state.heap}: exception: {state.exception}")
+                else: print(f"i={i}: {inst['opr']}: locals: {state.locals} stack: {state.stack} heap: {state.heap} exception: {state.exception}")
 
         def analyse(self, m): # Expect m to be (class, method)
             locals, heap = self.get_args(m)
