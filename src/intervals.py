@@ -99,7 +99,7 @@ class Interval: # Integers represented as intervals
         val1_branch = cls.checked(max(val1.l, val2.h), max(val1.h, val2.h), index=val1.index, heap_ptr=val1.heap_ptr)
         val1_no_branch = cls.checked(min(val1.l, val2.l - 1), val2.l - 1, index=val1.index, heap_ptr=val1.heap_ptr) # Review pls 
         val2_branch = cls.checked(min(val2.l, val1.l), val1.l, index=val2.index, heap_ptr=val2.heap_ptr)
-        val2_no_branch = cls.checked(max(val2.l, max(val1.h+1, val2.h)), max(val1.h+1, val2.h), index=val2.index, heap_ptr=val2.heap_ptr)
+        val2_no_branch = cls.checked(max(val2.l, val1.h+1), max(val1.h+1, val2.h), index=val2.index, heap_ptr=val2.heap_ptr)
         return val1_branch, val1_no_branch, val2_branch, val2_no_branch
 
     @classmethod
