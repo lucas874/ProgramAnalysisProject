@@ -33,7 +33,8 @@ class AbstractInterpreter:
                 i = self.worklist.pop()
                 bc = bytecode[i] 
                 print(i, bc)
-                for new_state, i_ in self.abstract_step(bc, i): 
+                for new_state, i_ in self.abstract_step(bc, i):
+                    print(f"\n\n{bc}\n{new_state.locals}\n{new_state.heap}\n\n")
                     self.merge_fwd(i_, new_state, int_constants)
                     if new_state.is_exception_state(): self.worklist = []  # Stop intepretation if exception?
                     if self.debug: 

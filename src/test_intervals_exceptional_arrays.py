@@ -6,7 +6,7 @@ from utilities import *
 from state import *
 
 # always... should be successful. dependsOnLattice.. should not
-
+# should all be successful
 @pytest.fixture(scope="session", autouse=True)
 def setup():
     global program

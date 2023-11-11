@@ -14,7 +14,8 @@ def main():
         sys.exit(1)
 
     # read the json files  and get classes
-    json_file_path = "../course-02242-examples/"
+    #json_file_path = "../course-02242-examples/"
+    json_file_path = "../exceptional/"
     cls_json_files = extract_files_by_extension(json_file_path, "json")
     classes = get_classes(cls_json_files)
      
@@ -24,7 +25,8 @@ def main():
     interpreter = AbstractInterpreter(program, abstraction, debug=True)
     class_ = sys.argv[1]
     method = sys.argv[2] 
-    
+    for k in program.bytecode:
+        print(k) 
     pretty_print_bytecode(program,(class_, method))
     interpreter.analyse((class_, method)) 
 

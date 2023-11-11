@@ -99,7 +99,8 @@ class Interpreter:
         new_val = new_l[idx] + self.abstraction.from_integer(b["amount"])
         new_val = self.abstraction.cpy_ptrs(new_val, new_l[idx])
         new_l[idx] = new_val
-        
+        print("NEW VAL: ", new_val)
+        print("OLD VAL: ", state.locals[idx]) 
         return [(State.new_locals(state, new_l), i+1)]
 
     def goto(self, b, state, i): 
