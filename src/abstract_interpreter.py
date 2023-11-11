@@ -30,12 +30,15 @@ class AbstractInterpreter:
             self.states[0] = State(locals, stack, heap)
              
             while self.worklist:# and not self.exceptions():
+                print("WORKLIST: ", self.worklist)
                 i = self.worklist.pop()
                 bc = bytecode[i] 
                 print(i, bc)
                 for new_state, i_ in self.abstract_step(bc, i):
                     self.merge_fwd(i_, new_state, int_constants)
-                    if new_state.is_exception_state(): self.worklist = []  # Stop intepretation if exception?
+                    if new_state.is_exception_state(): 
+                        print("EXCEPTION: ", new_state.exception)
+                        self.worklist = []  # Stop intepretation if exception?
                     if self.debug: 
                         self.print_state(bytecode) 
                         print("\n\n")
@@ -49,8 +52,8 @@ class AbstractInterpreter:
             return self.abstraction.from_type(param["type"]["base"])
 
         # When generating array, set count to top like with integer values. implementation of comparison for abstraction should take care of rest 
-        def generate_array(self, arr_ref): 
-            return self.abstraction.generate_array(arr_ref)
+        def generate_array(self, arr_ref, init_val=None): 
+            return self.abstraction.generate_array(arr_ref, init_val=init_val)
 
         def get_args(self, m):
             query = f"methods[?name=='{m[1]}']"
@@ -62,7 +65,7 @@ class AbstractInterpreter:
                 if "base" in p["type"]: locals[i] = self.generate_value(p)
                 elif "kind" in p["type"] and p["type"]["kind"] == "array":
                     arr_ref = f"arr_arg{i}"
-                    arr = self.generate_array(arr_ref)
+                    arr = self.generate_array(arr_ref, init_val=self.abstraction.from_type("int"))
                     locals[i] = arr_ref
                     heap[arr_ref] = arr
             

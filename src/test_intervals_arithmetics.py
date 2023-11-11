@@ -111,8 +111,7 @@ def test_Arithmetics_neverThrows5():
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'neverThrows5'))
      
     expected = State({0: Interval(l=1, h=2147483647, index=0), 1: Interval(l=-2147483648, h=2147483647, index=None)}, [Interval(l=-2147483648, h=2147483647, index=None)], {})
-    print("FINAL: ", final_states[-1])
-    print("EXPECTED: ", expected)
+     
     assert final_states[-1] == expected 
 
 def test_Arithmetics_speedVsPrecision():
