@@ -30,14 +30,14 @@ class AbstractInterpreter:
             self.states[0] = State(locals, stack, heap)
              
             while self.worklist:# and not self.exceptions():
-                print("WORKLIST: ", self.worklist)
+                #print("WORKLIST: ", self.worklist)
                 i = self.worklist.pop()
                 bc = bytecode[i] 
                 print(i, bc)
                 for new_state, i_ in self.abstract_step(bc, i):
                     self.merge_fwd(i_, new_state, int_constants)
                     if new_state.is_exception_state(): 
-                        print("EXCEPTION: ", new_state.exception)
+                        #print("EXCEPTION: ", new_state.exception)
                         self.worklist = []  # Stop intepretation if exception?
                     if self.debug: 
                         self.print_state(bytecode) 
@@ -46,6 +46,9 @@ class AbstractInterpreter:
             if self.debug:
                 print("Final state: ")
                 self.print_state(bytecode)
+                for i, s in enumerate(self.states):
+                    if s is not None and s.is_exception_state():
+                        print(f"EXCEPTION {s.exception} AT: {i}")
             return self.states
 
         def generate_value(self, param):
