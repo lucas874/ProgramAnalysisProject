@@ -99,8 +99,7 @@ class Interpreter:
         new_val = new_l[idx] + self.abstraction.from_integer(b["amount"])
         new_val = self.abstraction.cpy_ptrs(new_val, new_l[idx])
         new_l[idx] = new_val
-        print("NEW VAL: ", new_val)
-        print("OLD VAL: ", state.locals[idx]) 
+        
         return [(State.new_locals(state, new_l), i+1)]
 
     def goto(self, b, state, i): 
@@ -296,10 +295,10 @@ class Interpreter:
 
         new_stack = deepcopy(state.stack[:-2])
 
-        # Check bounds and go to exception state if out of bounds
-        if not self.within_bounds(state.heap[arr_ref], index): return [(State(deepcopy(state.locals), new_stack, deepcopy(state.heap), ExceptionType.IndexOutOfBoundsException), i+1)]
+        # Check bounds and go to exception state if out of bounds. push exception to state to avoid problems merging stacks w different length.... weird fix. But we finish right after anyway
+        if not self.within_bounds(state.heap[arr_ref], index): return [(State(deepcopy(state.locals), new_stack + [ExceptionType.IndexOutOfBoundsException], deepcopy(state.heap), ExceptionType.IndexOutOfBoundsException), i+1)]
 
-        # Array is tuple (count, items). Items represented as a single value of the astraction
+        # Array is tuple (count, items). Items represented as a single value of the astraction 
         new_stack += [state.heap[arr_ref][1]]
 
         return [(State.new_stack(state, new_stack), i+1)]
