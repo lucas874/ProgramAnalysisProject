@@ -64,12 +64,15 @@ class State: # State consists of local variables, operand stack and heap
         merged = {}
  
         for i in union:
+            if i == 2 and i in old_locals and i in new_locals:
+                print("OLD AND NEW locals[2]: ", old_locals[2], new_locals[2])
             if i in old_locals and new_locals:
                 merged[i] = wide(old_locals[i], new_locals[i], *args)
             elif i in old_locals:
                 merged[i] = deepcopy(old_locals[i])
             else: 
                 merged[i] = deepcopy(new_locals[i])
+            print("MERGED LOCALS[2]: ", merged[i])
         
         return merged 
 

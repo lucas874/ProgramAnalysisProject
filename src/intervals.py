@@ -269,3 +269,7 @@ class Interval: # Integers represented as intervals
     # corresponds to square bracket ordering. intv1 order intv2 if intv1.l >= intv2.l and intv1.h <= intv2.h. in other words intv1 included in intv2.
     def order(self, other):
         return self.l >= other.l and self.h <= other.h
+    
+    @classmethod
+    def clean(cls, val):
+        return cls.checked(val.l, val.h, index=None, heap_ptr=val.heap_ptr) 

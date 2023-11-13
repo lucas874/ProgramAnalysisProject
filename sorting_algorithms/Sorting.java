@@ -46,6 +46,18 @@ public class Sorting {
         }
     }
 
+    public static void insertionSort1(int[] array) {
+        for (int i = 1; i < array.length; i++) { 
+            int j = i;
+            while(j > 0 && array[j-1] > array[j]) {
+                int temp = array[j];
+                array[j] = array[j-1];
+                array[j-1] = temp;
+                j--;
+            } 
+        }
+    }
+
     public static void selectionSort(int[] array) {
         for (int i = 0; i < array.length; i++) {
             int min = array[i];
@@ -94,7 +106,7 @@ public class Sorting {
         int[] myNums2 = {1432, 2023, 3, 40};
         int[] myNums3 = {1432, 2023, 3, 40};
         bubbleSort1(myNums1);
-        insertionSort(myNums2);
+        insertionSort1(myNums2);
         selectionSort(myNums3);
 
         printArray(myNums1);

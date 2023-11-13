@@ -25,8 +25,8 @@ def main():
     interpreter = AbstractInterpreter(program, abstraction, debug=True)
     class_ = sys.argv[1]
     method = sys.argv[2] 
-    for k in program.bytecode:
-        print(k) 
+    #for k in program.bytecode:
+    #    print(k) 
     pretty_print_bytecode(program,(class_, method))
     interpreter.analyse((class_, method)) 
 

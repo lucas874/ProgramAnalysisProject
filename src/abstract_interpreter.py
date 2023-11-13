@@ -34,7 +34,7 @@ class AbstractInterpreter:
                         print(f"\t\t{elem}")
 
                     print("\tHeap:")
-                    for k, v in state.locals.items():
+                    for k, v in state.heap.items():
                         print(f"\t\t{k}: {v}")
 
         def analyse(self, m): # Expect m to be (class, method)
