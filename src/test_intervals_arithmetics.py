@@ -88,7 +88,7 @@ def test_Arithmetics_neverThrows2():
     interpreter = AbstractInterpreter(program, Interval) 
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'neverThrows2'))
      
-    expected = State({0: Interval(l=1, h=INT_MAX, index=0)}, [Interval(l=0, h=0, index=None)], {})
+    expected = State({0: Interval(l=1, h=INT_MAX)}, [Interval(l=0, h=0, index=None)], {})
     
     assert final_states[-1] == expected
 
@@ -110,7 +110,7 @@ def test_Arithmetics_neverThrows5():
     interpreter = AbstractInterpreter(program, Interval) 
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'neverThrows5'))
      
-    expected = State({0: Interval(l=1, h=2147483647, index=0), 1: Interval(l=-2147483648, h=2147483647, index=None)}, [Interval(l=-2147483648, h=2147483647, index=None)], {})
+    expected = State({0: Interval(l=1, h=2147483647), 1: Interval(l=-2147483648, h=2147483647, index=None)}, [Interval(l=-2147483648, h=2147483647, index=None)], {})
      
     assert final_states[-1] == expected 
 
