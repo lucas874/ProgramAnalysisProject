@@ -1,8 +1,13 @@
+package eu.bogoe.dtu.exceptional;
+
+import dtu.compute.exec.Case;
 
 
 // Sorting algorithms taken from: https://stackabuse.com/sorting-algorithms-in-java/
 
 public class Sorting {
+    
+    @Case
     public static void bubbleSort(int[] array) {
         boolean sorted = false;
         int temp;
@@ -19,6 +24,8 @@ public class Sorting {
         }
     }
 
+    // Not from that site. But lends itself more to our analysis. + does not use booleans
+    @Case
     public static void bubbleSort1(int[] array) { 
         int temp;
         for (int i = 0; i < array.length; i++) { 
@@ -31,7 +38,8 @@ public class Sorting {
             }
         }
     }
-
+    
+    @Case
     public static void insertionSort(int[] array) {
         for (int i = 1; i < array.length; i++) {
             int current = array[i];
@@ -46,6 +54,7 @@ public class Sorting {
         }
     }
 
+    @Case
     public static void selectionSort(int[] array) {
         for (int i = 0; i < array.length; i++) {
             int min = array[i];
@@ -64,6 +73,7 @@ public class Sorting {
     }
     
     // not from that site. return index or -1
+    @Case
     public static int binarySearch(int[] array, int target) {
         int low = 0;
         int high = array.length - 1;
@@ -106,4 +116,4 @@ public class Sorting {
         
     }
 
-} 
+}

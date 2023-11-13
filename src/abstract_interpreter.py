@@ -19,6 +19,24 @@ class AbstractInterpreter:
                 if state is None: print(f"{inst}: {state}")
                 else: print(f"i={i}: {inst['opr']}: locals: {state.locals} stack: {state.stack} heap: {state.heap} exception: {state.exception}")
 
+        def prettier_print_state(self, bytecode):
+             for i, (inst, state) in enumerate(zip(bytecode, self.states)):
+                if state is None: print(f"\t{inst}: {state}")
+                else: 
+                    print(f"i={i}: {inst['opr']}:")
+                    print("\tLocals:")
+                    for k, v in state.locals.items():
+                        print(f"\t\tlocals[{k}]: {v}")
+                    
+                    print("\tStack:")
+                    print("\t\t-> Top of stack <-")
+                    for i, elem in enumerate(state.stack[::-1]):
+                        print(f"\t\t{elem}")
+
+                    print("\tHeap:")
+                    for k, v in state.locals.items():
+                        print(f"\t\t{k}: {v}")
+
         def analyse(self, m): # Expect m to be (class, method)
             locals, heap = self.get_args(m)
             stack = []
@@ -40,12 +58,12 @@ class AbstractInterpreter:
                         #print("EXCEPTION: ", new_state.exception)
                         self.worklist = []  # Stop intepretation if exception?
                     if self.debug: 
-                        self.print_state(bytecode) 
+                        self.prettier_print_state(bytecode) 
                         print("\n\n")
 
             if self.debug:
                 print("Final state: ")
-                self.print_state(bytecode)
+                self.prettier_print_state(bytecode)
                 for i, s in enumerate(self.states):
                     if s is not None and s.is_exception_state():
                         print(f"EXCEPTION {s.exception} AT: {i}")
