@@ -137,16 +137,16 @@ class Pentagon: # Integers represented as intervals
                 locals_branch[val1.intv.index] = Pentagon(intv1_branch, val1_branch_set) 
                 locals_no_branch[val1.intv.index] = Pentagon(intv1_no_branch, val1_no_branch_set) 
             else: 
-                locals_branch[val1.intv.index] = Pentagon(deepcopy(val1.intv), val1_branch_set) 
-                locals_no_branch[val1.intv.index] = Pentagon(deepcopy(val1.intv), val1_no_branch_set)
+                locals_branch[val1.intv.index] = Pentagon(Interval.clean(val1.intv), val1_branch_set) 
+                locals_no_branch[val1.intv.index] = Pentagon(Interval.clean(val1.intv), val1_no_branch_set)
 
         if val1.intv.heap_ptr is not None:
             if val2.is_constant():
                 heap_branch[val1.intv.heap_ptr] = (Pentagon(intv1_branch, val1_branch_set), heap_branch[val1.intv.heap_ptr][1])
                 heap_no_branch[val1.intv.heap_ptr] = (Pentagon(intv1_no_branch, val1_no_branch_set), heap_branch[val1.intv.heap_ptr][1])
             else:
-                heap_branch[val1.intv.heap_ptr] = (Pentagon(deepcopy(val1.intv), val1_branch_set), heap_branch[val1.intv.heap_ptr][1])
-                heap_no_branch[val1.intv.heap_ptr] = (Pentagon(deepcopy(val1.intv), val1_no_branch_set), heap_branch[val1.intv.heap_ptr][1])
+                heap_branch[val1.intv.heap_ptr] = (Pentagon(Interval.clean(val1.intv), val1_branch_set), heap_branch[val1.intv.heap_ptr][1])
+                heap_no_branch[val1.intv.heap_ptr] = (Pentagon(Interval.clean(val1.intv), val1_no_branch_set), heap_branch[val1.intv.heap_ptr][1])
  
         if val2.intv.index is not None:
             val2_branch_set = val2.greater_variables | val1.get_ptrs() | val1.greater_variables # Know we know v1 > v2, which means all variables greater than v1 also greater than v2 
@@ -156,16 +156,16 @@ class Pentagon: # Integers represented as intervals
                 locals_branch[val2.intv.index] = Pentagon(intv2_branch, val2_branch_set)
                 locals_no_branch[val2.intv.index] = Pentagon(intv2_no_branch, val2_no_branch_set)
             else:
-                locals_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_branch_set)
-                locals_no_branch[val2.intv.index] = Pentagon(deepcopy(val2.intv), val2_no_branch_set)       
+                locals_branch[val2.intv.index] = Pentagon(Interval.clean(val2.intv), val2_branch_set)
+                locals_no_branch[val2.intv.index] = Pentagon(Interval.clean(val2.intv), val2_no_branch_set)       
 
         if val2.intv.heap_ptr is not None:
             if val1.is_constant():     
                 heap_branch[val2.intv.heap_ptr] = (Pentagon(intv2_branch, val2_branch_set), heap_branch[val2.intv.heap_ptr][1])
                 heap_no_branch[val2.intv.heap_ptr] = (Pentagon(intv2_no_branch, val2_no_branch_set), heap_no_branch[val2.intv.heap_ptr][1])
             else:
-                heap_branch[val2.intv.heap_ptr] = (Pentagon(deepcopy(val2.intv), val2_branch_set), heap_branch[val2.intv.heap_ptr][1])
-                heap_no_branch[val2.intv.heap_ptr] = (Pentagon(deepcopy(val2.intv), val2_no_branch_set), heap_no_branch[val2.intv.heap_ptr][1])
+                heap_branch[val2.intv.heap_ptr] = (Pentagon(Interval.clean(val2.intv), val2_branch_set), heap_branch[val2.intv.heap_ptr][1])
+                heap_no_branch[val2.intv.heap_ptr] = (Pentagon(Interval.clean(val2.intv), val2_no_branch_set), heap_no_branch[val2.intv.heap_ptr][1])
 
         return (State(locals_branch, stack_branch, heap_branch), State(locals_no_branch, stack_no_branch, heap_no_branch))
 
