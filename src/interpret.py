@@ -82,8 +82,7 @@ class Interpreter:
         idx = b["index"]
         # hope I understood it correctly. Think we remove the element from the operand stack too.
         new_stack = deepcopy(state.stack)
-        val = self.abstraction.clean(new_stack.pop()) # Remove index if set
-        #val = val.cpy_set_ptrs(index=idx) # CONSIDER THIS
+        val = self.abstraction.clean(new_stack.pop()) # Remove index if set 
 
         new_locals = deepcopy(state.locals)
         new_locals[idx] = val 
@@ -97,18 +96,8 @@ class Interpreter:
          
         idx = b["index"]
         new_l = deepcopy(state.locals)
-        print("===")
-        print("HELLOOOOO dsjaldjsal", self.abstraction.from_integer(b["amount"]).intv.is_negative())
-        print(self.abstraction.from_integer(b["amount"]))
-        print("NEGATED: ", Interval.negate(self.abstraction.from_integer(b["amount"]).intv))
-        other = self.abstraction.from_integer(b["amount"]) 
-        print(Pentagon(intv=Interval.negate(other.intv), greater_variables=other.greater_variables))
-        print(new_l[idx])
         new_val = new_l[idx] + self.abstraction.from_integer(b["amount"])
-        print(new_val)
-        new_val = self.abstraction.cpy_ptrs(new_val, new_l[idx])
-        print( new_val)
-        print("++++++++")
+        new_val = self.abstraction.cpy_ptrs(new_val, new_l[idx]) 
         new_l[idx] = new_val
         
         return [(State.new_locals(state, new_l), i+1)]

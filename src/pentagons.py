@@ -194,8 +194,7 @@ class Pentagon: # Integers represented as intervals
         return Pentagon(deepcopy(self.intv), deepcopy(self.greater_variables)) 
 
     @classmethod 
-    def cpy_ptrs(cls, v1, v2_copy_these_ptrs):
-        print(v1.greater_variables)
+    def cpy_ptrs(cls, v1, v2_copy_these_ptrs): 
         return Pentagon(Interval.cpy_ptrs(v1.intv, v2_copy_these_ptrs.intv), v1.greater_variables) 
     
     #def __iter__(self):
@@ -216,8 +215,7 @@ class Pentagon: # Integers represented as intervals
         
         intv = Interval.meet(self.intv - other.intv, meet_val)
  
-        greater_vars = self.get_ptrs() | self.greater_variables if other.intv.l > 0 else set() 
-        print("IN SUB: ", self.get_ptrs(), self.greater_variables) 
+        greater_vars = self.get_ptrs() | self.greater_variables if other.intv.l > 0 else set()  
         return Pentagon(intv, greater_vars) 
 
     def __mul__(self, other): # Come back and refine
@@ -300,7 +298,8 @@ class Pentagon: # Integers represented as intervals
         
     @classmethod
     def clean(cls, val):
-        return Pentagon(intv=Interval.clean(val.intv), greater_variables=val.greater_variables)
+        if isinstance(val, Pentagon): return Pentagon(intv=Interval.clean(val.intv), greater_variables=val.greater_variables)
+        else: return val
         
        
        

@@ -272,4 +272,5 @@ class Interval: # Integers represented as intervals
     
     @classmethod
     def clean(cls, val):
-        return cls.checked(val.l, val.h, index=None, heap_ptr=val.heap_ptr) 
+        if isinstance(val, Interval): return cls.checked(val.l, val.h, index=None, heap_ptr=val.heap_ptr)
+        else: return val
