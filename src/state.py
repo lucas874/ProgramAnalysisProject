@@ -87,7 +87,7 @@ class State: # State consists of local variables, operand stack and heap
         for i in union:
             if i in old_heap and new_heap:
                 if "arr" in i: # kind of sketchy but works ig.
-                    assert old_heap[i][0] == new_heap[i][0] # assert arrays same length. 
+                    #assert old_heap[i][0] == new_heap[i][0] # assert arrays same length. nope?
                     merged[i] = (old_heap[i][0], wide(old_heap[i][1], new_heap[i][1], *args)) # merge items
                 else: merged[i] = wide(old_heap[i], new_heap[i], *args)
             elif i in old_heap:

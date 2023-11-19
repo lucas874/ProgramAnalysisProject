@@ -5,6 +5,8 @@ from intervals import *
 from utilities import *
 from state import *
 
+# All tests should be successful
+
 @pytest.fixture(scope="session", autouse=True)
 def setup():
     global program
@@ -36,6 +38,7 @@ def test_Arithmetics_alwaysThrows3():
 
 def test_Arithmetics_alwaysThrows4():
     interpreter = AbstractInterpreter(program, Interval)
+    pretty_print_bytecode(program, ('eu/bogoe/dtu/exceptional/Arithmetics', 'alwaysThrows4'))
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'alwaysThrows4'))
     
     assert final_states[-1].exception == ExceptionType.ArithmeticException
@@ -85,7 +88,7 @@ def test_Arithmetics_neverThrows2():
     interpreter = AbstractInterpreter(program, Interval) 
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'neverThrows2'))
      
-    expected = State({0: Interval(l=1, h=INT_MAX, index=None)}, [Interval(l=0, h=0, index=None)], {})
+    expected = State({0: Interval(l=1, h=INT_MAX)}, [Interval(l=0, h=0, index=None)], {})
     
     assert final_states[-1] == expected
 
@@ -93,7 +96,7 @@ def test_Arithmetics_neverThrows3():
     interpreter = AbstractInterpreter(program, Interval) 
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'neverThrows3'))
      
-    expected = State({0: Interval(l=1, h=2147483647, index=None), 1: Interval(l=-2147483645, h=2147483647, index=None)}, [Interval(l=0, h=0, index=None)], {})
+    expected = State({0: Interval(l=1, h=2147483647), 1: Interval(l=-2147483645, h=2147483647)}, [Interval(l=0, h=0, index=None)], {})
     
     assert final_states[-1] == expected 
 
@@ -107,8 +110,8 @@ def test_Arithmetics_neverThrows5():
     interpreter = AbstractInterpreter(program, Interval) 
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arithmetics', 'neverThrows5'))
      
-    expected = State({0: Interval(l=1, h=2147483647, index=None), 1: Interval(l=-2147483648, h=2147483647, index=None)}, [Interval(l=-2147483648, h=2147483647, index=None)], {})
-
+    expected = State({0: Interval(l=1, h=2147483647), 1: Interval(l=-2147483648, h=2147483647, index=None)}, [Interval(l=-2147483648, h=2147483647, index=None)], {})
+     
     assert final_states[-1] == expected 
 
 def test_Arithmetics_speedVsPrecision():
