@@ -33,8 +33,9 @@ def test_Arrays_alwaysThrows3():
     
     interpreter = AbstractInterpreter(program, Pentagon)
     final_states = interpreter.analyse(('eu/bogoe/dtu/exceptional/Arrays', 'alwaysThrows3'))
-    
-    assert final_states[10].exception == ExceptionType.IndexOutOfBoundsException # 13 because state right after perform array store that leads to exception
+    exceptions = [s.exception for s in final_states if s is not None and s.exception is not None]
+    assert exceptions == [ExceptionType.IndexOutOfBoundsException] 
+    #assert final_states[10].exception == ExceptionType.IndexOutOfBoundsException # 13 because state right after perform array store that leads to exception
 
 def test_Arrays_alwaysThrows4():
     interpreter = AbstractInterpreter(program, Pentagon)
