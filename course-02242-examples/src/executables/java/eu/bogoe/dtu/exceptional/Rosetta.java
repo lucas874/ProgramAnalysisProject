@@ -1,5 +1,7 @@
 package eu.bogoe.dtu.exceptional;
 
+import java.util.Arrays;
+
 import dtu.compute.exec.Case;
 
 public class Rosetta {
@@ -20,7 +22,13 @@ public class Rosetta {
         int[] h = new int[g.length - f.length + 1];
         for (int n = 0; n < h.length; n++) {
             h[n] = g[n];
-            int lower = Math.max(n - f.length + 1, 0);
+            int lower;
+            if (n - f.length + 1 >= 0) {
+                lower = n - f.length + 1;
+            } else {
+                lower = 1; 
+            }
+            //int lower = Math.max(n - f.length + 1, 0);
             for (int i = lower; i < n; i++)
                 h[n] -= h[i] * f[n - i];
             h[n] /= f[0];
@@ -57,13 +65,15 @@ public class Rosetta {
         return ((reversedN << count) & ((1 << bits) - 1));
     }
 
-    static void fft(Complex[] buffer) {
+    @Case // changed a lot of things so does not compute fft at all but u know
+    static void fft(int[] buffer) {
 
-        int bits = (int) (log(buffer.length) / log(2));
+        //int bits = (int) (log(buffer.length) / log(2));
+        int bits = buffer.length;
         for (int j = 1; j < buffer.length / 2; j++) {
 
             int swapPos = bitReverse(j, bits);
-            Complex temp = buffer[j];
+            int temp = buffer[j];
             buffer[j] = buffer[swapPos];
             buffer[swapPos] = temp;
         }
@@ -74,14 +84,14 @@ public class Rosetta {
 
                     int evenIndex = i + k;
                     int oddIndex = i + k + (N / 2);
-                    Complex even = buffer[evenIndex];
-                    Complex odd = buffer[oddIndex];
+                    int even = buffer[evenIndex];
+                    int odd = buffer[oddIndex];
 
-                    double term = (-2 * PI * k) / (double) N;
-                    Complex exp = (new Complex(cos(term), sin(term)).mult(odd));
-
-                    buffer[evenIndex] = even.add(exp);
-                    buffer[oddIndex] = even.sub(exp);
+                    double term = (-2 * 3.14 * k) / (double) N;
+                    //Complex exp = (new Complex(cos(term), sin(term)).mult(odd));
+                    int exp = 1;
+                    buffer[evenIndex] = even + exp;
+                    buffer[oddIndex] = even - exp;
                 }
             }
         }
@@ -124,14 +134,32 @@ public class Rosetta {
 
     @Case // https://rosettacode.org/wiki/Knuth_shuffle#Java call to random removed 
     public static void shuffle (int[] array) {
-    int n = array.length;
-    while (n > 1) {
-        n = n - 1;
+        int n = array.length;
+        while (n > 1) {
+            n = n - 1;
 
-        int k = n; //decrements after using the value
-        int temp = array[n];
-        array[n] = array[k];
-        array[k] = temp;
+            int k = n; //decrements after using the value
+            int temp = array[n];
+            array[n] = array[k];
+            array[k] = temp;
+        }
     }
-}
+
+    @Case 
+    public static void transpose(){
+        double[][] m = {{1, 1, 1, 1},
+                        {2, 4, 8, 16},
+                        {3, 9, 27, 81},
+                        {4, 16, 64, 256},
+                        {5, 25, 125, 625}};
+        double[][] ans = new double[m[0].length][m.length];
+        for(int rows = 0; rows < m.length; rows++){
+                for(int cols = 0; cols < m[0].length; cols++){
+                        ans[cols][rows] = m[rows][cols];
+                }
+        }
+        //for(double[] i:ans){//2D arrays are arrays of arrays
+        //        System.out.println(Arrays.toString(i));
+        //}
+    }
 }

@@ -138,93 +138,6 @@
   ],
   "methods": [
     {
-      "name": "<clinit>",
-      "access": [
-        "static"
-      ],
-      "typeparams": [],
-      "params": [],
-      "returns": {
-        "type": null,
-        "annotations": []
-      },
-      "code": {
-        "max_stack": 1,
-        "max_locals": 0,
-        "exceptions": [],
-        "stack_map": null,
-        "bytecode": [
-          {
-            "offset": 0,
-            "opr": "push",
-            "value": {
-              "type": "float",
-              "value": 1
-            }
-          },
-          {
-            "offset": 1,
-            "opr": "put",
-            "static": true,
-            "field": {
-              "class": "eu/bogoe/dtu/FieldAccess",
-              "name": "floatStatic",
-              "type": "float"
-            }
-          },
-          {
-            "offset": 4,
-            "opr": "push",
-            "value": {
-              "type": "integer",
-              "value": 2
-            }
-          },
-          {
-            "offset": 5,
-            "opr": "invoke",
-            "access": "static",
-            "method": {
-              "is_interface": false,
-              "ref": {
-                "kind": "class",
-                "name": "java/lang/Integer"
-              },
-              "name": "valueOf",
-              "args": [
-                "int"
-              ],
-              "returns": {
-                "kind": "class",
-                "name": "java/lang/Integer"
-              }
-            }
-          },
-          {
-            "offset": 8,
-            "opr": "put",
-            "static": true,
-            "field": {
-              "class": "eu/bogoe/dtu/FieldAccess",
-              "name": "objectStatic",
-              "type": {
-                "kind": "class",
-                "name": "java/lang/Object"
-              }
-            }
-          },
-          {
-            "offset": 11,
-            "opr": "return",
-            "type": null
-          }
-        ]
-      },
-      "annotations": [],
-      "exceptions": [],
-      "default": null
-    },
-    {
       "name": "<init>",
       "access": [
         "public"
@@ -752,6 +665,93 @@
       ],
       "exceptions": [],
       "default": null
+    },
+    {
+      "name": "<clinit>",
+      "access": [
+        "static"
+      ],
+      "typeparams": [],
+      "params": [],
+      "returns": {
+        "type": null,
+        "annotations": []
+      },
+      "code": {
+        "max_stack": 1,
+        "max_locals": 0,
+        "exceptions": [],
+        "stack_map": null,
+        "bytecode": [
+          {
+            "offset": 0,
+            "opr": "push",
+            "value": {
+              "type": "float",
+              "value": 1
+            }
+          },
+          {
+            "offset": 1,
+            "opr": "put",
+            "static": true,
+            "field": {
+              "class": "eu/bogoe/dtu/FieldAccess",
+              "name": "floatStatic",
+              "type": "float"
+            }
+          },
+          {
+            "offset": 4,
+            "opr": "push",
+            "value": {
+              "type": "integer",
+              "value": 2
+            }
+          },
+          {
+            "offset": 5,
+            "opr": "invoke",
+            "access": "static",
+            "method": {
+              "is_interface": false,
+              "ref": {
+                "kind": "class",
+                "name": "java/lang/Integer"
+              },
+              "name": "valueOf",
+              "args": [
+                "int"
+              ],
+              "returns": {
+                "kind": "class",
+                "name": "java/lang/Integer"
+              }
+            }
+          },
+          {
+            "offset": 8,
+            "opr": "put",
+            "static": true,
+            "field": {
+              "class": "eu/bogoe/dtu/FieldAccess",
+              "name": "objectStatic",
+              "type": {
+                "kind": "class",
+                "name": "java/lang/Object"
+              }
+            }
+          },
+          {
+            "offset": 11,
+            "opr": "return",
+            "type": null
+          }
+        ]
+      },
+      "annotations": [],
+      "exceptions": [],
+      "default": null
     }
   ],
   "bootstrapmethods": [],
@@ -759,7 +759,7 @@
   "innerclasses": [],
   "annotations": [],
   "version": [
-    63,
+    55,
     0
   ]
 }

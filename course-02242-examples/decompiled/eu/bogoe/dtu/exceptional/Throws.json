@@ -30,108 +30,6 @@
   ],
   "methods": [
     {
-      "name": "<clinit>",
-      "access": [
-        "static"
-      ],
-      "typeparams": [],
-      "params": [],
-      "returns": {
-        "type": null,
-        "annotations": []
-      },
-      "code": {
-        "max_stack": 1,
-        "max_locals": 0,
-        "exceptions": [],
-        "stack_map": [
-          {
-            "index": 5,
-            "type": "same"
-          },
-          {
-            "index": 6,
-            "type": "same_locals_1_stack_item_frame",
-            "info": {
-              "type": "integer"
-            }
-          }
-        ],
-        "bytecode": [
-          {
-            "offset": 0,
-            "opr": "push",
-            "value": {
-              "type": "class",
-              "value": {
-                "kind": "class",
-                "name": "eu/bogoe/dtu/exceptional/Throws"
-              }
-            }
-          },
-          {
-            "offset": 2,
-            "opr": "invoke",
-            "access": "virtual",
-            "method": {
-              "ref": {
-                "kind": "class",
-                "name": "java/lang/Class"
-              },
-              "name": "desiredAssertionStatus",
-              "args": [],
-              "returns": "boolean"
-            }
-          },
-          {
-            "offset": 5,
-            "opr": "ifz",
-            "condition": "ne",
-            "target": 5
-          },
-          {
-            "offset": 8,
-            "opr": "push",
-            "value": {
-              "type": "integer",
-              "value": 1
-            }
-          },
-          {
-            "offset": 9,
-            "opr": "goto",
-            "target": 6
-          },
-          {
-            "offset": 12,
-            "opr": "push",
-            "value": {
-              "type": "integer",
-              "value": 0
-            }
-          },
-          {
-            "offset": 13,
-            "opr": "put",
-            "static": true,
-            "field": {
-              "class": "eu/bogoe/dtu/exceptional/Throws",
-              "name": "$assertionsDisabled",
-              "type": "boolean"
-            }
-          },
-          {
-            "offset": 16,
-            "opr": "return",
-            "type": null
-          }
-        ]
-      },
-      "annotations": [],
-      "exceptions": [],
-      "default": null
-    },
-    {
       "name": "<init>",
       "access": [
         "public"
@@ -971,19 +869,15 @@
         "exceptions": [],
         "stack_map": [
           {
-            "index": 1,
+            "index": 0,
             "type": "same"
           },
           {
-            "index": 6,
+            "index": 8,
             "type": "same"
           },
           {
-            "index": 9,
-            "type": "same"
-          },
-          {
-            "index": 13,
+            "index": 15,
             "type": "same"
           },
           {
@@ -994,17 +888,24 @@
         "bytecode": [
           {
             "offset": 0,
-            "opr": "goto",
-            "target": 6
-          },
-          {
-            "offset": 3,
             "opr": "load",
             "type": "int",
             "index": 0
           },
           {
+            "offset": 1,
+            "opr": "ifz",
+            "condition": "lt",
+            "target": 8
+          },
+          {
             "offset": 4,
+            "opr": "load",
+            "type": "int",
+            "index": 0
+          },
+          {
+            "offset": 5,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -1012,48 +913,48 @@
             }
           },
           {
-            "offset": 5,
+            "offset": 6,
             "opr": "binary",
             "type": "int",
             "operant": "div"
           },
           {
-            "offset": 6,
+            "offset": 7,
             "opr": "store",
             "type": "int",
             "index": 0
           },
           {
-            "offset": 7,
+            "offset": 8,
             "opr": "incr",
             "index": 0,
             "amount": -1
           },
           {
-            "offset": 10,
-            "opr": "load",
-            "type": "int",
-            "index": 0
-          },
-          {
             "offset": 11,
-            "opr": "ifz",
-            "condition": "ge",
-            "target": 1
+            "opr": "goto",
+            "target": 0
           },
           {
             "offset": 14,
-            "opr": "goto",
-            "target": 13
-          },
-          {
-            "offset": 17,
             "opr": "load",
             "type": "int",
             "index": 1
           },
           {
+            "offset": 15,
+            "opr": "ifz",
+            "condition": "ge",
+            "target": 15
+          },
+          {
             "offset": 18,
+            "opr": "load",
+            "type": "int",
+            "index": 1
+          },
+          {
+            "offset": 19,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -1061,28 +962,21 @@
             }
           },
           {
-            "offset": 19,
+            "offset": 20,
             "opr": "binary",
             "type": "int",
             "operant": "div"
           },
           {
-            "offset": 20,
+            "offset": 21,
             "opr": "store",
             "type": "int",
             "index": 1
           },
           {
-            "offset": 21,
-            "opr": "load",
-            "type": "int",
-            "index": 1
-          },
-          {
             "offset": 22,
-            "opr": "ifz",
-            "condition": "lt",
-            "target": 9
+            "opr": "goto",
+            "target": 8
           },
           {
             "offset": 25,
@@ -1323,19 +1217,15 @@
         "exceptions": [],
         "stack_map": [
           {
-            "index": 1,
+            "index": 0,
             "type": "same"
           },
           {
-            "index": 6,
+            "index": 8,
             "type": "same"
           },
           {
-            "index": 9,
-            "type": "same"
-          },
-          {
-            "index": 14,
+            "index": 16,
             "type": "same"
           },
           {
@@ -1346,17 +1236,24 @@
         "bytecode": [
           {
             "offset": 0,
-            "opr": "goto",
-            "target": 6
-          },
-          {
-            "offset": 3,
             "opr": "load",
             "type": "int",
             "index": 0
           },
           {
+            "offset": 1,
+            "opr": "ifz",
+            "condition": "lt",
+            "target": 8
+          },
+          {
             "offset": 4,
+            "opr": "load",
+            "type": "int",
+            "index": 0
+          },
+          {
+            "offset": 5,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -1364,48 +1261,48 @@
             }
           },
           {
-            "offset": 5,
+            "offset": 6,
             "opr": "binary",
             "type": "int",
             "operant": "div"
           },
           {
-            "offset": 6,
+            "offset": 7,
             "opr": "store",
             "type": "int",
             "index": 0
           },
           {
-            "offset": 7,
+            "offset": 8,
             "opr": "incr",
             "index": 0,
             "amount": -1
           },
           {
-            "offset": 10,
-            "opr": "load",
-            "type": "int",
-            "index": 0
-          },
-          {
             "offset": 11,
-            "opr": "ifz",
-            "condition": "ge",
-            "target": 1
+            "opr": "goto",
+            "target": 0
           },
           {
             "offset": 14,
-            "opr": "goto",
-            "target": 14
-          },
-          {
-            "offset": 17,
             "opr": "load",
             "type": "int",
             "index": 1
           },
           {
+            "offset": 15,
+            "opr": "ifz",
+            "condition": "gt",
+            "target": 16
+          },
+          {
             "offset": 18,
+            "opr": "load",
+            "type": "int",
+            "index": 1
+          },
+          {
+            "offset": 19,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -1413,34 +1310,27 @@
             }
           },
           {
-            "offset": 19,
+            "offset": 20,
             "opr": "binary",
             "type": "int",
             "operant": "div"
           },
           {
-            "offset": 20,
+            "offset": 21,
             "opr": "store",
             "type": "int",
             "index": 1
           },
           {
-            "offset": 21,
+            "offset": 22,
             "opr": "incr",
             "index": 1,
             "amount": 1
           },
           {
-            "offset": 24,
-            "opr": "load",
-            "type": "int",
-            "index": 1
-          },
-          {
             "offset": 25,
-            "opr": "ifz",
-            "condition": "le",
-            "target": 9
+            "opr": "goto",
+            "target": 8
           },
           {
             "offset": 28,
@@ -1710,6 +1600,108 @@
       ],
       "exceptions": [],
       "default": null
+    },
+    {
+      "name": "<clinit>",
+      "access": [
+        "static"
+      ],
+      "typeparams": [],
+      "params": [],
+      "returns": {
+        "type": null,
+        "annotations": []
+      },
+      "code": {
+        "max_stack": 1,
+        "max_locals": 0,
+        "exceptions": [],
+        "stack_map": [
+          {
+            "index": 5,
+            "type": "same"
+          },
+          {
+            "index": 6,
+            "type": "same_locals_1_stack_item_frame",
+            "info": {
+              "type": "integer"
+            }
+          }
+        ],
+        "bytecode": [
+          {
+            "offset": 0,
+            "opr": "push",
+            "value": {
+              "type": "class",
+              "value": {
+                "kind": "class",
+                "name": "eu/bogoe/dtu/exceptional/Throws"
+              }
+            }
+          },
+          {
+            "offset": 2,
+            "opr": "invoke",
+            "access": "virtual",
+            "method": {
+              "ref": {
+                "kind": "class",
+                "name": "java/lang/Class"
+              },
+              "name": "desiredAssertionStatus",
+              "args": [],
+              "returns": "boolean"
+            }
+          },
+          {
+            "offset": 5,
+            "opr": "ifz",
+            "condition": "ne",
+            "target": 5
+          },
+          {
+            "offset": 8,
+            "opr": "push",
+            "value": {
+              "type": "integer",
+              "value": 1
+            }
+          },
+          {
+            "offset": 9,
+            "opr": "goto",
+            "target": 6
+          },
+          {
+            "offset": 12,
+            "opr": "push",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "offset": 13,
+            "opr": "put",
+            "static": true,
+            "field": {
+              "class": "eu/bogoe/dtu/exceptional/Throws",
+              "name": "$assertionsDisabled",
+              "type": "boolean"
+            }
+          },
+          {
+            "offset": 16,
+            "opr": "return",
+            "type": null
+          }
+        ]
+      },
+      "annotations": [],
+      "exceptions": [],
+      "default": null
     }
   ],
   "bootstrapmethods": [],
@@ -1717,7 +1709,7 @@
   "innerclasses": [],
   "annotations": [],
   "version": [
-    63,
+    55,
     0
   ]
 }

@@ -298,8 +298,13 @@ class Interpreter:
         # Check bounds and go to exception state if out of bounds. push exception to state to avoid problems merging stacks w different length.... weird fix. But we finish right after anyway
         if not self.within_bounds(state.heap[arr_ref], index): return [(State(deepcopy(state.locals), new_stack + [ExceptionType.IndexOutOfBoundsException], deepcopy(state.heap), ExceptionType.IndexOutOfBoundsException), i+1)]
 
-        # Array is tuple (count, items). Items represented as a single value of the astraction 
-        new_stack += [state.heap[arr_ref][1]]
+        if b["type"] == "ref":
+            if not isinstance(state.heap[arr_ref][1], tuple): raise Exception("Expected tuple")
+            if not index.is_constant(): raise Exception("Expected constant")
+            new_stack += [state.heap[arr_ref][1][index.concrete_constant()]]
+        else:
+            # Array is tuple (count, items). Items represented as a single value of the astraction 
+            new_stack += [state.heap[arr_ref][1]]
 
         return [(State.new_stack(state, new_stack), i+1)]
 

@@ -30,108 +30,6 @@
   ],
   "methods": [
     {
-      "name": "<clinit>",
-      "access": [
-        "static"
-      ],
-      "typeparams": [],
-      "params": [],
-      "returns": {
-        "type": null,
-        "annotations": []
-      },
-      "code": {
-        "max_stack": 1,
-        "max_locals": 0,
-        "exceptions": [],
-        "stack_map": [
-          {
-            "index": 5,
-            "type": "same"
-          },
-          {
-            "index": 6,
-            "type": "same_locals_1_stack_item_frame",
-            "info": {
-              "type": "integer"
-            }
-          }
-        ],
-        "bytecode": [
-          {
-            "offset": 0,
-            "opr": "push",
-            "value": {
-              "type": "class",
-              "value": {
-                "kind": "class",
-                "name": "eu/bogoe/dtu/exceptional/Arithmetics"
-              }
-            }
-          },
-          {
-            "offset": 2,
-            "opr": "invoke",
-            "access": "virtual",
-            "method": {
-              "ref": {
-                "kind": "class",
-                "name": "java/lang/Class"
-              },
-              "name": "desiredAssertionStatus",
-              "args": [],
-              "returns": "boolean"
-            }
-          },
-          {
-            "offset": 5,
-            "opr": "ifz",
-            "condition": "ne",
-            "target": 5
-          },
-          {
-            "offset": 8,
-            "opr": "push",
-            "value": {
-              "type": "integer",
-              "value": 1
-            }
-          },
-          {
-            "offset": 9,
-            "opr": "goto",
-            "target": 6
-          },
-          {
-            "offset": 12,
-            "opr": "push",
-            "value": {
-              "type": "integer",
-              "value": 0
-            }
-          },
-          {
-            "offset": 13,
-            "opr": "put",
-            "static": true,
-            "field": {
-              "class": "eu/bogoe/dtu/exceptional/Arithmetics",
-              "name": "$assertionsDisabled",
-              "type": "boolean"
-            }
-          },
-          {
-            "offset": 16,
-            "opr": "return",
-            "type": null
-          }
-        ]
-      },
-      "annotations": [],
-      "exceptions": [],
-      "default": null
-    },
-    {
       "name": "<init>",
       "access": [
         "public"
@@ -907,7 +805,7 @@
             "type": "same"
           },
           {
-            "index": 21,
+            "index": 20,
             "type": "append_frame",
             "info": [
               {
@@ -916,8 +814,9 @@
             ]
           },
           {
-            "index": 26,
-            "type": "same"
+            "index": 29,
+            "type": "chop_frame",
+            "info": 1
           }
         ],
         "bytecode": [
@@ -1067,47 +966,12 @@
           },
           {
             "offset": 43,
-            "opr": "goto",
-            "target": 26
-          },
-          {
-            "offset": 46,
-            "opr": "load",
-            "type": "int",
-            "index": 0
-          },
-          {
-            "offset": 47,
-            "opr": "load",
-            "type": "int",
-            "index": 1
-          },
-          {
-            "offset": 48,
-            "opr": "binary",
-            "type": "int",
-            "operant": "sub"
-          },
-          {
-            "offset": 49,
-            "opr": "store",
-            "type": "int",
-            "index": 0
-          },
-          {
-            "offset": 50,
-            "opr": "incr",
-            "index": 2,
-            "amount": 1
-          },
-          {
-            "offset": 53,
             "opr": "load",
             "type": "int",
             "index": 2
           },
           {
-            "offset": 54,
+            "offset": 44,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -1115,10 +979,45 @@
             }
           },
           {
-            "offset": 56,
+            "offset": 46,
             "opr": "if",
-            "condition": "lt",
-            "target": 21
+            "condition": "ge",
+            "target": 29
+          },
+          {
+            "offset": 49,
+            "opr": "load",
+            "type": "int",
+            "index": 0
+          },
+          {
+            "offset": 50,
+            "opr": "load",
+            "type": "int",
+            "index": 1
+          },
+          {
+            "offset": 51,
+            "opr": "binary",
+            "type": "int",
+            "operant": "sub"
+          },
+          {
+            "offset": 52,
+            "opr": "store",
+            "type": "int",
+            "index": 0
+          },
+          {
+            "offset": 53,
+            "opr": "incr",
+            "index": 2,
+            "amount": 1
+          },
+          {
+            "offset": 56,
+            "opr": "goto",
+            "target": 20
           },
           {
             "offset": 59,
@@ -1946,7 +1845,7 @@
         "exceptions": [],
         "stack_map": [
           {
-            "index": 3,
+            "index": 2,
             "type": "append_frame",
             "info": [
               {
@@ -1955,7 +1854,7 @@
             ]
           },
           {
-            "index": 4,
+            "index": 6,
             "type": "same"
           }
         ],
@@ -1976,26 +1875,26 @@
           },
           {
             "offset": 3,
-            "opr": "goto",
-            "target": 4
-          },
-          {
-            "offset": 6,
-            "opr": "incr",
-            "index": 0,
-            "amount": -1
-          },
-          {
-            "offset": 9,
             "opr": "load",
             "type": "int",
             "index": 0
           },
           {
-            "offset": 10,
+            "offset": 4,
             "opr": "ifz",
-            "condition": "gt",
-            "target": 3
+            "condition": "le",
+            "target": 6
+          },
+          {
+            "offset": 7,
+            "opr": "incr",
+            "index": 0,
+            "amount": -1
+          },
+          {
+            "offset": 10,
+            "opr": "goto",
+            "target": 2
           },
           {
             "offset": 13,
@@ -2031,6 +1930,108 @@
       ],
       "exceptions": [],
       "default": null
+    },
+    {
+      "name": "<clinit>",
+      "access": [
+        "static"
+      ],
+      "typeparams": [],
+      "params": [],
+      "returns": {
+        "type": null,
+        "annotations": []
+      },
+      "code": {
+        "max_stack": 1,
+        "max_locals": 0,
+        "exceptions": [],
+        "stack_map": [
+          {
+            "index": 5,
+            "type": "same"
+          },
+          {
+            "index": 6,
+            "type": "same_locals_1_stack_item_frame",
+            "info": {
+              "type": "integer"
+            }
+          }
+        ],
+        "bytecode": [
+          {
+            "offset": 0,
+            "opr": "push",
+            "value": {
+              "type": "class",
+              "value": {
+                "kind": "class",
+                "name": "eu/bogoe/dtu/exceptional/Arithmetics"
+              }
+            }
+          },
+          {
+            "offset": 2,
+            "opr": "invoke",
+            "access": "virtual",
+            "method": {
+              "ref": {
+                "kind": "class",
+                "name": "java/lang/Class"
+              },
+              "name": "desiredAssertionStatus",
+              "args": [],
+              "returns": "boolean"
+            }
+          },
+          {
+            "offset": 5,
+            "opr": "ifz",
+            "condition": "ne",
+            "target": 5
+          },
+          {
+            "offset": 8,
+            "opr": "push",
+            "value": {
+              "type": "integer",
+              "value": 1
+            }
+          },
+          {
+            "offset": 9,
+            "opr": "goto",
+            "target": 6
+          },
+          {
+            "offset": 12,
+            "opr": "push",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "offset": 13,
+            "opr": "put",
+            "static": true,
+            "field": {
+              "class": "eu/bogoe/dtu/exceptional/Arithmetics",
+              "name": "$assertionsDisabled",
+              "type": "boolean"
+            }
+          },
+          {
+            "offset": 16,
+            "opr": "return",
+            "type": null
+          }
+        ]
+      },
+      "annotations": [],
+      "exceptions": [],
+      "default": null
     }
   ],
   "bootstrapmethods": [],
@@ -2038,7 +2039,7 @@
   "innerclasses": [],
   "annotations": [],
   "version": [
-    63,
+    55,
     0
   ]
 }

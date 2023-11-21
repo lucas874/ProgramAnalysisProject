@@ -94,7 +94,7 @@
         "exceptions": [],
         "stack_map": [
           {
-            "index": 3,
+            "index": 2,
             "type": "append_frame",
             "info": [
               {
@@ -104,51 +104,28 @@
           },
           {
             "index": 8,
-            "type": "full_frame",
-            "locals": [
-              {
-                "type": "object",
-                "ref": {
-                  "kind": "array",
-                  "type": "int"
-                }
-              },
-              {
-                "type": "integer"
-              },
+            "type": "append_frame",
+            "info": [
               {
                 "type": "top"
               },
               {
                 "type": "integer"
               }
-            ],
-            "stack": []
+            ]
           },
           {
-            "index": 37,
+            "index": 43,
             "type": "same"
           },
           {
-            "index": 38,
-            "type": "same"
+            "index": 45,
+            "type": "chop_frame",
+            "info": 2
           },
           {
-            "index": 44,
-            "type": "full_frame",
-            "locals": [
-              {
-                "type": "object",
-                "ref": {
-                  "kind": "array",
-                  "type": "int"
-                }
-              },
-              {
-                "type": "integer"
-              }
-            ],
-            "stack": []
+            "index": 46,
+            "type": "same"
           }
         ],
         "bytecode": [
@@ -168,11 +145,18 @@
           },
           {
             "offset": 2,
-            "opr": "goto",
-            "target": 44
+            "opr": "load",
+            "type": "int",
+            "index": 1
           },
           {
-            "offset": 5,
+            "offset": 3,
+            "opr": "ifz",
+            "condition": "ne",
+            "target": 46
+          },
+          {
+            "offset": 6,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -180,13 +164,13 @@
             }
           },
           {
-            "offset": 6,
+            "offset": 7,
             "opr": "store",
             "type": "int",
             "index": 1
           },
           {
-            "offset": 7,
+            "offset": 8,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -194,47 +178,29 @@
             }
           },
           {
-            "offset": 8,
+            "offset": 9,
             "opr": "store",
             "type": "int",
             "index": 3
           },
           {
-            "offset": 9,
-            "opr": "goto",
-            "target": 38
+            "offset": 10,
+            "opr": "load",
+            "type": "int",
+            "index": 3
+          },
+          {
+            "offset": 11,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
           },
           {
             "offset": 12,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
+            "opr": "arraylength"
           },
           {
             "offset": 13,
-            "opr": "load",
-            "type": "int",
-            "index": 3
-          },
-          {
-            "offset": 14,
-            "opr": "array_load",
-            "type": "int"
-          },
-          {
-            "offset": 15,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 16,
-            "opr": "load",
-            "type": "int",
-            "index": 3
-          },
-          {
-            "offset": 17,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -242,33 +208,59 @@
             }
           },
           {
-            "offset": 18,
+            "offset": 14,
             "opr": "binary",
             "type": "int",
-            "operant": "add"
+            "operant": "sub"
           },
           {
-            "offset": 19,
-            "opr": "array_load",
-            "type": "int"
-          },
-          {
-            "offset": 20,
+            "offset": 15,
             "opr": "if",
-            "condition": "le",
-            "target": 37
+            "condition": "ge",
+            "target": 45
           },
           {
-            "offset": 23,
+            "offset": 18,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 24,
+            "offset": 19,
             "opr": "load",
             "type": "int",
             "index": 3
+          },
+          {
+            "offset": 20,
+            "opr": "array_load",
+            "type": "int"
+          },
+          {
+            "offset": 21,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
+          },
+          {
+            "offset": 22,
+            "opr": "load",
+            "type": "int",
+            "index": 3
+          },
+          {
+            "offset": 23,
+            "opr": "push",
+            "value": {
+              "type": "integer",
+              "value": 1
+            }
+          },
+          {
+            "offset": 24,
+            "opr": "binary",
+            "type": "int",
+            "operant": "add"
           },
           {
             "offset": 25,
@@ -277,21 +269,9 @@
           },
           {
             "offset": 26,
-            "opr": "store",
-            "type": "int",
-            "index": 2
-          },
-          {
-            "offset": 27,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 28,
-            "opr": "load",
-            "type": "int",
-            "index": 3
+            "opr": "if",
+            "condition": "le",
+            "target": 43
           },
           {
             "offset": 29,
@@ -307,27 +287,26 @@
           },
           {
             "offset": 31,
-            "opr": "push",
-            "value": {
-              "type": "integer",
-              "value": 1
-            }
-          },
-          {
-            "offset": 32,
-            "opr": "binary",
-            "type": "int",
-            "operant": "add"
-          },
-          {
-            "offset": 33,
             "opr": "array_load",
             "type": "int"
           },
           {
+            "offset": 32,
+            "opr": "store",
+            "type": "int",
+            "index": 2
+          },
+          {
+            "offset": 33,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
+          },
+          {
             "offset": 34,
-            "opr": "array_store",
-            "type": "int"
+            "opr": "load",
+            "type": "int",
+            "index": 3
           },
           {
             "offset": 35,
@@ -357,9 +336,8 @@
           },
           {
             "offset": 39,
-            "opr": "load",
-            "type": "int",
-            "index": 2
+            "opr": "array_load",
+            "type": "int"
           },
           {
             "offset": 40,
@@ -368,42 +346,18 @@
           },
           {
             "offset": 41,
-            "opr": "push",
-            "value": {
-              "type": "integer",
-              "value": 0
-            }
-          },
-          {
-            "offset": 42,
-            "opr": "store",
-            "type": "int",
-            "index": 1
-          },
-          {
-            "offset": 43,
-            "opr": "incr",
-            "index": 3,
-            "amount": 1
-          },
-          {
-            "offset": 46,
-            "opr": "load",
-            "type": "int",
-            "index": 3
-          },
-          {
-            "offset": 47,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 48,
-            "opr": "arraylength"
+            "offset": 42,
+            "opr": "load",
+            "type": "int",
+            "index": 3
           },
           {
-            "offset": 49,
+            "offset": 43,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -411,28 +365,51 @@
             }
           },
           {
-            "offset": 50,
+            "offset": 44,
             "opr": "binary",
             "type": "int",
-            "operant": "sub"
+            "operant": "add"
           },
           {
-            "offset": 51,
-            "opr": "if",
-            "condition": "lt",
-            "target": 8
-          },
-          {
-            "offset": 54,
+            "offset": 45,
             "opr": "load",
+            "type": "int",
+            "index": 2
+          },
+          {
+            "offset": 46,
+            "opr": "array_store",
+            "type": "int"
+          },
+          {
+            "offset": 47,
+            "opr": "push",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "offset": 48,
+            "opr": "store",
             "type": "int",
             "index": 1
           },
           {
+            "offset": 49,
+            "opr": "incr",
+            "index": 3,
+            "amount": 1
+          },
+          {
+            "offset": 52,
+            "opr": "goto",
+            "target": 8
+          },
+          {
             "offset": 55,
-            "opr": "ifz",
-            "condition": "eq",
-            "target": 3
+            "opr": "goto",
+            "target": 2
           },
           {
             "offset": 58,
@@ -482,27 +459,19 @@
         "exceptions": [],
         "stack_map": [
           {
-            "index": 3,
-            "type": "full_frame",
-            "locals": [
-              {
-                "type": "object",
-                "ref": {
-                  "kind": "array",
-                  "type": "int"
-                }
-              },
+            "index": 2,
+            "type": "append_frame",
+            "info": [
               {
                 "type": "top"
               },
               {
                 "type": "integer"
               }
-            ],
-            "stack": []
+            ]
           },
           {
-            "index": 8,
+            "index": 10,
             "type": "append_frame",
             "info": [
               {
@@ -511,17 +480,18 @@
             ]
           },
           {
-            "index": 29,
-            "type": "same"
-          },
-          {
-            "index": 30,
-            "type": "same"
-          },
-          {
             "index": 35,
+            "type": "same"
+          },
+          {
+            "index": 37,
             "type": "chop_frame",
             "info": 1
+          },
+          {
+            "index": 39,
+            "type": "chop_frame",
+            "info": 2
           }
         ],
         "bytecode": [
@@ -541,17 +511,34 @@
           },
           {
             "offset": 2,
-            "opr": "goto",
-            "target": 35
-          },
-          {
-            "offset": 5,
             "opr": "load",
             "type": "int",
             "index": 2
           },
           {
-            "offset": 6,
+            "offset": 3,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
+          },
+          {
+            "offset": 4,
+            "opr": "arraylength"
+          },
+          {
+            "offset": 5,
+            "opr": "if",
+            "condition": "ge",
+            "target": 39
+          },
+          {
+            "offset": 8,
+            "opr": "load",
+            "type": "int",
+            "index": 2
+          },
+          {
+            "offset": 9,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -559,61 +546,55 @@
             }
           },
           {
-            "offset": 7,
+            "offset": 10,
             "opr": "binary",
             "type": "int",
             "operant": "add"
           },
           {
-            "offset": 8,
+            "offset": 11,
             "opr": "store",
             "type": "int",
             "index": 3
           },
           {
-            "offset": 9,
-            "opr": "goto",
-            "target": 30
-          },
-          {
             "offset": 12,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 13,
             "opr": "load",
             "type": "int",
             "index": 3
           },
           {
-            "offset": 14,
-            "opr": "array_load",
-            "type": "int"
-          },
-          {
-            "offset": 15,
+            "offset": 13,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 16,
-            "opr": "load",
-            "type": "int",
-            "index": 2
+            "offset": 14,
+            "opr": "arraylength"
           },
           {
-            "offset": 17,
-            "opr": "array_load",
-            "type": "int"
+            "offset": 15,
+            "opr": "if",
+            "condition": "ge",
+            "target": 37
           },
           {
             "offset": 18,
-            "opr": "if",
-            "condition": "ge",
-            "target": 29
+            "opr": "load",
+            "type": "ref",
+            "index": 0
+          },
+          {
+            "offset": 19,
+            "opr": "load",
+            "type": "int",
+            "index": 3
+          },
+          {
+            "offset": 20,
+            "opr": "array_load",
+            "type": "int"
           },
           {
             "offset": 21,
@@ -625,7 +606,7 @@
             "offset": 22,
             "opr": "load",
             "type": "int",
-            "index": 3
+            "index": 2
           },
           {
             "offset": 23,
@@ -634,21 +615,9 @@
           },
           {
             "offset": 24,
-            "opr": "store",
-            "type": "int",
-            "index": 1
-          },
-          {
-            "offset": 25,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 26,
-            "opr": "load",
-            "type": "int",
-            "index": 3
+            "opr": "if",
+            "condition": "ge",
+            "target": 35
           },
           {
             "offset": 27,
@@ -660,7 +629,7 @@
             "offset": 28,
             "opr": "load",
             "type": "int",
-            "index": 2
+            "index": 3
           },
           {
             "offset": 29,
@@ -669,8 +638,9 @@
           },
           {
             "offset": 30,
-            "opr": "array_store",
-            "type": "int"
+            "opr": "store",
+            "type": "int",
+            "index": 1
           },
           {
             "offset": 31,
@@ -682,74 +652,74 @@
             "offset": 32,
             "opr": "load",
             "type": "int",
-            "index": 2
+            "index": 3
           },
           {
             "offset": 33,
             "opr": "load",
-            "type": "int",
-            "index": 1
+            "type": "ref",
+            "index": 0
           },
           {
             "offset": 34,
+            "opr": "load",
+            "type": "int",
+            "index": 2
+          },
+          {
+            "offset": 35,
+            "opr": "array_load",
+            "type": "int"
+          },
+          {
+            "offset": 36,
             "opr": "array_store",
             "type": "int"
           },
           {
-            "offset": 35,
-            "opr": "incr",
-            "index": 3,
-            "amount": 1
+            "offset": 37,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
           },
           {
             "offset": 38,
             "opr": "load",
             "type": "int",
-            "index": 3
+            "index": 2
           },
           {
             "offset": 39,
             "opr": "load",
-            "type": "ref",
-            "index": 0
+            "type": "int",
+            "index": 1
           },
           {
             "offset": 40,
-            "opr": "arraylength"
+            "opr": "array_store",
+            "type": "int"
           },
           {
             "offset": 41,
-            "opr": "if",
-            "condition": "lt",
-            "target": 8
+            "opr": "incr",
+            "index": 3,
+            "amount": 1
           },
           {
             "offset": 44,
+            "opr": "goto",
+            "target": 10
+          },
+          {
+            "offset": 47,
             "opr": "incr",
             "index": 2,
             "amount": 1
           },
           {
-            "offset": 47,
-            "opr": "load",
-            "type": "int",
-            "index": 2
-          },
-          {
-            "offset": 48,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 49,
-            "opr": "arraylength"
-          },
-          {
             "offset": 50,
-            "opr": "if",
-            "condition": "lt",
-            "target": 3
+            "opr": "goto",
+            "target": 2
           },
           {
             "offset": 53,
@@ -799,7 +769,7 @@
         "exceptions": [],
         "stack_map": [
           {
-            "index": 3,
+            "index": 2,
             "type": "append_frame",
             "info": [
               {
@@ -808,7 +778,7 @@
             ]
           },
           {
-            "index": 12,
+            "index": 14,
             "type": "append_frame",
             "info": [
               {
@@ -820,17 +790,13 @@
             ]
           },
           {
-            "index": 21,
+            "index": 31,
             "type": "same"
           },
           {
-            "index": 28,
-            "type": "same"
-          },
-          {
-            "index": 35,
+            "index": 39,
             "type": "chop_frame",
-            "info": 2
+            "info": 3
           }
         ],
         "bytecode": [
@@ -850,31 +816,31 @@
           },
           {
             "offset": 2,
-            "opr": "goto",
-            "target": 35
-          },
-          {
-            "offset": 5,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 6,
             "opr": "load",
             "type": "int",
             "index": 1
           },
           {
-            "offset": 7,
-            "opr": "array_load",
-            "type": "int"
+            "offset": 3,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
+          },
+          {
+            "offset": 4,
+            "opr": "arraylength"
+          },
+          {
+            "offset": 5,
+            "opr": "if",
+            "condition": "ge",
+            "target": 39
           },
           {
             "offset": 8,
-            "opr": "store",
-            "type": "int",
-            "index": 2
+            "opr": "load",
+            "type": "ref",
+            "index": 0
           },
           {
             "offset": 9,
@@ -884,188 +850,188 @@
           },
           {
             "offset": 10,
-            "opr": "push",
-            "value": {
-              "type": "integer",
-              "value": 1
-            }
+            "opr": "array_load",
+            "type": "int"
           },
           {
             "offset": 11,
-            "opr": "binary",
+            "opr": "store",
             "type": "int",
-            "operant": "sub"
+            "index": 2
           },
           {
             "offset": 12,
-            "opr": "store",
-            "type": "int",
-            "index": 3
-          },
-          {
-            "offset": 13,
-            "opr": "goto",
-            "target": 21
-          },
-          {
-            "offset": 16,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 17,
-            "opr": "load",
-            "type": "int",
-            "index": 3
-          },
-          {
-            "offset": 18,
-            "opr": "push",
-            "value": {
-              "type": "integer",
-              "value": 1
-            }
-          },
-          {
-            "offset": 19,
-            "opr": "binary",
-            "type": "int",
-            "operant": "add"
-          },
-          {
-            "offset": 20,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 21,
-            "opr": "load",
-            "type": "int",
-            "index": 3
-          },
-          {
-            "offset": 22,
-            "opr": "array_load",
-            "type": "int"
-          },
-          {
-            "offset": 23,
-            "opr": "array_store",
-            "type": "int"
-          },
-          {
-            "offset": 24,
-            "opr": "incr",
-            "index": 3,
-            "amount": -1
-          },
-          {
-            "offset": 27,
-            "opr": "load",
-            "type": "int",
-            "index": 3
-          },
-          {
-            "offset": 28,
-            "opr": "ifz",
-            "condition": "lt",
-            "target": 28
-          },
-          {
-            "offset": 31,
-            "opr": "load",
-            "type": "int",
-            "index": 2
-          },
-          {
-            "offset": 32,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 33,
-            "opr": "load",
-            "type": "int",
-            "index": 3
-          },
-          {
-            "offset": 34,
-            "opr": "array_load",
-            "type": "int"
-          },
-          {
-            "offset": 35,
-            "opr": "if",
-            "condition": "lt",
-            "target": 12
-          },
-          {
-            "offset": 38,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 39,
-            "opr": "load",
-            "type": "int",
-            "index": 3
-          },
-          {
-            "offset": 40,
-            "opr": "push",
-            "value": {
-              "type": "integer",
-              "value": 1
-            }
-          },
-          {
-            "offset": 41,
-            "opr": "binary",
-            "type": "int",
-            "operant": "add"
-          },
-          {
-            "offset": 42,
-            "opr": "load",
-            "type": "int",
-            "index": 2
-          },
-          {
-            "offset": 43,
-            "opr": "array_store",
-            "type": "int"
-          },
-          {
-            "offset": 44,
-            "opr": "incr",
-            "index": 1,
-            "amount": 1
-          },
-          {
-            "offset": 47,
             "opr": "load",
             "type": "int",
             "index": 1
           },
           {
-            "offset": 48,
+            "offset": 13,
+            "opr": "push",
+            "value": {
+              "type": "integer",
+              "value": 1
+            }
+          },
+          {
+            "offset": 14,
+            "opr": "binary",
+            "type": "int",
+            "operant": "sub"
+          },
+          {
+            "offset": 15,
+            "opr": "store",
+            "type": "int",
+            "index": 3
+          },
+          {
+            "offset": 16,
+            "opr": "load",
+            "type": "int",
+            "index": 3
+          },
+          {
+            "offset": 17,
+            "opr": "ifz",
+            "condition": "lt",
+            "target": 31
+          },
+          {
+            "offset": 20,
+            "opr": "load",
+            "type": "int",
+            "index": 2
+          },
+          {
+            "offset": 21,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 49,
-            "opr": "arraylength"
+            "offset": 22,
+            "opr": "load",
+            "type": "int",
+            "index": 3
+          },
+          {
+            "offset": 23,
+            "opr": "array_load",
+            "type": "int"
+          },
+          {
+            "offset": 24,
+            "opr": "if",
+            "condition": "ge",
+            "target": 31
+          },
+          {
+            "offset": 27,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
+          },
+          {
+            "offset": 28,
+            "opr": "load",
+            "type": "int",
+            "index": 3
+          },
+          {
+            "offset": 29,
+            "opr": "push",
+            "value": {
+              "type": "integer",
+              "value": 1
+            }
+          },
+          {
+            "offset": 30,
+            "opr": "binary",
+            "type": "int",
+            "operant": "add"
+          },
+          {
+            "offset": 31,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
+          },
+          {
+            "offset": 32,
+            "opr": "load",
+            "type": "int",
+            "index": 3
+          },
+          {
+            "offset": 33,
+            "opr": "array_load",
+            "type": "int"
+          },
+          {
+            "offset": 34,
+            "opr": "array_store",
+            "type": "int"
+          },
+          {
+            "offset": 35,
+            "opr": "incr",
+            "index": 3,
+            "amount": -1
+          },
+          {
+            "offset": 38,
+            "opr": "goto",
+            "target": 14
+          },
+          {
+            "offset": 41,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
+          },
+          {
+            "offset": 42,
+            "opr": "load",
+            "type": "int",
+            "index": 3
+          },
+          {
+            "offset": 43,
+            "opr": "push",
+            "value": {
+              "type": "integer",
+              "value": 1
+            }
+          },
+          {
+            "offset": 44,
+            "opr": "binary",
+            "type": "int",
+            "operant": "add"
+          },
+          {
+            "offset": 45,
+            "opr": "load",
+            "type": "int",
+            "index": 2
+          },
+          {
+            "offset": 46,
+            "opr": "array_store",
+            "type": "int"
+          },
+          {
+            "offset": 47,
+            "opr": "incr",
+            "index": 1,
+            "amount": 1
           },
           {
             "offset": 50,
-            "opr": "if",
-            "condition": "lt",
-            "target": 3
+            "opr": "goto",
+            "target": 2
           },
           {
             "offset": 53,
@@ -1115,7 +1081,7 @@
         "exceptions": [],
         "stack_map": [
           {
-            "index": 3,
+            "index": 2,
             "type": "append_frame",
             "info": [
               {
@@ -1124,7 +1090,7 @@
             ]
           },
           {
-            "index": 6,
+            "index": 8,
             "type": "append_frame",
             "info": [
               {
@@ -1133,17 +1099,14 @@
             ]
           },
           {
-            "index": 25,
-            "type": "same"
-          },
-          {
-            "index": 36,
+            "index": 39,
             "type": "chop_frame",
             "info": 1
           },
           {
-            "index": 37,
-            "type": "same"
+            "index": 41,
+            "type": "chop_frame",
+            "info": 1
           }
         ],
         "bytecode": [
@@ -1163,48 +1126,49 @@
           },
           {
             "offset": 2,
-            "opr": "goto",
-            "target": 37
-          },
-          {
-            "offset": 5,
             "opr": "load",
             "type": "int",
             "index": 1
           },
           {
-            "offset": 6,
-            "opr": "store",
-            "type": "int",
-            "index": 2
-          },
-          {
-            "offset": 7,
-            "opr": "goto",
-            "target": 25
-          },
-          {
-            "offset": 10,
+            "offset": 3,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 11,
+            "offset": 4,
+            "opr": "arraylength"
+          },
+          {
+            "offset": 5,
+            "opr": "if",
+            "condition": "ge",
+            "target": 41
+          },
+          {
+            "offset": 8,
+            "opr": "load",
+            "type": "int",
+            "index": 1
+          },
+          {
+            "offset": 9,
+            "opr": "store",
+            "type": "int",
+            "index": 2
+          },
+          {
+            "offset": 10,
             "opr": "load",
             "type": "int",
             "index": 2
           },
           {
-            "offset": 12,
-            "opr": "array_load",
-            "type": "int"
-          },
-          {
-            "offset": 13,
-            "opr": "store",
-            "type": "int",
-            "index": 3
+            "offset": 11,
+            "opr": "ifz",
+            "condition": "le",
+            "target": 39
           },
           {
             "offset": 14,
@@ -1220,18 +1184,6 @@
           },
           {
             "offset": 16,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 17,
-            "opr": "load",
-            "type": "int",
-            "index": 2
-          },
-          {
-            "offset": 18,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -1239,90 +1191,88 @@
             }
           },
           {
-            "offset": 19,
+            "offset": 17,
             "opr": "binary",
             "type": "int",
             "operant": "sub"
           },
           {
-            "offset": 20,
+            "offset": 18,
             "opr": "array_load",
             "type": "int"
           },
           {
-            "offset": 21,
-            "opr": "array_store",
-            "type": "int"
-          },
-          {
-            "offset": 22,
+            "offset": 19,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 23,
+            "offset": 20,
             "opr": "load",
             "type": "int",
             "index": 2
           },
           {
-            "offset": 24,
-            "opr": "push",
-            "value": {
-              "type": "integer",
-              "value": 1
-            }
+            "offset": 21,
+            "opr": "array_load",
+            "type": "int"
+          },
+          {
+            "offset": 22,
+            "opr": "if",
+            "condition": "le",
+            "target": 39
           },
           {
             "offset": 25,
-            "opr": "binary",
-            "type": "int",
-            "operant": "sub"
+            "opr": "load",
+            "type": "ref",
+            "index": 0
           },
           {
             "offset": 26,
             "opr": "load",
             "type": "int",
-            "index": 3
+            "index": 2
           },
           {
             "offset": 27,
-            "opr": "array_store",
+            "opr": "array_load",
             "type": "int"
           },
           {
             "offset": 28,
-            "opr": "incr",
-            "index": 2,
-            "amount": -1
-          },
-          {
-            "offset": 31,
-            "opr": "load",
+            "opr": "store",
             "type": "int",
-            "index": 2
+            "index": 3
           },
           {
-            "offset": 32,
-            "opr": "ifz",
-            "condition": "le",
-            "target": 36
-          },
-          {
-            "offset": 35,
+            "offset": 29,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 36,
+            "offset": 30,
             "opr": "load",
             "type": "int",
             "index": 2
           },
           {
-            "offset": 37,
+            "offset": 31,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
+          },
+          {
+            "offset": 32,
+            "opr": "load",
+            "type": "int",
+            "index": 2
+          },
+          {
+            "offset": 33,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -1330,66 +1280,79 @@
             }
           },
           {
-            "offset": 38,
+            "offset": 34,
             "opr": "binary",
             "type": "int",
             "operant": "sub"
           },
           {
-            "offset": 39,
+            "offset": 35,
             "opr": "array_load",
             "type": "int"
           },
           {
-            "offset": 40,
+            "offset": 36,
+            "opr": "array_store",
+            "type": "int"
+          },
+          {
+            "offset": 37,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 41,
+            "offset": 38,
             "opr": "load",
             "type": "int",
             "index": 2
           },
           {
+            "offset": 39,
+            "opr": "push",
+            "value": {
+              "type": "integer",
+              "value": 1
+            }
+          },
+          {
+            "offset": 40,
+            "opr": "binary",
+            "type": "int",
+            "operant": "sub"
+          },
+          {
+            "offset": 41,
+            "opr": "load",
+            "type": "int",
+            "index": 3
+          },
+          {
             "offset": 42,
-            "opr": "array_load",
+            "opr": "array_store",
             "type": "int"
           },
           {
             "offset": 43,
-            "opr": "if",
-            "condition": "gt",
-            "target": 6
+            "opr": "incr",
+            "index": 2,
+            "amount": -1
           },
           {
             "offset": 46,
+            "opr": "goto",
+            "target": 8
+          },
+          {
+            "offset": 49,
             "opr": "incr",
             "index": 1,
             "amount": 1
           },
           {
-            "offset": 49,
-            "opr": "load",
-            "type": "int",
-            "index": 1
-          },
-          {
-            "offset": 50,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 51,
-            "opr": "arraylength"
-          },
-          {
             "offset": 52,
-            "opr": "if",
-            "condition": "lt",
-            "target": 3
+            "opr": "goto",
+            "target": 2
           },
           {
             "offset": 55,
@@ -1439,7 +1402,7 @@
         "exceptions": [],
         "stack_map": [
           {
-            "index": 3,
+            "index": 2,
             "type": "append_frame",
             "info": [
               {
@@ -1448,7 +1411,7 @@
             ]
           },
           {
-            "index": 14,
+            "index": 16,
             "type": "append_frame",
             "info": [
               {
@@ -1463,15 +1426,16 @@
             ]
           },
           {
-            "index": 25,
+            "index": 31,
             "type": "same"
           },
           {
-            "index": 26,
-            "type": "same"
+            "index": 33,
+            "type": "chop_frame",
+            "info": 1
           },
           {
-            "index": 43,
+            "index": 47,
             "type": "chop_frame",
             "info": 3
           }
@@ -1493,31 +1457,31 @@
           },
           {
             "offset": 2,
-            "opr": "goto",
-            "target": 43
-          },
-          {
-            "offset": 5,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 6,
             "opr": "load",
             "type": "int",
             "index": 1
           },
           {
-            "offset": 7,
-            "opr": "array_load",
-            "type": "int"
+            "offset": 3,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
+          },
+          {
+            "offset": 4,
+            "opr": "arraylength"
+          },
+          {
+            "offset": 5,
+            "opr": "if",
+            "condition": "ge",
+            "target": 47
           },
           {
             "offset": 8,
-            "opr": "store",
-            "type": "int",
-            "index": 2
+            "opr": "load",
+            "type": "ref",
+            "index": 0
           },
           {
             "offset": 9,
@@ -1527,18 +1491,35 @@
           },
           {
             "offset": 10,
-            "opr": "store",
-            "type": "int",
-            "index": 3
+            "opr": "array_load",
+            "type": "int"
           },
           {
             "offset": 11,
+            "opr": "store",
+            "type": "int",
+            "index": 2
+          },
+          {
+            "offset": 12,
             "opr": "load",
             "type": "int",
             "index": 1
           },
           {
-            "offset": 12,
+            "offset": 13,
+            "opr": "store",
+            "type": "int",
+            "index": 3
+          },
+          {
+            "offset": 14,
+            "opr": "load",
+            "type": "int",
+            "index": 1
+          },
+          {
+            "offset": 15,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -1546,210 +1527,193 @@
             }
           },
           {
-            "offset": 13,
+            "offset": 16,
             "opr": "binary",
             "type": "int",
             "operant": "add"
           },
           {
-            "offset": 14,
+            "offset": 17,
             "opr": "store",
             "type": "int",
             "index": 4
-          },
-          {
-            "offset": 16,
-            "opr": "goto",
-            "target": 26
           },
           {
             "offset": 19,
             "opr": "load",
+            "type": "int",
+            "index": 4
+          },
+          {
+            "offset": 21,
+            "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 20,
+            "offset": 22,
+            "opr": "arraylength"
+          },
+          {
+            "offset": 23,
+            "opr": "if",
+            "condition": "ge",
+            "target": 33
+          },
+          {
+            "offset": 26,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
+          },
+          {
+            "offset": 27,
             "opr": "load",
             "type": "int",
             "index": 4
           },
           {
-            "offset": 22,
+            "offset": 29,
             "opr": "array_load",
             "type": "int"
           },
           {
-            "offset": 23,
+            "offset": 30,
             "opr": "load",
             "type": "int",
             "index": 2
           },
           {
-            "offset": 24,
+            "offset": 31,
             "opr": "if",
             "condition": "ge",
-            "target": 25
+            "target": 31
           },
           {
-            "offset": 27,
+            "offset": 34,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 28,
+            "offset": 35,
             "opr": "load",
             "type": "int",
             "index": 4
           },
           {
-            "offset": 30,
+            "offset": 37,
             "opr": "array_load",
             "type": "int"
           },
           {
-            "offset": 31,
+            "offset": 38,
             "opr": "store",
             "type": "int",
             "index": 2
           },
           {
-            "offset": 32,
+            "offset": 39,
             "opr": "load",
             "type": "int",
             "index": 4
           },
           {
-            "offset": 34,
+            "offset": 41,
             "opr": "store",
             "type": "int",
             "index": 3
           },
           {
-            "offset": 35,
+            "offset": 42,
             "opr": "incr",
             "index": 4,
             "amount": 1
           },
           {
-            "offset": 38,
-            "opr": "load",
-            "type": "int",
-            "index": 4
-          },
-          {
-            "offset": 40,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 41,
-            "opr": "arraylength"
-          },
-          {
-            "offset": 42,
-            "opr": "if",
-            "condition": "lt",
-            "target": 14
-          },
-          {
             "offset": 45,
+            "opr": "goto",
+            "target": 16
+          },
+          {
+            "offset": 48,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 46,
+            "offset": 49,
             "opr": "load",
             "type": "int",
             "index": 1
           },
           {
-            "offset": 47,
+            "offset": 50,
             "opr": "array_load",
             "type": "int"
           },
           {
-            "offset": 48,
+            "offset": 51,
             "opr": "store",
             "type": "int",
             "index": 4
           },
           {
-            "offset": 50,
+            "offset": 53,
             "opr": "load",
             "type": "ref",
             "index": 0
-          },
-          {
-            "offset": 51,
-            "opr": "load",
-            "type": "int",
-            "index": 1
-          },
-          {
-            "offset": 52,
-            "opr": "load",
-            "type": "int",
-            "index": 2
-          },
-          {
-            "offset": 53,
-            "opr": "array_store",
-            "type": "int"
           },
           {
             "offset": 54,
             "opr": "load",
-            "type": "ref",
-            "index": 0
+            "type": "int",
+            "index": 1
           },
           {
             "offset": 55,
             "opr": "load",
             "type": "int",
-            "index": 3
+            "index": 2
           },
           {
             "offset": 56,
-            "opr": "load",
-            "type": "int",
-            "index": 4
-          },
-          {
-            "offset": 58,
             "opr": "array_store",
             "type": "int"
           },
           {
-            "offset": 59,
-            "opr": "incr",
-            "index": 1,
-            "amount": 1
-          },
-          {
-            "offset": 62,
-            "opr": "load",
-            "type": "int",
-            "index": 1
-          },
-          {
-            "offset": 63,
+            "offset": 57,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 64,
-            "opr": "arraylength"
+            "offset": 58,
+            "opr": "load",
+            "type": "int",
+            "index": 3
+          },
+          {
+            "offset": 59,
+            "opr": "load",
+            "type": "int",
+            "index": 4
+          },
+          {
+            "offset": 61,
+            "opr": "array_store",
+            "type": "int"
+          },
+          {
+            "offset": 62,
+            "opr": "incr",
+            "index": 1,
+            "amount": 1
           },
           {
             "offset": 65,
-            "opr": "if",
-            "condition": "lt",
-            "target": 3
+            "opr": "goto",
+            "target": 2
           },
           {
             "offset": 68,
@@ -1809,7 +1773,7 @@
         "exceptions": [],
         "stack_map": [
           {
-            "index": 8,
+            "index": 7,
             "type": "append_frame",
             "info": [
               {
@@ -1821,7 +1785,7 @@
             ]
           },
           {
-            "index": 24,
+            "index": 26,
             "type": "append_frame",
             "info": [
               {
@@ -1830,13 +1794,17 @@
             ]
           },
           {
-            "index": 34,
+            "index": 36,
             "type": "same"
           },
           {
-            "index": 36,
+            "index": 38,
             "type": "chop_frame",
             "info": 1
+          },
+          {
+            "index": 39,
+            "type": "same"
           }
         ],
         "bytecode": [
@@ -1886,29 +1854,42 @@
           },
           {
             "offset": 7,
-            "opr": "goto",
-            "target": 36
-          },
-          {
-            "offset": 10,
             "opr": "load",
             "type": "int",
             "index": 2
           },
           {
-            "offset": 11,
+            "offset": 8,
             "opr": "load",
             "type": "int",
             "index": 3
           },
           {
+            "offset": 9,
+            "opr": "if",
+            "condition": "gt",
+            "target": 39
+          },
+          {
             "offset": 12,
+            "opr": "load",
+            "type": "int",
+            "index": 2
+          },
+          {
+            "offset": 13,
+            "opr": "load",
+            "type": "int",
+            "index": 3
+          },
+          {
+            "offset": 14,
             "opr": "binary",
             "type": "int",
             "operant": "add"
           },
           {
-            "offset": 13,
+            "offset": 15,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -1916,54 +1897,54 @@
             }
           },
           {
-            "offset": 14,
+            "offset": 16,
             "opr": "binary",
             "type": "int",
             "operant": "div"
           },
           {
-            "offset": 15,
+            "offset": 17,
             "opr": "store",
             "type": "int",
             "index": 4
           },
           {
-            "offset": 17,
+            "offset": 19,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 18,
+            "offset": 20,
             "opr": "load",
             "type": "int",
             "index": 4
           },
           {
-            "offset": 20,
+            "offset": 22,
             "opr": "array_load",
             "type": "int"
           },
           {
-            "offset": 21,
+            "offset": 23,
             "opr": "load",
             "type": "int",
             "index": 1
           },
           {
-            "offset": 22,
+            "offset": 24,
             "opr": "if",
             "condition": "ge",
-            "target": 24
+            "target": 26
           },
           {
-            "offset": 25,
+            "offset": 27,
             "opr": "load",
             "type": "int",
             "index": 4
           },
           {
-            "offset": 27,
+            "offset": 29,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -1971,59 +1952,59 @@
             }
           },
           {
-            "offset": 28,
+            "offset": 30,
             "opr": "binary",
             "type": "int",
             "operant": "add"
           },
           {
-            "offset": 29,
+            "offset": 31,
             "opr": "store",
             "type": "int",
             "index": 2
           },
           {
-            "offset": 30,
+            "offset": 32,
             "opr": "goto",
-            "target": 36
+            "target": 38
           },
           {
-            "offset": 33,
+            "offset": 35,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 34,
+            "offset": 36,
             "opr": "load",
             "type": "int",
             "index": 4
           },
           {
-            "offset": 36,
+            "offset": 38,
             "opr": "array_load",
             "type": "int"
           },
           {
-            "offset": 37,
+            "offset": 39,
             "opr": "load",
             "type": "int",
             "index": 1
           },
           {
-            "offset": 38,
+            "offset": 40,
             "opr": "if",
             "condition": "le",
-            "target": 34
+            "target": 36
           },
           {
-            "offset": 41,
+            "offset": 43,
             "opr": "load",
             "type": "int",
             "index": 4
           },
           {
-            "offset": 43,
+            "offset": 45,
             "opr": "push",
             "value": {
               "type": "integer",
@@ -2031,50 +2012,37 @@
             }
           },
           {
-            "offset": 44,
+            "offset": 46,
             "opr": "binary",
             "type": "int",
             "operant": "sub"
           },
           {
-            "offset": 45,
+            "offset": 47,
             "opr": "store",
             "type": "int",
             "index": 3
           },
           {
-            "offset": 46,
+            "offset": 48,
             "opr": "goto",
-            "target": 36
+            "target": 38
           },
           {
-            "offset": 49,
+            "offset": 51,
             "opr": "load",
             "type": "int",
             "index": 4
           },
           {
-            "offset": 51,
+            "offset": 53,
             "opr": "return",
             "type": "int"
           },
           {
-            "offset": 52,
-            "opr": "load",
-            "type": "int",
-            "index": 2
-          },
-          {
-            "offset": 53,
-            "opr": "load",
-            "type": "int",
-            "index": 3
-          },
-          {
             "offset": 54,
-            "opr": "if",
-            "condition": "le",
-            "target": 8
+            "opr": "goto",
+            "target": 7
           },
           {
             "offset": 57,
@@ -2127,12 +2095,12 @@
         "annotations": []
       },
       "code": {
-        "max_stack": 4,
+        "max_stack": 3,
         "max_locals": 2,
         "exceptions": [],
         "stack_map": [
           {
-            "index": 3,
+            "index": 2,
             "type": "append_frame",
             "info": [
               {
@@ -2141,8 +2109,9 @@
             ]
           },
           {
-            "index": 10,
-            "type": "same"
+            "index": 14,
+            "type": "chop_frame",
+            "info": 1
           }
         ],
         "bytecode": [
@@ -2162,11 +2131,28 @@
           },
           {
             "offset": 2,
-            "opr": "goto",
-            "target": 10
+            "opr": "load",
+            "type": "int",
+            "index": 1
+          },
+          {
+            "offset": 3,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
+          },
+          {
+            "offset": 4,
+            "opr": "arraylength"
           },
           {
             "offset": 5,
+            "opr": "if",
+            "condition": "ge",
+            "target": 14
+          },
+          {
+            "offset": 8,
             "opr": "get",
             "static": true,
             "field": {
@@ -2179,24 +2165,24 @@
             }
           },
           {
-            "offset": 8,
+            "offset": 11,
             "opr": "load",
             "type": "ref",
             "index": 0
           },
           {
-            "offset": 9,
+            "offset": 12,
             "opr": "load",
             "type": "int",
             "index": 1
           },
           {
-            "offset": 10,
+            "offset": 13,
             "opr": "array_load",
             "type": "int"
           },
           {
-            "offset": 11,
+            "offset": 14,
             "opr": "invoke",
             "access": "dynamic",
             "index": 0,
@@ -2212,7 +2198,7 @@
             }
           },
           {
-            "offset": 16,
+            "offset": 19,
             "opr": "invoke",
             "access": "virtual",
             "method": {
@@ -2231,32 +2217,15 @@
             }
           },
           {
-            "offset": 19,
+            "offset": 22,
             "opr": "incr",
             "index": 1,
             "amount": 1
           },
           {
-            "offset": 22,
-            "opr": "load",
-            "type": "int",
-            "index": 1
-          },
-          {
-            "offset": 23,
-            "opr": "load",
-            "type": "ref",
-            "index": 0
-          },
-          {
-            "offset": 24,
-            "opr": "arraylength"
-          },
-          {
             "offset": 25,
-            "opr": "if",
-            "condition": "lt",
-            "target": 3
+            "opr": "goto",
+            "target": 2
           },
           {
             "offset": 28,
@@ -3016,7 +2985,7 @@
   ],
   "annotations": [],
   "version": [
-    63,
+    55,
     0
   ]
 }
