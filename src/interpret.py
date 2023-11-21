@@ -241,26 +241,47 @@ class Interpreter:
     def newarray(self, b, state, i):
         if b["type"] == "boolean" or b["type"] == "char": raise Exception("Not implemented")
 
-        if b["dim"] != 1: raise Exception("Not implemented") # TODO multidimensional arrays. if we want to...
+        if b["dim"] > 2: raise Exception("Not implemented") # TODO multidimensional arrays. if we want to...
         if len(state.stack) < 1: raise Exception("Expected stack of at least 1 element")
 
-        # Stack should be ..., count -> 
-        # becomes ..., arrayref ->  
-        count = state.stack[-1]
-        
-        # Nice to have but not important come back
-        #if count < self.abstraction.from_integer(0): return [(State(deepcopy(state.locals), deepcopy(state.stack[:-1]), deepcopy(state.heap), ExceptionType.NegativeArraySizeException), i+1)]
-
-        # When creating new array we set the heap_ptr of count and items to new_arr_ref. May be redundant but also we may need it. 
-        new_arr_ref = "arr" + str(self.arrays_allocated)
-        self.arrays_allocated += 1
-        new_arr = self.abstraction.generate_array(arr_ref=new_arr_ref, count=count.cpy_set_ptrs(heap_ptr=new_arr_ref), init_val=self.abstraction.from_integer(0, heap_ptr=new_arr_ref))
-        
-        new_stack = deepcopy(state.stack[:-1]) + [new_arr_ref]
         new_heap = deepcopy(state.heap)
+        if b["dim"] == 2:
+            cols = state.stack[-1]
+            rows = state.stack[-2]
+            if not (rows.is_constant() and cols.is_constant()): raise Exception("Expected something else")
 
-        # an actual list now because easier implementation wise. Not important for what we are focusing on. But that way we can just use the arithmetics we have instead of sth special for sets. if representing possible values as sets.
-        new_heap[new_arr_ref] = new_arr # consider whether to have length elements, set representing min max of all values or something else. in any event default val is 0.
+            # create #rows arrays of length cols
+            refs = []
+            for _ in range(cols.concrete_constant()):
+                new_arr_ref = "arr" + str(self.arrays_allocated)
+                self.arrays_allocated += 1
+                refs += [new_arr_ref]
+                new_arr = self.abstraction.generate_array(arr_ref=new_arr_ref, count=cols.cpy_set_ptrs(heap_ptr=new_arr_ref), init_val=self.abstraction.from_integer(0, heap_ptr=new_arr_ref))
+                new_heap[new_arr_ref] = new_arr # consider whether to have length elements, set representing min max of all values or something else. in any event default val is 0.
+            
+            # Create an array of #rows entries. set the entries to the refs we just created as tuple   
+            new_arr_ref = "arr" + str(self.arrays_allocated)
+            self.arrays_allocated += 1 
+            new_arr = self.abstraction.generate_array(arr_ref=new_arr_ref, count=rows.cpy_set_ptrs(heap_ptr=new_arr_ref), init_val=tuple(refs))
+            new_heap[new_arr_ref] = new_arr # consider whether to have length elements, set representing min max of all values or something else. in any event default val is 0.
+            new_stack = deepcopy(state.stack[:-2]) + [new_arr_ref]
+        else:
+            # Stack should be ..., count -> 
+            # becomes ..., arrayref ->  
+            count = state.stack[-1]
+        
+            # Nice to have but not important come back
+            #if count < self.abstraction.from_integer(0): return [(State(deepcopy(state.locals), deepcopy(state.stack[:-1]), deepcopy(state.heap), ExceptionType.NegativeArraySizeException), i+1)]
+
+            # When creating new array we set the heap_ptr of count and items to new_arr_ref. May be redundant but also we may need it. 
+            new_arr_ref = "arr" + str(self.arrays_allocated)
+            self.arrays_allocated += 1
+            new_arr = self.abstraction.generate_array(arr_ref=new_arr_ref, count=count.cpy_set_ptrs(heap_ptr=new_arr_ref), init_val=self.abstraction.from_integer(0, heap_ptr=new_arr_ref))
+            
+            new_stack = deepcopy(state.stack[:-1]) + [new_arr_ref]
+       
+            # an actual list now because easier implementation wise. Not important for what we are focusing on. But that way we can just use the arithmetics we have instead of sth special for sets. if representing possible values as sets.
+            new_heap[new_arr_ref] = new_arr # consider whether to have length elements, set representing min max of all values or something else. in any event default val is 0.
 
         return [(State.new_stack_new_heap(state, new_stack, new_heap), i+1)]
 
@@ -276,6 +297,9 @@ class Interpreter:
 
         new_stack = deepcopy(state.stack[:-3])
         new_heap = deepcopy(state.heap)
+
+        if isinstance(arr_ref, tuple) and index.is_constant():
+            arr_ref = arr_ref[index.concrete_constant()]
 
         # Check bounds and go to exception state if out of bounds
         if not self.within_bounds(new_heap[arr_ref], index): return [(State(deepcopy(state.locals), new_stack, new_heap, ExceptionType.IndexOutOfBoundsException), i+1)]
@@ -294,14 +318,17 @@ class Interpreter:
         index = state.stack[-1]
 
         new_stack = deepcopy(state.stack[:-2])
+        
+        if isinstance(arr_ref, tuple) and index.is_constant():
+                arr_ref = arr_ref[index.concrete_constant()]
 
         # Check bounds and go to exception state if out of bounds. push exception to state to avoid problems merging stacks w different length.... weird fix. But we finish right after anyway
         if not self.within_bounds(state.heap[arr_ref], index): return [(State(deepcopy(state.locals), new_stack + [ExceptionType.IndexOutOfBoundsException], deepcopy(state.heap), ExceptionType.IndexOutOfBoundsException), i+1)]
 
         if b["type"] == "ref":
             if not isinstance(state.heap[arr_ref][1], tuple): raise Exception("Expected tuple")
-            if not index.is_constant(): raise Exception("Expected constant")
-            new_stack += [state.heap[arr_ref][1][index.concrete_constant()]]
+            #if not index.is_constant(): raise Exception("Expected constant")
+            new_stack += [state.heap[arr_ref][1]]
         else:
             # Array is tuple (count, items). Items represented as a single value of the astraction 
             new_stack += [state.heap[arr_ref][1]]
@@ -313,7 +340,10 @@ class Interpreter:
 
         # stack should be ..., arrayref ->
         arr_ref = state.stack[-1]
-        
+
+        if isinstance(arr_ref, tuple): # assume all vectors in matrix have same length
+            arr_ref = arr_ref[0] 
+
         if arr_ref not in state.heap: raise Exception("Array ref not defined") # We do not perform this check elsewhere. just remove assume never happens
 
         new_stack = deepcopy(state.stack[:-1]) + [state.heap[arr_ref][0]]

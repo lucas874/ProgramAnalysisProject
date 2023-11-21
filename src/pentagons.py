@@ -55,6 +55,9 @@ class Pentagon: # Integers represented as intervals
         if isinstance(v1, str): # In case of references
             assert v1 == v2
             return v1 
+        if isinstance(v1, tuple): # Multidimensional arrays
+            assert v1 == v2
+            return v1
         
         intv = Interval.wide(v1.intv, v2.intv, K)
         strictly_lt = cls.widen_set(v1, v2)

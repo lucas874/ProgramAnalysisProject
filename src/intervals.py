@@ -49,6 +49,9 @@ class Interval: # Integers represented as intervals
         if isinstance(v1, str): # In case of references
             assert v1 == v2
             return v1
+        if isinstance(v1, tuple): # Multidimensional arrays
+            assert v1 == v2
+            return v1
         #if v1.index != None: assert v1.index == v2.index # REVIEW INDEX CHECK
         #if v1.heap_ptr != None or v2.heap_ptr != None: # CONSIDER does not have to be the same like in neverThrows3 arrays. but which one do we pick? Should be none in that case...
             #print(v1.heap_ptr, v2.heap_ptr)
