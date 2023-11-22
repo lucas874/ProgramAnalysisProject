@@ -7,12 +7,25 @@ import dtu.compute.exec.Case;
 public class Rosetta {
 
     @Case //https://rosettacode.org/wiki/Array_concatenation#Java
-    int[] concat(int[] arrayA, int[] arrayB) {
+    int[] concat() {
+        int[] arrayA = new int[100];
+        int[] arrayB = new int[100];
+        
         int[] array = new int[arrayA.length + arrayB.length];
-        for (int index = 0; index < arrayA.length; index++)
+        for (int index = 0; index < arrayA.length; index++) {
+            assert index < array.length;
+            assert index < arrayA.length;
             array[index] = arrayA[index];
-        for (int index = 0; index < arrayB.length; index++)
-            array[index + arrayA.length] = arrayB[index];
+        }
+        for (int index = 0; index < arrayB.length; index++) {
+            assert index < array.length;
+            assert index < arrayB.length;
+            
+            int offsetIndex = index + arrayA.length;
+            assert offsetIndex < array.length;    
+            
+            array[offsetIndex] = arrayB[index];
+        }
         return array;
     }
 
@@ -117,19 +130,19 @@ public class Rosetta {
     //https://rosettacode.org/wiki/100_doors#Java
     @Case // this if change to int
     public static void hundredDoors() {
-        boolean[] doors = new boolean[101];
+        int[] doors = new int[101];
 
         for (int i = 1; i < doors.length; i++) {
             for (int j = i; j < doors.length; j += i) {
-                doors[j] = !doors[j];
+                doors[j] = -doors[j];
             }
         }
 
-        for (int i = 1; i < doors.length; i++) {
-            if (doors[i]) {
-                System.out.printf("Door %d is open.%n", i);
+/*         for (int i = 1; i < doors.length; i++) {
+            if (doors[i] >= 0) {
+                System.out.println(doors[i]);
             }
-        }
+        } */
     }
 
     @Case // https://rosettacode.org/wiki/Knuth_shuffle#Java call to random removed 

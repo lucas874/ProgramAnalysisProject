@@ -54,7 +54,11 @@ class Pentagon: # Integers represented as intervals
         if is_exception(v2): return v2 # hmmm ?
         if isinstance(v1, str): # In case of references
             assert v1 == v2
-            return v1 
+            return v1
+        if v1 == None:
+            return v1
+        if v2 == None:
+            return v2
         
         intv = Interval.wide(v1.intv, v2.intv, K)
         strictly_lt = cls.widen_set(v1, v2)
