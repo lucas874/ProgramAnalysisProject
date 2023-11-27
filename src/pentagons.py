@@ -19,7 +19,7 @@ class Pentagon: # Integers represented as intervals
 
     @classmethod 
     def from_value(cls, value, index=None, heap_ptr=None): # From value field in bytecode json
-        if value["type"] == "integer":
+        if value["type"] == "integer" or value["type"] == "double" or value["type"] == "float":
             intv = Interval.from_integer(value["value"], index=index, heap_ptr=heap_ptr)
             return Pentagon(intv, set()) 
         else:
@@ -27,7 +27,7 @@ class Pentagon: # Integers represented as intervals
 
     @classmethod 
     def from_integer(cls, value, index=None, heap_ptr=None):
-        return cls.checked(value, value, index=index, heap_ptr=heap_ptr)
+        return cls.checked(int(value), int(value), index=index, heap_ptr=heap_ptr)
 
     @classmethod # RECONSIDER THIS
     def checked(cls, l, h, index=None, heap_ptr=None, strictly_lt=set()):
@@ -65,9 +65,14 @@ class Pentagon: # Integers represented as intervals
     @classmethod
     def handle_array(cls, arr, new_val, arr_ref, state):
         count = arr[0].intv
-        items = arr[1].intv 
+        if isinstance(new_val, str):
+            items = arr[1]
+            count, items = Interval.handle_array((count, items), new_val, arr_ref, state)
+            return (Pentagon(count, arr[0].greater_variables), items)
+        else:
+            items = arr[1].intv 
         
-        count, items = Interval.handle_array((count, items), new_val.intv, arr_ref, state)
+            count, items = Interval.handle_array((count, items), new_val.intv, arr_ref, state)
         
         return (Pentagon(count, arr[0].greater_variables), Pentagon(items, arr[1].greater_variables))
 
@@ -181,7 +186,11 @@ class Pentagon: # Integers represented as intervals
         return ptrs
 
     def is_constant(self):
-        return self.intv.is_constant() 
+        return self.intv.is_constant()
+    
+    def concrete_constant(self):
+        if not self.is_constant(): raise Exception("Only applicable for constants")
+        else: return self.intv.concrete_constant() 
  
     def cpy_set_ptrs(self, index=None, heap_ptr=None):
         intv = self.intv.checked(self.intv.l, self.intv.h, index, heap_ptr)

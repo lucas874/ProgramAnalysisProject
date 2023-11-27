@@ -55,16 +55,16 @@ class AbstractInterpreter:
                     self.merge_fwd(i_, new_state, int_constants)
                     if new_state.is_exception_state():  
                         self.worklist = []  # Stop intepretation if exception?
-                    if self.debug: 
-                        self.prettier_print_state(bytecode) 
-                        #print("\n\n")
+                    # if self.debug: 
+                    #     self.prettier_print_state(bytecode) 
+                    #     print("\n\n")
 
-            if self.debug:
-                #print("Final state: ")
-                self.prettier_print_state(bytecode)
-                for i, s in enumerate(self.states):
-                    if s is not None and s.is_exception_state():
-                        print(f"EXCEPTION {s.exception} AT: {i}")
+            # if self.debug:
+            #     # print("Final state: ")
+            #     # self.prettier_print_state(bytecode)
+            #     for i, s in enumerate(self.states):
+            #         if s is not None and s.is_exception_state():
+            #             print(f"EXCEPTION {s.exception} AT: {i}")
             return self.states
 
         def generate_value(self, param):

@@ -82,10 +82,15 @@ class Interval: # Integers represented as intervals
     def handle_array(cls, arr, new_val, arr_ref, state): 
         if arr[0].eq(cls.from_integer(1), state): 
             return (arr[0], Interval(new_val.l, new_val.h, index=arr[1].index, heap_ptr=arr[1].heap_ptr))
-        else: 
-            new_l = min(new_val.l, arr[1].l)
-            new_h = max(new_val.h, arr[1].h) 
-            return (arr[0], cls.checked(new_l, new_h, index=arr[1].index, heap_ptr=arr_ref))
+        else:
+            if isinstance(new_val, str):
+                if isinstance(arr[1], tuple):
+                    return (arr[0], arr[1] + (new_val,))
+                else: return  (arr[0], (new_val, ))
+            else:     
+                new_l = min(new_val.l, arr[1].l)
+                new_h = max(new_val.h, arr[1].h) 
+                return (arr[0], cls.checked(new_l, new_h, index=arr[1].index, heap_ptr=arr_ref))
 
     @classmethod
     def adjust_values_gt(cls, val1, val2):  # Return four intervals. Do like we do in the ifs with the values right now.
@@ -166,6 +171,10 @@ class Interval: # Integers represented as intervals
 
     def is_constant(self):
         return self.l == self.h
+    
+    def concrete_constant(self):
+        if not self.is_constant(): raise Exception("Only applicable for constants")
+        else: return self.l
 
     def is_negative(self):
         return self.h < 0
